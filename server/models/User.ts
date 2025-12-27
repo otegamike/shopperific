@@ -1,7 +1,14 @@
-import mongoose from "mongoose";
-const { Schema, model, models } = mongoose;
+// import mongoose from "mongoose";
+import { db } from "../lib/mongoose.js";
+const { Schema, model, models } = db;
 
 export type UserRole = "buyer" | "seller";
+
+const RefreshTokenEntrySchema = new Schema({
+  deviceId: { type: String, required: true },
+  refreshToken: { type: String, required: true },
+  createdAt: { type: Date, required: true, default: Date.now},
+});
 
 const UserSchema = new Schema(
   {
@@ -22,6 +29,11 @@ const UserSchema = new Schema(
       type: String,
       enum: ["buyer", "seller"],
       required: true,
+    },
+
+    refreshTokens: {
+      type: [RefreshTokenEntrySchema],
+      default: [],
     },
 
     // provider: {
