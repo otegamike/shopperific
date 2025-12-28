@@ -1,4 +1,7 @@
 import { db } from "../lib/mongoose.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const MONGODB_URI = process.env.MONGODB_URI as string;
 
@@ -23,10 +26,8 @@ export async function connectDB() {
   if (cached.conn) return cached.conn;
 
   if (!cached.promise) {
-    cached.promise = db.connect(MONGODB_URI, {
-      serverSelectionTimeoutMS: 30_000,
-      socketTimeoutMS: 30_000,
-      maxPoolSize: 10,
+    cached.promise = db.connect(MONGODB_URI,  {
+      dbName: "Shopperific",
       bufferCommands: false,
     });
   }

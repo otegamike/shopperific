@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import { connectDB } from "../utils/db.js";
 
-export const  withDb = async(
+export const withDb = async(
   req: Request,
   res: Response,
   next: NextFunction

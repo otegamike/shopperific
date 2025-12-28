@@ -1,4 +1,4 @@
-interface RefreshTokenEntry {
+export interface RefreshTokenEntry {
     deviceId: string;
     refreshToken: string;
     createdAt: Date;

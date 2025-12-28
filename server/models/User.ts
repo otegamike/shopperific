@@ -1,4 +1,4 @@
-// import mongoose from "mongoose";
+
 import { db } from "../lib/mongoose.js";
 const { Schema, model, models } = db;
 

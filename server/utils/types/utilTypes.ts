@@ -22,3 +22,14 @@ export interface NewUSerOBj {
     email: string;
     role: "buyer" | "seller";
 }
+
+export interface AccessToken {
+    accessToken?: string;
+}
+
+export interface AuthUser {
+    userId: string;
+    deviceId: string;
+}
+
+export type ReqUser = NewUSerOBj & AccessToken;
