@@ -4,13 +4,13 @@ import User from "../models/User.js";
 import { connectDB } from "../utils/db.js";
 import { createToken } from "../utils/createToken.js";
 import {addDevice} from "../utils/addDevice.js";
-import { withDb } from "../middleware/withDB.js";
+import { connectToDb } from "../middleware/connectToDb.js";
 import type { TypedRequest, TypedResponse, loginRequestBody, registerRequestBody, NewUSerOBj } from "../utils/types/utilTypes.js";
 
 const router = Router();
 
 // Register Route
-router.post("/register", withDb, async (req: TypedRequest<registerRequestBody>, res: TypedResponse<{ message: string, newUser?: any }>) => {
+router.post("/register", connectToDb, async (req: TypedRequest<registerRequestBody>, res: TypedResponse<{ message: string, newUser?: any }>) => {
 
     const { deviceId, email, password, role } = req.body;
 

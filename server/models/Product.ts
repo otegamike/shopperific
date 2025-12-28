@@ -1,7 +1,7 @@
 import { db } from "../lib/mongoose.js";
 const { Schema, model, models } = db;
 
-export interface Product {
+export interface ProductType {
   name: string;
   description: string;
   price: number;
@@ -11,7 +11,7 @@ export interface Product {
   images?: string[];
 }
 
-const ProductSchema = new Schema<Product>(
+const ProductSchema = new Schema<ProductType>(
   {
     name: {
       type: String,
@@ -46,4 +46,4 @@ const ProductSchema = new Schema<Product>(
     timestamps: true
   }
 );
-export default models.Product || model<Product>("Product", ProductSchema);
+export default models.Product || model<ProductType>("Product", ProductSchema);
