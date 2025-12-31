@@ -1,9 +1,15 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import { connectDB } from './utils/db.js';
+
+// Middleware 
+import { connectToDb } from './middleware/connectToDb.js';
+import { validateUser } from './middleware/validateUser.js';
+import cookieParser from 'cookie-parser';
+
+// Routes 
 import authRoutes from './routes/auth.js';
 import productsRoutes from './routes/products.js';
-import cookieParser from 'cookie-parser';
+import shopRoutes from './routes/shops.js'
 
 // Load environment variables from .env file
 dotenv.config();
@@ -16,15 +22,24 @@ app.use(express.json());
 // Middleware to parse cookies
 app.use(cookieParser());
 
+// Log request method and URL
 app.use ((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
   next();
 });
 
-// Routes
+// connect to database
+app.use( connectToDb );
+
+// Log in and register routes
 app.use('/api/auth', authRoutes);
 
+// Validate user for all routes below
+app.use( validateUser );
+
 app.use('/api/products', productsRoutes);
+
+app.use('/api/shops', shopRoutes );
 
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });

@@ -23,8 +23,17 @@ export interface NewUSerOBj {
     role: "buyer" | "seller";
 }
 
+type baseReqUser = NewUSerOBj;
+
 export interface AccessToken {
     accessToken?: string;
+}
+
+export interface reqVariables {
+    shopOwnerId?: string;
+    shopName?: string;
+    productId?: string;
+    orderId?: string;
 }
 
 export interface AuthUser {
@@ -32,4 +41,4 @@ export interface AuthUser {
     deviceId: string;
 }
 
-export type ReqUser = NewUSerOBj & AccessToken;
+export type ReqUser = baseReqUser & AccessToken & reqVariables;

@@ -68,7 +68,7 @@ export const validateUser = async (
     }
     
     if (newAccessToken) {
-        userObj.accessToken = newAccessToken;
+       res.setHeader("Authorization", `Bearer ${newAccessToken}`);
     }
 
         req.user = userObj;  

@@ -1,4 +1,4 @@
-import { db } from "../lib/mongoose.js";
+import { db , Types } from "../lib/mongoose.js";
 const { Schema, model, models } = db;
 
 export interface ProductType {
@@ -9,6 +9,8 @@ export interface ProductType {
   category?: string;
   stock?: number;
   images?: string[];
+  shopName: string;
+  shopRef: Types.ObjectId;
 }
 
 const ProductSchema = new Schema<ProductType>(
@@ -40,7 +42,16 @@ const ProductSchema = new Schema<ProductType>(
     },
     images: [{
       type: String
-    }]
+    }],
+    shopName: {
+      type: String,
+      require: true,
+    },
+    shopRef: {
+      type: Schema.Types.ObjectId,
+      ref: "Shop",
+      required: true,
+    }
   },
   {
     timestamps: true

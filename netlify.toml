@@ -5,6 +5,7 @@
 [functions]
   node_bundler = "esbuild"
   directory = "server/functions"
+  external_node_modules = ["serverless-http"]
 
 [dev]
   command = "npm run dev"

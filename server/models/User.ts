@@ -28,6 +28,7 @@ const UserSchema = new Schema(
     role: {
       type: String,
       enum: ["buyer", "seller"],
+      default: "seller",
       required: true,
     },
 
@@ -44,7 +45,7 @@ const UserSchema = new Schema(
     //   type: String,
     // },
 
-    isVerified: {
+    isEmailVerified: {
       type: Boolean,
       default: false,
     },

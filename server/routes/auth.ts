@@ -75,9 +75,6 @@ router.post("/login", async (req: TypedRequest<loginRequestBody>, res) => {
     }
 
     try {
-        const connect = await connectDB();
-        if (!connect) return res.status(500).json({ message: "Database connection failed." });
-
         const user = await User.findOne({ email });
 
         if (!user) {
