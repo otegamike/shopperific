@@ -12,6 +12,8 @@ export interface loginRequestBody {
 
 export interface registerRequestBody {
     deviceId: string;
+    firstName: string;
+    lastName: string;
     email: string;
     password: string;
     role: "buyer" | "seller";

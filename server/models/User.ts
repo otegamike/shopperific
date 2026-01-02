@@ -1,5 +1,6 @@
 
 import { db } from "../lib/mongoose.js";
+import { RefreshTokenEntry } from "../utils/addDevice.js";
 const { Schema, model, models } = db;
 
 export type UserRole = "buyer" | "seller";
@@ -10,9 +11,46 @@ const RefreshTokenEntrySchema = new Schema({
   createdAt: { type: Date, required: true, default: Date.now},
 });
 
-const UserSchema = new Schema(
+export interface VerifyEmailType {
+  isEmailVerified: boolean;
+  emailVerificationToken: string;
+  emailVerificationCode: string;
+  emailverificationExpiresAt: number;
+}
+
+export interface RegisterUserType {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  role: UserRole;
+}
+
+export interface RefreshTokens {
+  refreshTokens: RefreshTokenEntry[];
+}
+
+export type User = 
+  VerifyEmailType & 
+  RefreshTokens & 
+  RegisterUserType;
+
+const UserSchema = new Schema<User>(
   {
-    email: {
+   
+    firstName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    
+    lastName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+     email: {
       type: String,
       required: true,
       unique: true,
@@ -28,14 +66,48 @@ const UserSchema = new Schema(
     role: {
       type: String,
       enum: ["buyer", "seller"],
-      default: "seller",
+      default: "buyer",
       required: true,
     },
-
+    
     refreshTokens: {
       type: [RefreshTokenEntrySchema],
       default: [],
     },
+
+
+    // For Email verification
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
+    emailVerificationToken: {
+      type: String,
+      trim: true,
+    },
+    emailVerificationCode: {
+      type: String,
+      trim: true
+    },
+    emailverificationExpiresAt: {
+      type: Number
+    }
+  },
+  {
+    timestamps: true,
+  }
+);
+
+export default models.User || model("User", UserSchema);
+
+
+
+
+
+
+
+
+
 
     // provider: {
     //   type: String, // "google", "github", etc
@@ -44,15 +116,3 @@ const UserSchema = new Schema(
     // providerId: {
     //   type: String,
     // },
-
-    isEmailVerified: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
-
-export default models.User || model("User", UserSchema);

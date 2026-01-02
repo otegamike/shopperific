@@ -7,15 +7,23 @@ import {addDevice} from "../utils/addDevice.js";
 import { connectToDb } from "../middleware/connectToDb.js";
 import type { TypedRequest, TypedResponse, loginRequestBody, registerRequestBody, NewUSerOBj } from "../utils/types/utilTypes.js";
 
+// for Email Verification 
+import { genToken, verifyurl, hashToken } from "../services/EmailVerificationToken.js";
+import { sendVerifyEmail } from "../services/sendMail.js";
+import { getFromDb } from "../services/fetchFromDb.js";
+import { RegisterUserType } from "../models/User.js";
+
 const router = Router();
+console.log("auth routes");
 
 // Register Route
-router.post("/register", connectToDb, async (req: TypedRequest<registerRequestBody>, res: TypedResponse<{ message: string, newUser?: any }>) => {
+router.post("/register", async (req: TypedRequest<registerRequestBody>, res: TypedResponse<{ message: string, newUser?: any }>) => {
 
-    const { deviceId, email, password, role } = req.body;
+    const { firstName, lastName , email, password, role } = req.body;
+    const deviceId = req.headers["x-device-id"] as string;
 
-    if (!deviceId || !email || !password || !role) {
-        return res.status(400).json({ message: "Email, password, and role are required." });
+    if (!deviceId || !email || !password || !firstName || !lastName || !role) {
+        return res.status(400).json({ message: "Full name, Email, password, and role are required." });
     }
 
     try {
@@ -28,11 +36,36 @@ router.post("/register", connectToDb, async (req: TypedRequest<registerRequestBo
         const salt = await bcrypt.genSalt();
         const hashedpassword = await bcrypt.hash(password, salt);
 
-        const newUser = new User({
+        const userData : RegisterUserType = {
+            firstName,
+            lastName,
             email,
             password: hashedpassword,
             role
-        });
+        };
+
+        const newUser = new User(userData);
+        
+
+        const genEmailToken = genToken();
+        if (!genEmailToken.generated) {
+            return res.status(500).json({message: "internal server error. Please Try again later"});
+        }
+
+        newUser.emailVerificationToken = genEmailToken.hashedToken;
+        newUser.emailVerificationCode = genEmailToken.hashedCode;
+        newUser.emailverificationExpiresAt = genEmailToken.expiresAt;
+
+        const verificationCode = genEmailToken.code as string;
+        const verificationUrl = verifyurl(genEmailToken.token as string);
+
+        // Send user email.
+        const sendUserEmail = await sendVerifyEmail(firstName, email, verificationCode, verificationUrl);
+
+        // Check if email was sent.
+        if (!sendUserEmail.sent) {
+            return res.status(500).json({message: "internal server error. Please Try again later"});
+        }
 
         await newUser.save();
 
@@ -67,7 +100,8 @@ router.post("/register", connectToDb, async (req: TypedRequest<registerRequestBo
 
 // Login Route
 router.post("/login", async (req: TypedRequest<loginRequestBody>, res) => { 
-    const { deviceId, email, password } = req.body;
+    const { email, password } = req.body;
+    const deviceId = req.headers["x-device-id"] as string;
 
     if (!email || !password) {
         res.status(400).json({ message: "Email and password are required." });
@@ -117,6 +151,58 @@ router.post("/login", async (req: TypedRequest<loginRequestBody>, res) => {
         res.status(500).json({ message: "Couldn't log you in. Please try again." });
     }
 
+});
+
+router.get('/verify-email', async (req, res) => {
+    const token = req.query.token || req.body.code;
+
+    if (!token) {
+        return res.status(403).json({ error : "Missing verification Code or token." });
+    }
+
+    console.log("verifying Email...");
+
+    const hash = hashToken(token);
+    if (!hash.hashed) { 
+        return res.status(500).json({ error : "internal server error. Please try again." });
+    }
+
+    const hashedToken = hash.hashedToken as string;
+
+    const user = await User.findOne({
+        $or: [
+            { emailVerificationToken: hashedToken},
+            { emailVerificationCode: hashedToken}
+        ],
+        emailVerificationExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+        return res.status(400).json({
+        message: "Invalid or expired verification code",
+        });
+    }
+
+    user.isEmailVerified = true;
+    user.emailVerificationCode = undefined;
+    user.emailVerificationToken = undefined;
+    user.emailVerificationExpires = undefined;
+
+    await user.save();
+   
+    return res.status(200).json({ message: "your account has successfully been verified" });
+
+})
+
+router.get('/test', async (req, res) => {
+
+    const getUser = await getFromDb("user", {email: "yellowr@test.com"}, "role" , 1);
+    if (getUser?.found && getUser.data) {
+        return res.status(200).json( getUser.data );
+    } else {
+        return res.status(500).json({ error : "internal server error. Please try again." });
+    }
+    
 });
 
 export default router;

@@ -11,7 +11,7 @@ import { getShop } from "../services/fetchFromDb.js";
 
 const router = Router();
 // get all shops
-router.get("/", async (req, res) => { 
+router.post("/", async (req, res) => { 
      const fetchShop = await getShop("all",  Number(req.query.limit), Number(req.query.page));
     
       if (!fetchShop.found) { return res.status(500).json({message: "error fetching shops"}) }
@@ -20,7 +20,7 @@ router.get("/", async (req, res) => {
 });
 
 // get shop by shop name
-router.get("/:shopId", async (req, res) => {
+router.post("/:shopId", async (req, res) => {
     const shopId = req.params.shopId;
     
     const fetchShop = await getShop({ shopId }, Number(req.query.limit), Number(req.query.page));

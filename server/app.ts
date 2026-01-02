@@ -4,12 +4,14 @@ import dotenv from 'dotenv';
 // Middleware 
 import { connectToDb } from './middleware/connectToDb.js';
 import { validateUser } from './middleware/validateUser.js';
+import { isEmailVerified } from './middleware/isEmailVerified.js';
 import cookieParser from 'cookie-parser';
 
 // Routes 
 import authRoutes from './routes/auth.js';
 import productsRoutes from './routes/products.js';
 import shopRoutes from './routes/shops.js'
+import verifyEmailRoute from  './routes/auth/verifyEmail.js'
 
 // Load environment variables from .env file
 dotenv.config();
@@ -36,6 +38,10 @@ app.use('/api/auth', authRoutes);
 
 // Validate user for all routes below
 app.use( validateUser );
+
+app.use('/api/verify-email', verifyEmailRoute);
+
+app.use( isEmailVerified );
 
 app.use('/api/products', productsRoutes);
 
