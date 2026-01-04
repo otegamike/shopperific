@@ -8,18 +8,22 @@ import { useState } from "react"
 function SignIn() {
 
   const [formType, setFormType] = useState<"login" | "register" | "verifyEmail">("login");
+  const [userEmail, setUserEmail] = useState<string>("");
 
-  const switchForm = (formType: "login" | "register" | "verifyEmail") => {
+  const switchForm = (formType: "login" | "register" | "verifyEmail" , email?: string) => {
     setFormType(formType);
+    if (email && formType === "verifyEmail") {
+      setUserEmail(email);
+    }
   }
 
-  const Form = (formType: "login" | "register" | "verifyEmail") => {
+  const Form = (formType: "login" | "register" | "verifyEmail", email?: string) => {
     if (formType === "login") {
-      return <Login switchForm={() => switchForm("register")} />
+      return <Login switchForm={switchForm} />
     } else if (formType === "register") {
-      return <Registration switchForm={() => switchForm("verifyEmail")} />
-    } else {
-      return <VerifyEmail />
+      return <Registration switchForm={switchForm} />
+    } else if (formType === "verifyEmail" && email) {
+      return <VerifyEmail email={email} />
     }
   }
 
@@ -28,7 +32,7 @@ function SignIn() {
     <main>
       <Header />
       <div className="auth__card">
-        <Card content={Form(formType)} />
+        <Card content={Form(formType, userEmail)} />
       </div>
     </main>
   )

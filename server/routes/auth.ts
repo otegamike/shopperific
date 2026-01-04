@@ -5,7 +5,7 @@ import { connectDB } from "../utils/db.js";
 import { createToken } from "../utils/createToken.js";
 import {addDevice} from "../utils/addDevice.js";
 import { connectToDb } from "../middleware/connectToDb.js";
-import type { TypedRequest, TypedResponse, loginRequestBody, registerRequestBody, NewUSerOBj } from "../utils/types/utilTypes.js";
+import type { TypedRequest, TypedResponse, loginRequestBody, registerRequestBody, NewUSerOBj, ClientUser } from "../utils/types/utilTypes.js";
 
 // for Email Verification 
 import { genToken, verifyurl, hashToken } from "../services/EmailVerificationToken.js";
@@ -17,7 +17,7 @@ const router = Router();
 console.log("auth routes");
 
 // Register Route
-router.post("/register", async (req: TypedRequest<registerRequestBody>, res: TypedResponse<{ message: string, newUser?: any }>) => {
+router.post("/register", async (req: TypedRequest<registerRequestBody>, res: TypedResponse<{ message: string, clientUser?: ClientUser }>) => {
 
     const { firstName, lastName , email, password, role } = req.body;
     const deviceId = req.headers["x-device-id"] as string;
@@ -66,8 +66,10 @@ router.post("/register", async (req: TypedRequest<registerRequestBody>, res: Typ
             maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         });
 
+        const clientUser = {firstName: newUser.firstName, email: newUser.email, role: newUser.role };
+
         console.log("New user registered");
-        return res.status(201).json({ message: "User registered successfully." , newUser});
+        return res.status(201).json({ message: "User registered successfully." , clientUser});
 
     } catch (error) {
 
@@ -122,8 +124,10 @@ router.post("/login", async (req: TypedRequest<loginRequestBody>, res) => {
 
         res.setHeader("Authorization", `Bearer ${accessToken}`);
 
+        const clientUser: ClientUser = { firstName: user.firstName, email: user.email, role: user.role };
+
         console.log("User logged in:", user);
-        return res.status(200).json({ message: "Login successful.", user: { email: user.email, role: user.role } });
+        return res.status(200).json({ message: "Login successful.", clientUser });
 
     } catch (err) {
         console.error("Error during login:", err);

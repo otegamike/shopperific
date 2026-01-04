@@ -3,7 +3,7 @@ import "../auth.css"
 import Input from "../../../forms/input"
 import Button from "../../../buttons/button"
 
-function Login({ switchForm }: { switchForm: () => void }) {
+function Login({ switchForm }: { switchForm: (formType: "login" | "register" | "verifyEmail", email?: string) => void }) {
   return (
     <div className="auth__form"> <h2>Login</h2>
       <form action="">
@@ -17,7 +17,7 @@ function Login({ switchForm }: { switchForm: () => void }) {
         </div>
         <Button content="Login" type="main" className="login__btn" />
       </form>
-      <p>Don't have an account? <a id="switch-form" onClick={switchForm}>Register</a></p>
+      <p>Don't have an account? <a id="switch-form" onClick={() => switchForm("register")}>Register</a></p>
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 
-import { verifyurl } from './EmailVerificationToken';
+import { verifyurl } from './EmailVerificationToken.js';
 
 dotenv.config();
 

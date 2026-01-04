@@ -64,7 +64,7 @@ router.post('/',  async (req, res) => {
 
     const hash = hashToken(token);
     if (!hash.hashed) { 
-        return res.status(500).json({ error : "internal server error. Please try again." });
+        return res.status(500).json({verified: false, error : "internal server error. Please try again." });
     }
 
     const hashedToken = hash.hashedToken;
@@ -76,21 +76,32 @@ router.post('/',  async (req, res) => {
 
     const update = await findAndUpdate("user", findBy, set);
     if (!update.updated) {
-        return res.status(500).json({message: "internal server error"});
+        return res.status(500).json({verified: false, error: "internal server error"});
     } else {
-        res.status(201).json({message: "Email verified successfully"});
+        return res.status(201).json({verified: true, message: "Email verified successfully"});
     }
 
 })
 
-router.get('/new',  async (req, res) => { 
+router.post('/new',  async (req, res) => { 
     const email = req.user?.email as string;
     const userId = req.user?.userId;
+    const clientEmail = req.body.email.toLowerCase();
+    const firstName = req.body.firstName;
+
+    if (!email || typeof email !== "string" || clientEmail !== email || !firstName || typeof firstName !== "string") {
+        console.log("Forbidden; one of the fields is missing or invalid", email, clientEmail, firstName, userId);
+        return res.status(403).json({ error : "Forbidden; one of the fields is missing or invalid" });
+    }
+
+    console.log("Generating token...");
 
     const genEmailToken = genToken();
 
     if ( !genEmailToken.generated ) {
+        console.log("Couldn't generate token");
         return res.status(500).json({error: "Internal server error."});
+        
     }
 
      // indicate fields to set.
@@ -105,19 +116,20 @@ router.get('/new',  async (req, res) => {
 
     // Exit if generated token wasn't stored.
     if (!storeToken.updated) {
-        return res.status(500).json({ error : "Internal sever error."});
+        console.log("Couldn't store token");
+        return res.status(500).json({sent: false, error : "Internal sever error. Please try again."});
     }
 
-    const firstName = storeToken.newData.firstName;
     // Send Email to user.
     const mail = await sendVerifyEmail(firstName, email, genEmailToken.code, genEmailToken.url);
 
     if (!mail.sent) {
-        return res.status(500).json({ error : "Internal sever error.  Please Try again later"});
+        console.log("Couldn't send mail");
+        return res.status(500).json({sent: false, error : "Internal sever error.  Please Try again later"});
     }
 
-    return res.status(200).json({ sent: true, message: "Code sent to your email."})
-
+    res.status(200).json({ sent: true, message: "Code sent to your email."})
+    return console.log("Email sent to user.");
 })
 
 export default router;

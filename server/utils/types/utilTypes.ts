@@ -43,4 +43,10 @@ export interface AuthUser {
     deviceId: string;
 }
 
+export interface ClientUser {
+    firstName: string;
+    email: string;
+    role: "buyer" | "seller";
+}
+
 export type ReqUser = baseReqUser & AccessToken & reqVariables;

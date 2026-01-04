@@ -6,9 +6,10 @@ import FormGroup from "../../../forms/FormGroup"
 import { getDeviceId } from "../../../../services/deviceId"
 
 import { register } from "../../../../services/authentication"
+import { sendVerificationCode } from "../../../../services/authentication"
 
 
-function Registration({ switchForm }: { switchForm: () => void }) {
+function Registration({ switchForm }: { switchForm: (formType: "login" | "register" | "verifyEmail", email?: string) => void }) {
   const deviceId = getDeviceId();
   const [formData, setFormData] = useState({
     deviceId,
@@ -31,9 +32,15 @@ function Registration({ switchForm }: { switchForm: () => void }) {
     const result = await register(formData);
     if (!result.registered) {
       console.log(result.error);
-    } 
-    if (result.registered) {
+    } else if (result.registered) {
       console.log(result.data);
+      const sendMail = await sendVerificationCode(formData.email, formData.firstName);
+        if (!sendMail.sent) {
+        console.log(sendMail.error);
+      } else if (sendMail.sent) {
+        console.log(sendMail.data);
+        switchForm("verifyEmail", formData.email);
+      }
     }
   }
   return (
@@ -45,9 +52,9 @@ function Registration({ switchForm }: { switchForm: () => void }) {
         <FormGroup label="Password" type="password" name="password" id="password" onChange={handleChange} />
         <FormGroup label="Confirm Password" type="password" name="confirmPassword" id="confirmPassword" onChange={handleChange} />
 
-        <Button content="Register" type="main" className="login__btn" />
+        <Button content= "Register" type="main" className="login__btn" />
       </form>
-      <p>Already have an account? <a id="switch-form" onClick={switchForm}>Login</a></p>
+      <p>Already have an account? <a id="switch-form" onClick={() => switchForm("verifyEmail", "otegamike@gmail.com")}>Login</a></p>
     </div>
   )
 }
