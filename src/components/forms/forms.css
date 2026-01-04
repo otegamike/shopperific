@@ -1,0 +1,11 @@
+input {
+    padding: 0.5rem;
+    border-radius: 5px;
+    width: 100%;
+    margin: 0.5rem 0;
+    border: 1px solid #555;
+}
+
+.tall {
+    padding: 0.7rem;
+}

@@ -1,0 +1,30 @@
+.header {
+    max-width: 1490px;
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+
+}
+
+.header__logo {
+    font-family: 'Cormorant Unicase', sans-serif;
+    font-size: 1.89rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.header__logo img {
+    width: 2.8rem;
+    aspect-ratio: 1;
+}
+
+.header__nav-list {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}

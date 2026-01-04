@@ -1,0 +1,11 @@
+
+
+.login__btn {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+}
+
+.login__btn:hover {
+   scale: 1;
+}

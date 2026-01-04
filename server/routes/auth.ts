@@ -45,27 +45,6 @@ router.post("/register", async (req: TypedRequest<registerRequestBody>, res: Typ
         };
 
         const newUser = new User(userData);
-        
-
-        const genEmailToken = genToken();
-        if (!genEmailToken.generated) {
-            return res.status(500).json({message: "internal server error. Please Try again later"});
-        }
-
-        newUser.emailVerificationToken = genEmailToken.hashedToken;
-        newUser.emailVerificationCode = genEmailToken.hashedCode;
-        newUser.emailverificationExpiresAt = genEmailToken.expiresAt;
-
-        const verificationCode = genEmailToken.code as string;
-        const verificationUrl = verifyurl(genEmailToken.token as string);
-
-        // Send user email.
-        const sendUserEmail = await sendVerifyEmail(firstName, email, verificationCode, verificationUrl);
-
-        // Check if email was sent.
-        if (!sendUserEmail.sent) {
-            return res.status(500).json({message: "internal server error. Please Try again later"});
-        }
 
         await newUser.save();
 

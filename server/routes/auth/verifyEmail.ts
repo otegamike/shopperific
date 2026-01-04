@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { hashToken } from "../../services/EmailVerificationToken";
-import { findAndUpdate } from "../../services/saveToDb";
-import { genToken } from "../../services/EmailVerificationToken";
-import { sendVerifyEmail } from "../../services/sendMail";
+import { hashToken } from "../../services/EmailVerificationToken.js";
+import { findAndUpdate } from "../../services/saveToDb.js";
+import { genToken } from "../../services/EmailVerificationToken.js";
+import { sendVerifyEmail } from "../../services/sendMail.js";
 
 // Types 
-import { VerifyEmailType } from "../../models/User";
+import { VerifyEmailType } from "../../models/User.js";
 
 const router = Router();
 
@@ -116,7 +116,7 @@ router.get('/new',  async (req, res) => {
         return res.status(500).json({ error : "Internal sever error.  Please Try again later"});
     }
 
-    return res.status(200).json({ message: "Code sent to your email."})
+    return res.status(200).json({ sent: true, message: "Code sent to your email."})
 
 })
 
