@@ -1,0 +1,33 @@
+.section {
+    padding: 2rem 1rem 2rem 2rem;
+    margin: 1rem;
+    border-radius: 1rem;
+    background-color: var(--secondary-color);
+    width: 95%;
+    max-width: 1480px;
+    transition: all 0.3s ease-in-out;
+
+    & h3 {
+        padding: 0rem 0 1rem 0;
+    }
+}
+
+.section .products {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 1rem;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+}
+
+.section .products::-webkit-scrollbar {
+    display: none;
+}
+
+.section .products>* {
+    flex-shrink: 0;
+    scroll-snap-align: start;
+}

@@ -1,10 +1,12 @@
 button {
-    padding: 0.6rem 1rem;
+    padding: 0.5rem 1rem;
     border-radius: 5px;
     border: none;
     cursor: pointer;
     scale: 1;
+    width: fit-content;
     transition: all 0.3s ease-in-out;
+    white-space: nowrap;
 }
 
 button:hover {
@@ -24,9 +26,24 @@ button:hover {
 
 .tall__btn {
     margin-top: 0.5rem;
-    padding: 1REM;
+    padding: 1rem;
 }
 
 .tall__btn:hover {
-   scale: 1;
+    scale: 1;
+}
+
+.button--disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+.full__btn {
+    width: 100%;
+}
+
+.pill__btn {
+    border-radius: 9999px;
+    padding: 0.5rem 1.5rem;
 }

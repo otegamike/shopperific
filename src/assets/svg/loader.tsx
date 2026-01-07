@@ -1,5 +1,7 @@
 
-const LoaderSvg = (size: number = 30, fill: string = "#f1f2f5", props: any) => (
+import type { SvgProps } from "./svgInterface"
+
+const LoaderSvg = ({size = 30, fill = "#f1f2f5", className, props}: SvgProps) => (
   <svg
     fill={fill}
     xmlns="http://www.w3.org/2000/svg"
@@ -7,7 +9,7 @@ const LoaderSvg = (size: number = 30, fill: string = "#f1f2f5", props: any) => (
     height={size}
     viewBox="0 0 399.389 399.389"
     xmlSpace="preserve"
-    className="spinner"
+    className={`spinner ${className}`}
     {...props}
   >
     <g strokeWidth={0} />

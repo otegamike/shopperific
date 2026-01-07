@@ -39,7 +39,7 @@ function VerifyEmail({ email }: VerifyEmailProps) {
       </div>
       <form action="" onSubmit={handleSubmit}>
         <FormGroup label="Enter Code" type="number" name="code" id="code" value={code.toString()} maxLength={6} onChange={handleChange} />
-        <Button content="Verify" type="main" className="auth__btn" />
+        <Button content="Verify" type="main" className="auth__btn full__btn" />
       </form>
     </div>
   )

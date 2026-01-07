@@ -15,7 +15,7 @@ export interface VerifyEmailType {
   isEmailVerified: boolean;
   emailVerificationToken: string;
   emailVerificationCode: string;
-  emailverificationExpiresAt: number;
+  emailVerificationExpiresAt: number;
 }
 
 export interface RegisterUserType {
@@ -89,7 +89,7 @@ const UserSchema = new Schema<User>(
       type: String,
       trim: true
     },
-    emailverificationExpiresAt: {
+    emailVerificationExpiresAt: {
       type: Number
     }
   },

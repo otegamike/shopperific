@@ -1,6 +1,6 @@
-import Product from "../models/Product"
-import Shop from "../models/Shop";
-import User from "../models/User";
+import Product from "../models/Product.js"
+import Shop from "../models/Shop.js";
+import User from "../models/User.js";
 
 export type models  = "user" | "product" | "shop";
 

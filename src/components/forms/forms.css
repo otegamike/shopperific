@@ -9,3 +9,48 @@ input {
 .tall {
     padding: 0.7rem;
 }
+
+.input__container {
+    position: relative;
+}
+
+.input__container svg {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.message {
+   font-size: small;
+}
+
+.error {
+    background-color: #ffe6e6;
+}
+
+.error__message {
+    color: red;
+}
+
+.success {
+    background-color: #d9ffcc;
+}
+
+.success__message {
+    color: green;
+}
+
+.warning {
+    background-color: #fff6d9;
+}
+
+.warning__message {
+    color: orange;
+}
+
+.hide {
+    display: none;
+}
+

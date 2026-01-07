@@ -22,6 +22,8 @@ export const checkTokenDb = async (token: string, deviceId: string, userId: stri
     if (exists) {
         bool = true;
         console.log("Token found in DB for device:", deviceId);
-    };
+    } else {
+        console.log("Device or Token doesn't match our Records.");
+    }
     return bool
 }

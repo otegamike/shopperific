@@ -1,0 +1,65 @@
+.panel {
+    padding: 0.5rem 0rem 1rem 0rem;
+    min-width: 15rem;
+
+    &.default {
+        background-color: var(--panel-color-dark);
+    }
+
+}
+
+.panel__list {
+    display: flex;
+    flex-direction: column;
+
+    & li {
+        width: 100%;
+        padding: 0.5rem 1.5rem;
+    }
+
+    & li:hover {
+        background-color: var(--panel-color-dark-hover);
+    }
+
+    & li:hover:last-child {
+        background-color: var(--panel-color-dark);
+    }
+
+    & li:last-child {
+        padding-left: 1rem;
+        padding-right: 1rem;
+        border-bottom: none;
+    }
+}
+
+.nav__menu {
+    position: fixed;
+    position-anchor: --header;
+    top: anchor(--header bottom);
+    right: anchor(--header right);
+    transform: translateY(-100%);
+    transition: all 0.3s ease-in-out;
+}
+
+.menu__expand {
+    transform: translateX(0);
+}
+
+.cta__anchor {
+    anchor-name: --cta-anchor;
+}
+
+.button__clone {
+    position: absolute;
+    top: anchor(--cta-anchor top);
+    left: anchor(--cta-anchor left);
+    z-index: 101;
+    transition: all 0.3s ease-in-out;
+    /* transition: top 0.3s ease-in-out, left 0.3s ease-in-out, width 0.3s ease-in-out; */
+}
+
+.is-hidden {
+    visibility: hidden;    /* Hides the element visually */
+    pointer-events: none;  /* Prevents clicks, hovers, and focus */
+    user-select: none;     /* Prevents text from being highlighted */
+}

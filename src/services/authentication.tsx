@@ -47,7 +47,7 @@ export const register = async (newUser: RegisterProps) : Promise<
 
 }
 
-export const login = async (email: string, password: string) : Promise<
+export const login = async ({email, password}: {email: string, password: string}) : Promise<
     |{authorized: false, error: string}
     |{authorized: true, data: any}> => {
         try {
@@ -65,7 +65,13 @@ export const login = async (email: string, password: string) : Promise<
 
             const data = await response.json();
             if (!response.ok) {
-                return {authorized: false, error:"Internal server error"};
+                if (data.incorrect === "username") {
+                    return {authorized: false, error:"Username incorrect try again."};
+                }
+                if (data.incorrect === "password") {
+                    return {authorized: false, error:"Password incorrect try again."};
+                }
+                return {authorized: false, error:data.message};
             }
             console.log(data);
             return {authorized: true, data};
@@ -105,13 +111,13 @@ export const sendVerificationCode = async (email: string, firstName: string) : P
             console.error(err.message, err);
             return {sent: false, error: "Internal server error"};
         }
-    }
+}
 
-    export const verifyUserEmail = async ( code: string ) : Promise<
+export const verifyUserEmail = async ( code: string ) : Promise<
     |{verified: false, error: string}
     |{verified: true, data: any}> => {
         try {
-            const response = await fetch("./api/verify-email/verify", {
+            const response = await fetch("./api/verify-email", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

@@ -52,6 +52,10 @@
 
   /* variables */
   --background-color: #E0E0E0;
+  --panel-color-dark: #211F49;
+  --panel-color-darker: #181736;
+  --panel-color-dark-hover:#100f24;
+
   --primary-color: #7086e0;
   --primary-color-hover: #4360d6;
   --primary-color-active: #6c7dd6;
@@ -63,7 +67,7 @@
 
 html {
   scroll-behavior: smooth;
-  font-size: 16px;
+  font-size: clamp(12px, calc((3 / 70) * 100vw - (170 / 70) * 1px), 16px);
 }
 
 *,
@@ -84,11 +88,21 @@ a {
   text-decoration: none;
   color: var(--primary-color);
   cursor: pointer;
+
+  &.panel-item {
+    color: var(--secondary-color);
+  }
+
+  &.panel-item:hover {
+    color: var(--secondary-color);
+  }
 }
 
 a:hover {
   color: var(--primary-color-hover);
 }
+
+
 
 img,
 picture,
@@ -121,9 +135,19 @@ body {
 }
 
 .main-header {
+  position: sticky;
+  top: 0;
   display: flex;
   justify-content: center;
   background-color: var(--light-color);
+  z-index: 100;
+}
+
+.sections {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .auth__card {
@@ -135,6 +159,12 @@ body {
 
 .spinner {
   animation: spin 1s linear infinite;
+}
+
+.center__content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 @keyframes spin {

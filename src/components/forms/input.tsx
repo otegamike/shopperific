@@ -1,4 +1,6 @@
 import "./forms.css"
+import { PasswordShow , PasswordHide } from "../../assets/svg/passwordshow"
+import { useState } from "react"
 
 interface inputType  {
   type: string, 
@@ -8,14 +10,29 @@ interface inputType  {
   maxLength?: number,
   placeholder?: string,
   className?: string ,
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void,
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-function Input({ type, name, id, value, maxLength, placeholder, className , onChange }: inputType) {
+function Input({ type, name, id, value, maxLength, placeholder, className , onBlur, onChange }: inputType) {
+  const [formType, setFormType ] = useState(type);
+
   return (
-    <>
-    <input className={`input__text ${className}`} type={type} name={name} id={id} value={value} placeholder={placeholder} onChange={onChange} maxLength={maxLength} />
-    </>
+    <div className="input__container">
+      <input 
+        className={`input__text ${className}`} 
+        type={formType} 
+        name={name} id={id} 
+        value={value} 
+        placeholder={placeholder} 
+        onChange={onChange} 
+        maxLength={maxLength} 
+        onBlur={onBlur} 
+      />
+      
+      {(formType === "text" && type==="password") && <span onClick={() => setFormType("password")} className="password__show"><PasswordShow size={25} /> </span>}
+      {(formType === "password" && type==="password") && <span onClick={() => setFormType("text")} className="password__hide"><PasswordHide size={25} /> </span>}
+    </div>
   )
 }
 

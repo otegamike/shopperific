@@ -1,0 +1,43 @@
+
+.alrtCon {
+    position: fixed;
+    bottom:40px;
+    width: 100%;
+    z-index: 5;
+}
+
+.alrt {
+    position: fixed;
+    left:50%;
+    bottom:40px;
+    
+    text-align: center;
+    max-width: min(70%,450px);
+    box-sizing: border-box;
+    padding: 8px 10px;
+    background-color: rgb(247, 76, 76);
+    border-radius: 20px;
+    color: white;
+    font-weight: bold;
+    font-size: small;
+    opacity: 0;
+    transform: translate(-50%);
+    transition: opacity 0.5s ease-in-out;
+}
+
+.alert-success {
+    background-color: hsl(105 100% 40% / 0.9);
+}
+
+.alert-warning {
+    background-color: hsl(24 100% 55% / 0.9);
+}
+
+.fade-in {
+    opacity: 0.9;
+}
+
+.fade-out {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}

@@ -1,8 +1,86 @@
 .card {
     padding: 2rem;
-    margin-top: 2rem;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
     border-radius: 1rem;
     background-color: var(--secondary-color);
-    width: min(100%, 500px);
+    width: min(95%, 500px);
     transition: all 0.3s ease-in-out;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.product__image,
+.product__name,
+.product__price,
+.product__button {
+    background: linear-gradient(90deg, var(--background-color) 25%, #f0f0f0 50%, var(--background-color) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+.products {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.product__card {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    justify-content: left;
+    max-width: 190px;
+    width: 43%;
+    gap: 0.5rem;
+}
+
+.product__image {
+    display: block;
+    width: 100%;
+    aspect-ratio: 6/5;
+    border-radius: 1rem;
+    background-color: var(--background-color);
+}
+
+.product__name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: left;
+    width: 100%;
+    height: 1.5rem;
+    background-color: var(--background-color);
+    border-radius: 1rem;
+}
+
+.product__actions {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.product__price {
+    display: flex;
+    justify-content: space-between;
+    width: 55%;
+    height: 2rem;
+    background-color: var(--background-color);
+    border-radius: 1rem;
+}
+
+.product__button {
+    display: flex;
+    justify-content: space-between;
+    width: 40%;
+    height: 2rem;
+    background-color: var(--background-color);
+    border-radius: 1rem;
 }

@@ -93,13 +93,13 @@ router.post("/login", async (req: TypedRequest<loginRequestBody>, res) => {
         const user = await User.findOne({ email });
 
         if (!user) {
-            res.status(400).json({ message: "Email or Username not found. Create a new account." });
+            res.status(400).json({ message: "Email or Username not found. Create a new account." , incorrect: "username"});
             return;
         }
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
-            res.status(400).json({ message: "Password incorrect try again." });
+            res.status(400).json({ message: "Password incorrect try again." , incorrect: "password" });
             console.log("Incorrect password for user:", email)
             return;
         }
