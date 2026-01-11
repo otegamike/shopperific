@@ -1,9 +1,8 @@
-import "./forms.css"
+
 import { PasswordShow , PasswordHide } from "../../assets/svg/passwordshow"
 import { useState } from "react"
 
 interface inputType  {
-  variant?: string,
   type: string, 
   label: string,
   name: string, 
@@ -16,17 +15,17 @@ interface inputType  {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-function Input({ variant, type, label, name, id, value, maxLength, placeholder, className , onBlur, onChange }: inputType) {
+function BorderlessInput({ type, label,  name, id, value, maxLength, placeholder, className , onBlur, onChange }: inputType) {
   const [formType, setFormType ] = useState(type);
 
   return (
     <div className="input__container">
       <input 
-        className={`input__text ${variant === "borderless" ? "borderless__input" : ""} ${className}`} 
+        className={`input__text borderless__input ${className}`} 
         type={formType} 
         name={name} id={id} 
         value={value} 
-        placeholder={variant === "borderless" ? label : placeholder} 
+        placeholder={label} 
         onChange={onChange} 
         maxLength={maxLength} 
         onBlur={onBlur} 
@@ -38,4 +37,4 @@ function Input({ variant, type, label, name, id, value, maxLength, placeholder, 
   )
 }
 
-export default Input
+export default BorderlessInput

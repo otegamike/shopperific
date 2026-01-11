@@ -22,11 +22,11 @@
         background-color: var(--panel-color-dark-hover);
     }
 
-    & li:hover:first-child {
-        background-color: var(--panel-color-dark);
+    & li.panel__button:hover {
+        background-color: transparent;
     }
 
-    & li:first-child {
+    & li.panel__button {
         padding-left: 1rem;
         padding-right: 1rem;
         border-bottom: none;
