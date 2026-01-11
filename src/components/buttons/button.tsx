@@ -6,12 +6,13 @@ interface ButtonProps {
     state?: "default" | "disabled" | "active";
     id?: string;
     className?: string;
+    style?: React.CSSProperties;
     onClick?: () => void;
 }
 
-function Button({ content, type  = "secondary" , state = "default" , id , className , onClick }: ButtonProps) {
+function Button({ content, type  = "secondary" , state = "default" , id , className , style , onClick }: ButtonProps) {
   return (
-    <button id={id} className={`button button--${type} ${className} button--${state}`} onClick={onClick} >{ content }</button>
+    <button id={id} className={`button--${type} ${className} button--${state}`} style={style} onClick={onClick} >{ content }</button>
   )
 }
 

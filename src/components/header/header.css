@@ -28,10 +28,14 @@
 .header__nav {
     position: relative;
     display: flex;
+    justify-content: right;
     align-items: center;
-    gap: 1.5rem;
+    width: 70%;
+    gap: 1rem;
     height: 100%;
 }
+
+
 
 .navBar {
     position: absolute;
@@ -49,4 +53,9 @@
     display: flex;
     align-items: center;
     gap: 1rem;
+}
+
+.usersvg {
+    max-width: 45px;
+    max-height: 45px;
 }

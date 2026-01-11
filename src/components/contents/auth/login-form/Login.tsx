@@ -27,42 +27,53 @@ function Login({ switchForm }: { switchForm: (formType: "login" | "register" | "
     password: ""
   });
 
-  const [ loading , setLoading ] = useState(false);
+  const [loading, setLoading] = useState(false);
 
 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      setLoading(true);
+    e.preventDefault();
+    setLoading(true);
 
-      // Return if fields are unValidated
-      if (!isFormValid) {
+    // Return if fields are unValidated
+    if (!isFormValid) {
 
-        if (Object.values(formData).some(value => value === "")) alertObj("Please fill in all fields", "warning");
-        else alertObj("Some Fields are invalid", "warning");
-        return setLoading(false);
-      }
+      if (Object.values(formData).some(value => value === "")) alertObj("Please fill in all fields", "warning");
+      else alertObj("Some Fields are invalid", "warning");
+      return setLoading(false);
+    }
 
-      // Send login request and await response.
-      const result = await login(formData);
-      if (!result.authorized) {
-        alertObj(result.error, "warning");
-      } else if (result.authorized) {
-        alertObj("Login successful", "success");
-      }
-      setLoading(false);
+    // Send login request and await response.
+    const result = await login(formData);
+    if (!result.authorized) {
+      alertObj(result.error, "warning");
+    } else if (result.authorized) {
+      console.log(result.user);
+      localStorage.setItem("name", result.user.firstName);
+      localStorage.setItem("email", result.user.email);
+      localStorage.setItem("role", result.user.role);
+
+      alertObj(`${result.message} ${localStorage.getItem("role")}`, "success");
+
+    }
+    setLoading(false);
   }
 
   return (
-    <div className="auth__form"> <h2>Login</h2>
-      <form action="" onSubmit={handleSubmit}>
-        <FormGroup label="Email" type="text" name="email" id="email" formValue={formData.email} onChange={handleChange} validate={true} validateFunction={handleValidation} />
-        <FormGroup label="Password" type="password" name="password" id="password" formValue={formData.password} onChange={handleChange} validate={true} validateFunction={handleValidation} /> 
-        
-        <Button content={loading ? <LoaderSvg /> : "Login"} type="main" className="login__btn full__btn center__content" />
-      </form>
-      <p>Don't have an account? <a id="switch-form" onClick={() => switchForm("register")}>Register</a></p>
-    </div>  
+    <>
+      <div className="auth__form"> <h2>Login</h2>
+        <form action="" onSubmit={handleSubmit}>
+          <FormGroup label="Email" type="text" name="email" id="email" formValue={formData.email} onChange={handleChange} validate={true} validateFunction={handleValidation} />
+          <FormGroup label="Password" type="password" name="password" id="password" formValue={formData.password} onChange={handleChange} validate={true} validateFunction={handleValidation} />
+
+          <Button content={loading ? <LoaderSvg /> : "Login"} type="main" className="login__btn full__btn center__content" />
+        </form>
+        <p>Don't have an account? <a id="switch-form" onClick={() => switchForm("register")}>Register</a></p>
+      </div>
+
+      <div className="auth__images">
+      </div>
+    </>
   )
 }
 

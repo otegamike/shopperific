@@ -2,6 +2,7 @@
     padding: 0.5rem 0rem 1rem 0rem;
     min-width: 15rem;
 
+
     &.default {
         background-color: var(--panel-color-dark);
     }
@@ -21,14 +22,21 @@
         background-color: var(--panel-color-dark-hover);
     }
 
-    & li:hover:last-child {
+    & li:hover:first-child {
         background-color: var(--panel-color-dark);
     }
 
-    & li:last-child {
+    & li:first-child {
         padding-left: 1rem;
         padding-right: 1rem;
         border-bottom: none;
+        margin: 0 0 1rem 0;
+    }
+
+    li > a {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
     }
 }
 
@@ -43,6 +51,7 @@
 
 .menu__expand {
     transform: translateX(0);
+    box-shadow: 0 0 1rem rgba(0, 0, 0, 0.8);
 }
 
 .cta__anchor {

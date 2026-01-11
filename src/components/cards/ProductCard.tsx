@@ -3,9 +3,13 @@
 
 import "./card.css"
 
-function ProductCard() {
+interface ProductCardProps {
+    orientation?: string;
+}
+
+function ProductCard({ orientation = "row" }: ProductCardProps) {
     return (
-        <div className="product__card">
+        <div className={`product__card ${orientation}`}>
             <span className="product__image"></span>
             <span className="product__name"></span>
             <span className="product__actions">

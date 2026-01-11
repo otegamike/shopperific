@@ -1,7 +1,8 @@
 
 import HamburgerMenu from "./hamburger-menu/hamburgerMenu"
-import Button from "../buttons/button"
 import Search from "../contents/search/Search"
+import UserSvg from "../../assets/svg/user"
+import { Link } from "react-router-dom"
 
 interface HeaderNavProps {
   buttonid?: string;
@@ -11,7 +12,7 @@ function HeaderNav({ buttonid }: HeaderNavProps) {
   return (
     <div className='header__nav'>
       <Search />
-      <Button type="main" id={buttonid} className="pill__btn is-hidden cta__anchor" content="Sign up" />
+    <Link to="/profile"><UserSvg id={buttonid} className="usersvg" /></Link>
       <HamburgerMenu />
     </div>
   )

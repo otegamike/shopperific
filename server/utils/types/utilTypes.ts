@@ -46,7 +46,7 @@ export interface AuthUser {
 export interface ClientUser {
     firstName: string;
     email: string;
-    role: "buyer" | "seller";
+    role: "buyer" | "seller" | "Admin";
 }
 
 export type ReqUser = baseReqUser & AccessToken & reqVariables;

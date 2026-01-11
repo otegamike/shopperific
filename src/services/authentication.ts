@@ -49,7 +49,7 @@ export const register = async (newUser: RegisterProps) : Promise<
 
 export const login = async ({email, password}: {email: string, password: string}) : Promise<
     |{authorized: false, error: string}
-    |{authorized: true, data: any}> => {
+    |{authorized: true, message: string, user: any}> => {
         try {
             const response = await fetch("./api/auth/login", {
                 method: "POST",
@@ -74,7 +74,7 @@ export const login = async ({email, password}: {email: string, password: string}
                 return {authorized: false, error:data.message};
             }
             console.log(data);
-            return {authorized: true, data};
+            return {authorized: true, message: data.message, user: data.clientUser};
 
         } catch (err: any) {
             console.error(err.message, err);

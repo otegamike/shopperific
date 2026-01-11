@@ -1,10 +1,11 @@
 import type { SvgProps } from "./svgInterface"
 
 
-const SearchSvg =({size = 30, fill = "#211f49", className, props}: SvgProps) => (
+const SearchSvg =({size = 30, fill = "#211f49", style, className, props}: SvgProps) => (
   <svg
     width={size}
     height={size}
+    style={style}
     viewBox="0 0 24 24"
     fill="none"
     className={className}

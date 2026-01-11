@@ -5,7 +5,7 @@ import NavBarContent from "../contents/navBar/NavBarContent"
 
 function NavBarPanel() {
   return (
-    <Panel className="nav__menu" id="menu" children={<NavBarContent />} />
+    <Panel className="nav__menu is-hidden" id="menu" children={<NavBarContent />} />
   )
 }
 

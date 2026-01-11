@@ -6,7 +6,7 @@ function HeaderLogo() {
   return (
     <Link to="/home">
         <div className='header__logo'>
-            <img src={logo} alt="logo" />
+            <img src={logo} id="logo" alt="logo" />
             Shopperific
         </div>
     </Link>

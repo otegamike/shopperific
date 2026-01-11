@@ -1,3 +1,8 @@
+
+import shoppeerLeft from "../assets/shoppers/left-shopper.png"
+import shoppeerRight from "../assets/shoppers/right-shopper.png"
+
+
 import Card from "../components/cards/Card"
 import Header from "../components/header/Header"
 import Login from "../components/contents/auth/login-form/Login"
@@ -35,6 +40,9 @@ function SignIn() {
       <div className="auth__card">
         <Card content={Form(formType, userEmail)} />
       </div>
+
+     <img src={shoppeerRight} alt="shoppeer-right" />
+
     </main>
   )
 }

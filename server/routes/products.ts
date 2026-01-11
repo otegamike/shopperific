@@ -13,7 +13,7 @@ router.post('/' , async (req , res) => {
 
   const fetchProduct = await getProduct("all",  Number(req.query.limit), Number(req.query.page));
 
-  if (!fetchProduct.found) { return res.status(500).json({message: "error fetching products"}) }
+  if (!fetchProduct.found) { return res.status(500).json({error: "error fetching products"}) }
  
   return res.status(200).json(fetchProduct.products);
 })
