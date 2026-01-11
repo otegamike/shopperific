@@ -18,8 +18,15 @@ button:hover {
 }
 
 .button--secondary {
-    background-color: var(--secondary-color);
-    color: var(--primary-color);
+    background-color: var(--primary-color-400);
+    color: var(--primary-color-50);
+    scale: 0.9;
+}
+
+.button--secondary:hover {
+    background-color: var(--primary-color-600);
+    color: var(--primary-color-50);
+    scale: 0.9;
 }
 
 .tall__btn {

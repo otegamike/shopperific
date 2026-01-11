@@ -11,18 +11,20 @@ const Products = () => {
         <>
             <Header navbar={true} /> 
             <div>
-                <section className='section' >
-                    <h3>Products</h3>
-                    <div className='products-grid'>
-                        <ProductCard orientation='grid' />
-                        <ProductCard orientation='grid' />
-                        <ProductCard orientation='grid' />
-                        <ProductCard orientation='grid' />
-                        <ProductCard orientation='grid' />
-                        <ProductCard orientation='grid' />
-                        <ProductCard orientation='grid' />
-                    </div>
-                </section>
+                <main className='center__content'>
+                    <section className='section' >
+                        <h3>Products</h3>
+                        <div className='products-grid'>
+                            <ProductCard orientation='grid' />
+                            <ProductCard orientation='grid' />
+                            <ProductCard orientation='grid' />
+                            <ProductCard orientation='grid' />
+                            <ProductCard orientation='grid' />
+                            <ProductCard orientation='grid' />
+                            <ProductCard orientation='grid' />
+                        </div>
+                    </section>
+                </main>
             </div>
         </>
     )

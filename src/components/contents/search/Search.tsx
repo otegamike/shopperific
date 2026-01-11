@@ -6,13 +6,31 @@ import { calculateSearchWidth } from "../../../utils/SearchWidth"
 
 function Search() {
     const [searchWidth, setSearchWidth] = useState<string>("60vw");
-    const [windowWidth] = useState<number>(window.innerWidth);
+    const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setWindowWidth(window.innerWidth);
+        };
+
+        window.addEventListener('resize', handleResize);
+
+        // Calculate initial width
+        const width = calculateSearchWidth();
+        if (width) {
+            setSearchWidth(width);
+        }
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
     useEffect(() => {
         const width = calculateSearchWidth();
-        if (!width) return;
-        setSearchWidth(width);
-
+        if (width) {
+            setSearchWidth(width);
+        }
     }, [windowWidth]);
 
     return (

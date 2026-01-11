@@ -18,10 +18,7 @@
     }
 }
 
-.product__image,
-.product__name,
-.product__price,
-.product__button {
+.skeleton__loader {
     background: linear-gradient(90deg, var(--background-color) 25%, #f0f0f0 50%, var(--background-color) 75%);
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite;
@@ -87,3 +84,66 @@
     background-color: var(--background-color);
     border-radius: 1rem;
 }
+
+.shops__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    width: 100%;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--background-color);
+}
+
+.shops {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.shop__card {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+}
+
+.shop__logo {
+    display: block;
+    width: 100%;
+    max-width: 5rem;
+    aspect-ratio: 1/1;
+    border-radius: 1rem;
+    background-color: var(--background-color);
+}
+
+.shop__group {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    justify-content: center;
+    width: 100%;
+    gap: 1rem;
+}
+
+.shop__name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: left;
+    width: 80%;
+    height: 1.5rem;
+    border-radius: 1rem;
+    background-color: var(--background-color);
+}
+
+.shop__link {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: left;
+    width: 50%;
+    height: 1.5rem;
+    background-color: var(--background-color);
+    border-radius: 1rem;
+}
+
+

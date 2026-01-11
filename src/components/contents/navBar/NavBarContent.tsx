@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom"
 import { useState } from "react"
+import "./nav-content.css"
 
 import Button from "../../buttons/button"
 import ShopSvg from "../../../assets/svg/shops"
@@ -13,8 +14,8 @@ function NavBarContent() {
 
   return (
     <ul className="panel__list">
-      <div className="center-content" >
-        {userName && <UserSvg size={70} /> }
+      <div className="center__content panel__user" >
+        {userName && <UserSvg size={70} fill="var(--secondary-color)" /> }
         {userName &&  <h4>{userName}</h4> }
       </div>
       

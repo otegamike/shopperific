@@ -35,15 +35,19 @@ function SignIn() {
 
 
   return (
-    <main>
-      <Header />
+    <div>
+    <Header />
+    <main className="auth">
+      
       <div className="auth__card">
         <Card content={Form(formType, userEmail)} />
       </div>
-
-     <img src={shoppeerRight} alt="shoppeer-right" />
+      <img className="background__img ilustration-left" src={shoppeerLeft} alt="shoppeer-left" />
+      <img className="background__img ilustration-right" src={shoppeerRight} alt="shoppeer-right" />
 
     </main>
+
+    </div>
   )
 }
 

@@ -52,7 +52,10 @@
 
   /* variables */
   --background-color: #E0E0E0;
+  
   --background-color-lighter: #EDEDED;
+  --background-gradient: linear-gradient(177deg,rgba(237, 237, 237, 1) 0%, rgba(197, 197, 219, 1) 73%, rgba(182, 182, 207, 1) 85%, rgba(155, 155, 212, 1) 100%);
+
   --panel-color-dark: #211F49;
   --panel-color-darker: #181736;
   --panel-color-dark-hover:#100f24;
@@ -76,7 +79,8 @@
 
 
   --primary-color-active-hover: #6c7dd6;
-  --secondary-color: #f2f2f2;
+  --secondary-colorr: #f2f2f2;
+  --secondary-color: hsl(200 0% 98% / 0.8);
   --secondary-color-lighter: #fafafa;
   --secondary-color-lightest: hsl(200, 0%, 98%);
 
@@ -153,6 +157,8 @@ h6 {
 
 body {
   background-color: var(--background-color);
+  background: var(--background-gradient);
+  min-height: 100vh;
 }
 
 header {
@@ -196,6 +202,33 @@ header {
 
 .animation__clone {
   transition: all 0.3s ease-in-out;
+}
+
+.auth {
+  position: relative;
+  background: url("./assets/shoppers/auth-bg.png");
+  z-index: 1;
+  min-height: 100vh;
+  container-type: inline-size;
+  container-name: auth;
+  max-width: 1480px;
+  margin: 0 auto;
+
+  & .background__img {
+    position: absolute;
+    width: 40%;
+    max-width: 350px;
+    bottom: 14%;
+    z-index: -10;
+  }
+
+  & img.ilustration-left {
+    left: 0;
+  }
+
+  & img.ilustration-right {
+    right: 0;
+  }
 }
 
 @keyframes spin {
