@@ -7,6 +7,7 @@ interface inputType  {
   maxLength?: number,
   placeholder?: string,
   className?: string ,
+  required?: boolean,
   onBlur?: (e: React.FocusEvent<HTMLTextAreaElement>) => void,
   onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void
 }
@@ -19,7 +20,8 @@ function textarea({
     value, 
     maxLength, 
     placeholder, 
-    className , 
+    className ,
+    required,
     onBlur , 
     onChange 
 }: inputType) {
@@ -33,6 +35,7 @@ function textarea({
     className={` ${variant === "borderless" ? "borderless__input" : ""} textarea__text ${className}`}
     onBlur={onBlur}
     onChange={onChange}
+    required={required?required:false}
     ></textarea>
   )
 }

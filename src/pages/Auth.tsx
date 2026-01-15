@@ -37,7 +37,7 @@ function SignIn() {
   return (
     <div>
     <Header />
-    <main className="auth">
+    <main className="background__ilustration auth__page">
       
       <div className="auth__card">
         <Card content={Form(formType, userEmail)} />

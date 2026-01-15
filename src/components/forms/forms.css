@@ -14,7 +14,7 @@ input {
     position: relative;
 }
 
-.input__container svg {
+.input__container>.form__icon {
     position: absolute;
     right: 1rem;
     top: 50%;
@@ -46,6 +46,11 @@ input {
     background-color: #fff6d9;
 }
 
+.loading {
+    position: relative;
+    background-color: #d9d9d9;
+}
+
 .warning__message {
     color: orange;
 }
@@ -71,12 +76,23 @@ textarea {
 
 .borderless__input {
     border: none;
-    outline: none;
+    outline: 1px solid hsl(228 64% 68% / 0.2);
     border-radius: 4rem;
     padding-left: 1.5rem;
-    color: var(--panel-color-dark);
 }
 
-borderless__input:placeholder {
-    color: var(--panel-color-dark);
+.borderless__input:focus {
+    outline: 1px solid hsl(228 64% 68% / 0.7);
+}
+
+.borderless__input::placeholder {
+    color: var(--panel-color-dark-transparent);
+}
+
+.borderless__input:disabled {
+    background-color: #ebebeb;
+}
+
+.borderless__msg {
+    padding-left: 1.3rem;
 }

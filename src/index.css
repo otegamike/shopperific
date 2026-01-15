@@ -59,6 +59,7 @@
   --panel-color-dark: #211F49;
   --panel-color-darker: #181736;
   --panel-color-dark-hover:#100f24;
+  --panel-color-dark-transparent: hsl(200 0% 8% / 0.4);
 
   --primary-color: #7086e0;
   --primary-color-hover: #4360d6;
@@ -204,9 +205,8 @@ header {
   transition: all 0.3s ease-in-out;
 }
 
-.auth {
+.background__ilustration {
   position: relative;
-  background: url("./assets/shoppers/auth-bg.png");
   z-index: 1;
   min-height: 100vh;
   container-type: inline-size;
@@ -226,9 +226,18 @@ header {
     left: 0;
   }
 
+  & img.girl {
+    scale: 0.9;
+    transform: translateY(10%);
+  }
+
   & img.ilustration-right {
     right: 0;
   }
+}
+
+.auth__page {
+  background: url("./assets/shoppers/auth-bg.png"); 
 }
 
 @keyframes spin {

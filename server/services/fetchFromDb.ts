@@ -39,7 +39,7 @@ export const getShop = async (
     findBy : any,
     reqLimit: number = 12, reqPage: number = 1,
     fields: string = "shopName shopId description owner" ) 
-    : Promise<{found: boolean, shops?: any , message?: string }> => {
+    : Promise<{found: boolean, shops?: any , message?: string, error?: string }> => {
         
         console.log(queryLog(findBy, "Shops"));
 
@@ -53,11 +53,12 @@ export const getShop = async (
                     .limit(limit)
                     .lean();
 
+                if (shops.length === 0) return {found: false, message: "No shops found"};
                 return {found: true, shops};
         
             } catch (err: any) {
                 console.error(err.message, err);
-                return {found: false , message: "error fetching Shops"}
+                return {found: false , error: "error fetching Shops"}
         }
 
 } 

@@ -41,7 +41,7 @@ app.use( validateUser );
 
 app.use('/api/verify-email', verifyEmailRoute);
 
-app.use( isEmailVerified );
+// app.use( isEmailVerified );
 
 app.use('/api/products', productsRoutes);
 

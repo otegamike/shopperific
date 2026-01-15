@@ -19,15 +19,37 @@ router.post("/", async (req, res) => {
       return res.status(200).json(fetchShop.shops);
 });
 
-// get shop by shop name
-router.post("/:shopId", async (req, res) => {
+// get shop by shop Id
+router.get("/:shopId", async (req, res) => {
     const shopId = req.params.shopId;
     
     const fetchShop = await getShop({ shopId }, Number(req.query.limit), Number(req.query.page));
     
-    if (!fetchShop.found) { return res.status(500).json({message: "error fetching Shops"}) }
+    if (!fetchShop.found) { return res.status(404).json({message: "Shop not found"}) }
      
     return res.status(200).json(fetchShop.shops);
+});
+
+router.post("/shop-id", async (req, res) => {
+    const shopId = req.body.shopId;
+    console.log(shopId);
+
+    try {
+        const fetchShop = await getShop({ shopId }, Number(req.query.limit), Number(req.query.page));
+    
+        if (!fetchShop.found && !fetchShop.error) { return res.status(200).json({available: true, message: "Shop is available"}) }
+
+        if (fetchShop.error) {throw new Error(fetchShop.error)}
+
+        return res.status(200).json({available: false, message: "Shop id taken pick a different shopId"});
+        
+    } catch (err: any) {
+        console.error(err.message, err);
+
+        return res.status(500).json({error: err.message});
+    }
+    
+    
 });
 
 // create a new shop

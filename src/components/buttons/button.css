@@ -59,4 +59,9 @@ button:hover {
     border-radius: 50%;
 }
 
+.createShop__btn {
+    margin-top: 1rem;
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+}
 

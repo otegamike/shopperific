@@ -1,5 +1,6 @@
 import "./forms.css"
 import { PasswordShow , PasswordHide } from "../../assets/svg/passwordshow"
+import Loading from "../../assets/svg/loading"
 import { useState } from "react"
 
 interface inputType  {
@@ -12,11 +13,14 @@ interface inputType  {
   maxLength?: number,
   placeholder?: string,
   className?: string ,
+  required?: boolean,
+  disabled?: boolean,
+  loading?: boolean,
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void,
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-function Input({ variant, type, label, name, id, value, maxLength, placeholder, className , onBlur, onChange }: inputType) {
+function Input({ variant, type, label, name, id, value, maxLength, placeholder, className , required, disabled=false, loading=false, onBlur, onChange }: inputType) {
   const [formType, setFormType ] = useState(type);
 
   return (
@@ -28,12 +32,14 @@ function Input({ variant, type, label, name, id, value, maxLength, placeholder, 
         value={value} 
         placeholder={variant === "borderless" ? label : placeholder} 
         onChange={onChange} 
+        required={required}
+        disabled={disabled}
         maxLength={maxLength} 
         onBlur={onBlur} 
       />
-      
-      {(formType === "text" && type==="password") && <span onClick={() => setFormType("password")} className="password__show"><PasswordShow size={25} /> </span>}
-      {(formType === "password" && type==="password") && <span onClick={() => setFormType("text")} className="password__hide"><PasswordHide size={25} /> </span>}
+      {loading && <span className="form__icon"><Loading className="spinner" size={20} /></span>}
+      {(formType === "text" && type==="password") && <span onClick={() => setFormType("password")} className="form__icon password__show"><PasswordShow size={25} /> </span>}
+      {(formType === "password" && type==="password") && <span onClick={() => setFormType("text")} className="form__icon password__hide"><PasswordHide size={25} /> </span>}
     </div>
   )
 }

@@ -5,18 +5,21 @@ interface validateForms {
 
 
 
-export const validateForms =  ( key: string, value: string) => {
-    const nameRegex = /^[a-zA-Z\u00C0-\u01FF ]+([-']?[a-zA-Z\u00C0-\u01FF ]+)*$/;
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
-    console.log(key, value);
-
+export const validateForms =  ( key: string, value: string, required: boolean): {isValid: boolean, message: string } => {
+    
     let result = {
         isValid: false,
         message: ""
-    }
-
+    }  
     
+    if ( required && value.trim() === "" )  {
+        console.log(value);
+        return result = { isValid: false, message: "This field is required" } 
+    }
+    
+    const nameRegex = /^[a-zA-Z\u00C0-\u01FF ]+([-']?[a-zA-Z\u00C0-\u01FF ]+)*$/;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
     if (key.toLowerCase().includes("name")) {
         const isValid = nameRegex.test(value);
         if (!isValid) {

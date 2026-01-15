@@ -11,7 +11,7 @@ function VerifyEmail({ email }: VerifyEmailProps) {
 
   const [code, setCode] = useState<string>("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const val = e.target.value;
     if (val.length <= 6) {
       setCode(val);
