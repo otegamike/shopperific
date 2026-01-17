@@ -1,5 +1,12 @@
 import { getDeviceId } from "./deviceId";
 
+export type createShopType = {
+    shopName: string,
+    shopId: string,
+    shopLink: string,
+    description: string
+}
+
 export const checkShopId = async (shopId: string): Promise<| { error: string } | { available: boolean, message: string }> => {
 
     if (!shopId) {
@@ -31,7 +38,12 @@ export const checkShopId = async (shopId: string): Promise<| { error: string } |
     }
 }
 
-export const createShop = async (shopName: string, shopId: string, description: string): Promise<| { error: string } | { created: true; message: string }> => {
+export const createShop = async (
+    shopData: createShopType)
+    : Promise<| { error: string } | { created: true; message: string }> => {
+
+
+    const { shopName, shopId, description } = shopData;
     if (!shopName || !shopId || !description) {
         return { error: "All fields are required." };
     }
@@ -56,7 +68,8 @@ export const createShop = async (shopName: string, shopId: string, description: 
         } else {
             return { error: "Error establishing a connection. please try again" };
         }
-    } catch (error) {
+    } catch (err: any) {
+        console.error(err.message, err);
         return { error: "Error establishing a connection. please try again" };
     }
 
@@ -66,6 +79,7 @@ export const validateShopId = async (value: string): Promise<{ isValid: boolean,
 
     const check = await checkShopId(value);
     if ('available' in check) {
+        console.log(check);
         return { isValid: check.available, message: check.message }
     } else {
         return { isValid: false, message: check.error }

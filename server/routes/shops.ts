@@ -36,12 +36,14 @@ router.post("/shop-id", async (req, res) => {
 
     try {
         const fetchShop = await getShop({ shopId }, Number(req.query.limit), Number(req.query.page));
+
+        console.log(fetchShop);
     
         if (!fetchShop.found && !fetchShop.error) { return res.status(200).json({available: true, message: "Shop is available"}) }
 
         if (fetchShop.error) {throw new Error(fetchShop.error)}
 
-        return res.status(200).json({available: false, message: "Shop id taken pick a different shopId"});
+        return res.status(200).json({available: false, message: "Shop id taken pick a different shopId"} );
         
     } catch (err: any) {
         console.error(err.message, err);
@@ -56,7 +58,10 @@ router.post("/shop-id", async (req, res) => {
 router.post("/new", requireSeller, async (req: TypedRequest<ShopReqBody>, res: Response ) => { 
     const { shopName , shopId , description } = req.body;
 
+
+    console.log('creating new shop');
     if ( !req.user) {
+        console.log("unAuthorized user");
         return res.status(403).json({message: "Unvalidated Access is Forbiden."});
     }
 
@@ -74,6 +79,7 @@ router.post("/new", requireSeller, async (req: TypedRequest<ShopReqBody>, res: R
         ]);
 
         if (existingShop) {
+            console.log("Shop ID is taken");
             return res.status(403).json({message: `${shopId} is already taken. Try another one`});
         }
 

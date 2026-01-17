@@ -1,9 +1,9 @@
 import React from 'react'
 import Input from './input'
 import Textarea from './textarea'
-import { useState } from 'react'
-import { validateForms } from '../../utils/validateForms'
+import { useState, useEffect } from 'react'
 import FileUpload from './file'
+import type { handleValidationType, validityType } from '../../types/ValidationInterface'
 
 
 interface FormGroupProps {
@@ -13,7 +13,7 @@ interface FormGroupProps {
   name: string,
   id: string,
   value?: any,
-  formValue?: any,
+  formValue?: any | string,
   maxLength?: number,
   placeholder?: string,
   className?: string,
@@ -22,10 +22,8 @@ interface FormGroupProps {
   disabled?: boolean,
   onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void,
   validate?: boolean,
-  validateFunction?: (key: string, value: boolean) => void,
-  customValidator?: {asyncFunction: true, validatorFunction ( value: string): Promise<{isValid: boolean, message: string}>} | {asyncFunction: false, validatorFunction ( value: string): {isValid: boolean, message: string}},
-  message?: string,
-  messageClass?: string
+  validateFunction?: handleValidationType,
+  validity?: validityType
 }
 
 function FormGroup({
@@ -45,11 +43,18 @@ function FormGroup({
   onChange,
   validate = false,
   validateFunction,
-  customValidator
+  validity
 }: FormGroupProps) {
   const [ loading, setLoading] = useState(false);
   const [formState, setFormState] = useState<{state:"idle" | "loading" | "success" | "error", message: string}>({state: "idle", message: ""});
 
+
+  useEffect(() => {
+    if (validity) {
+      setFormState({state: validity.isValid ? "success" : "error", message: validity.message});
+    }
+  }, [validity]);
+  
   const formType = {
     textarea: <Textarea className={`tall ${formState.state}`} variant={variant?variant:""} label={label} name={name} id={id} value={value} maxLength={maxLength} placeholder={placeholder} required={required} onBlur={()=> validateForm()} onChange={onChange} />,
     text: <Input className={`tall ${formState.state}`} variant={variant} type={type} label={label} name={name} id={id} value={value} maxLength={maxLength} placeholder={placeholder} required={required} loading={loading} disabled={disabled} onBlur={()=> validateForm()} onChange={onChange} />,
@@ -59,30 +64,15 @@ function FormGroup({
   }
 
   const validateForm = async() => {
-
-    if (validate && validateFunction && !customValidator) {
-
-      const result = validateForms(name, formValue, required);
-      setFormState({state: result.isValid ? "success" : "error", message: result.message});
-      validateFunction(name, result.isValid);
-      console.log(formState);
-    } else if (validate && validateFunction && customValidator) {
-        if (customValidator?.asyncFunction) {
-          setFormState({state: "loading", message: "Loading..."});
-          setLoading(true);
-          
-          const result = await customValidator.validatorFunction(formValue) ;
-          setFormState({state: result.isValid ? "success" : "error", message: result.message});
-          validateFunction(name, result.isValid);
-          setLoading(false);
-          console.log(formState);
-        } else {
-          const result = customValidator.validatorFunction(formValue) ;
-          setFormState({state: result.isValid ? "success" : "error", message: result.message});
-          validateFunction(name, result.isValid);
-          console.log(formState);
-        }
+    if (validate && validateFunction && typeof formValue === "string") {
+      
+        setFormState({state: "loading", message: "Loading..."});
+        setLoading(true);
+        const result = await validateFunction(name, formValue, required);
+        setFormState({state: result.isValid ? "success" : "error", message: result.message});
+        setLoading(false);
     }
+
   }
 
   return (
