@@ -4,7 +4,9 @@ import Shop from "../models/Shop.js";
 
 export const requireSeller = async (req: Request, res: Response, next: NextFunction) => {
     if (req.user?.role !== "seller" || !req.user?.userId) {
-        return res.status(403).json({ message: "Forbidden: Seller access required." });
+        res.status(403).json({ message: "Forbidden: Seller access required." });
+        console.log("Forbidden: Seller access required.");
+        return;
     }
 
     const shop = await Shop.findOne({ owner: toObjectId(req.user.userId) });

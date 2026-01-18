@@ -55,7 +55,7 @@ router.post("/shop-id", async (req, res) => {
 });
 
 // create a new shop
-router.post("/new", requireSeller, async (req: TypedRequest<ShopReqBody>, res: Response ) => { 
+router.post("/new", async (req: TypedRequest<ShopReqBody>, res: Response ) => { 
     const { shopName , shopId , description } = req.body;
 
 
