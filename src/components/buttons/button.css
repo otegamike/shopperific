@@ -24,8 +24,22 @@ button:hover {
 }
 
 .button--secondary:hover {
-    background-color: var(--primary-color-600);
+    background-color: var(--primary-color-500);
     color: var(--primary-color-50);
+    scale: 0.9;
+}
+
+.button--tetirary {
+    background-color: var(--primary-color-50);
+    color: var(--primary-color-600);
+    border: 1px solid var(--primary-color-300);
+    scale: 0.85;
+}
+
+.button--tetirary:hover {
+    background-color: var(--primary-color-100);
+    color: var(--primary-color-600);
+    border: 1px solid var(--primary-color-300);
     scale: 0.9;
 }
 

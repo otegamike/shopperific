@@ -4,7 +4,16 @@ import "./search.css"
 import { useState, useEffect } from "react"
 import { calculateSearchWidth } from "../../../utils/SearchWidth"
 
-function Search() {
+interface searchBounds {
+    minWidth?: string;
+    maxWidth?: string;
+}
+interface searchProp {
+    searchBounds?: searchBounds;
+    dynamic?: boolean;
+}
+
+function Search({ searchBounds, dynamic = false }:searchProp) {
     const [searchWidth, setSearchWidth] = useState<string>("60vw");
     const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
 
@@ -34,11 +43,9 @@ function Search() {
     }, [windowWidth]);
 
     return (
-        <div className="search">
-            <div className="search-bounds">
-                <input type="text" style={{ "--search-width": searchWidth } as React.CSSProperties} id="search" name="search" placeholder="Search" />
-                <SearchSvg size={25} fill="var(--panel-color-dark)" style={{ opacity: 0.5 }} className="search-icon" />
-            </div>
+        <div className="search-bounds" style={ searchBounds ?  searchBounds : {} } >
+            <input type="text" style={dynamic ? { "--search-width": searchWidth } as React.CSSProperties : {}} id="search" name="search" placeholder="Search" />
+            <SearchSvg size={25} fill="var(--panel-color-dark)" style={{ opacity: 0.5 }} className="search-icon" />
         </div>
     )
 }

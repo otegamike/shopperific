@@ -3,7 +3,7 @@ import "./button.css"
 
 interface ButtonProps {
   content: React.ReactNode;
-  type?: "main" | "secondary";
+  type?: "main" | "secondary" | "tetirary";
   state?: "default" | "disabled" | "active";
   id?: string;
   className?: string;

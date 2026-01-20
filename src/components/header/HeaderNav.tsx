@@ -11,7 +11,7 @@ interface HeaderNavProps {
 function HeaderNav({ buttonid }: HeaderNavProps) {
   return (
     <div className='header__nav'>
-      <Search />
+      <div className="search"><Search dynamic={true}/></div>
     <Link to="/profile"><UserSvg id={buttonid} className="usersvg" /></Link>
       <HamburgerMenu />
     </div>
