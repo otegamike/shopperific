@@ -147,6 +147,9 @@
 }
 
 .stat__card {
+    --color: var(--soft-blue-light) ;
+    --border-color: var(--soft-blue);
+
     padding: 2rem;
     display: flex;
     flex-direction: column;
@@ -154,6 +157,26 @@
     justify-content: center;
     gap: 1rem;
     border-radius: 1rem;
-    background-color: var(--background-color);
+    background-color: var(--color);
+    border: 1px solid var(--border-color);
+    color: var(--border-color);
+    opacity: 0.85;
 }
+
+.red {
+    --color: var(--coral-red-light) ;
+    --border-color: var(--coral-red);
+}
+
+.green {
+     --color: var(--mint-green-light) ;
+    --border-color: var(--mint-green);
+}
+
+.purple {
+     --color: var(--lavender-purple-light) ;
+    --border-color: var(--lavender-purple);
+}
+
+
 

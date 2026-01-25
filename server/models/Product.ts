@@ -10,6 +10,7 @@ export interface ProductType {
   stock?: number;
   images?: string[];
   shopName: string;
+  shopId: string;
   shopRef: Types.ObjectId;
 }
 
@@ -34,18 +35,22 @@ const ProductSchema = new Schema<ProductType>(
     },
     category: {
       type: String,
-      required: false
+      required: true
     },
     stock: {
       type: Number,
-      required: false
+      required: true
     },
     images: [{
       type: String
     }],
     shopName: {
       type: String,
-      require: true,
+      required: true,
+    },
+    shopId: {
+      type: String,
+      required: true,
     },
     shopRef: {
       type: Schema.Types.ObjectId,

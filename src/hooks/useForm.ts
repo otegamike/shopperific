@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, type ChangeEvent } from 'react';
 import { validateForms } from '../utils/validateForms';
 import type { handleValidationType, CustomValidatorType, validityType } from '../types/ValidationInterface';
 
@@ -17,7 +17,7 @@ export function useForm<T>(initialValues: T, customValidatorArray?: {key: string
     });
 
     // Handle Input Changes
-    const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleChange = useCallback((e: ChangeEvent< HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement >) => {
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,

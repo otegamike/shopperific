@@ -10,7 +10,7 @@ import List from "../../components/sidebar/List"
 
 // pages
 import Overview from "./pages/Overview"
-import Products from "./pages/Products"
+import Products from "./pages/products/Products"
 import Orders from "./pages/Orders"
 import Shops from "./pages/Shops"
 import Customers from "./pages/Customers"
@@ -56,7 +56,7 @@ function dashboard() {
       <Header navbar={true} />
       <main className="center__content dashboard__container">
         <div className="dashboard__page">
-          <div className="sidebar">
+          <div className="sidebar no-sidebar">
             <ul>
               <List id="overview" icon={<OverviewSvg fill="var(--color)" size={20} />} label="overview" active={active} handleActive={handleActive} />
               <List id="products" icon={<ProductsSvg fill="var(--color)" size={20} />} label="products" active={active} handleActive={handleActive} />
@@ -68,7 +68,7 @@ function dashboard() {
             </ul>
           </div>
           <div className="dashboard__body">
-            {pages[active]||<Overview />}
+            {pages[active] || <Overview />}
           </div>
         </div>
 

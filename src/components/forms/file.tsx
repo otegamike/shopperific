@@ -10,12 +10,13 @@ interface inputType  {
   maxLength?: number,
   placeholder?: string,
   required?: boolean,
+  multiple?: boolean,
   className?: string ,
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void,
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-function fileUpload({ type, accept = "image/*", variant, label, name, id, value, maxLength, placeholder, className , required, onBlur, onChange }: inputType) {
+function fileUpload({ type, accept = "image/*", variant, label, name, id, value, maxLength, placeholder, className , required, multiple, onBlur, onChange }: inputType) {
  
   return (
     <div className="input__container">
@@ -31,6 +32,7 @@ function fileUpload({ type, accept = "image/*", variant, label, name, id, value,
         maxLength={maxLength} 
         onBlur={onBlur} 
         required={required}
+        multiple={multiple}
       />
 
     </div>

@@ -106,3 +106,26 @@ textarea {
 .borderless__msg {
     padding-left: 1.3rem;
 }
+
+.form__select_container {
+    position: relative;
+    margin: 0.5rem 0;
+}
+
+.form__select {
+    appearance: none;       /* Hides the default arrow in modern browsers */
+    -webkit-appearance: none; /* For Safari */
+    -moz-appearance: none;
+    position: relative;
+}
+
+.form__select_container::after {
+    content: "▼";
+    font-size: 12px;
+    top: 50%;
+    right: 15px;            /* Move the arrow left or right here */
+    transform: translateY(-50%) translateX(-10px);
+    position: absolute;
+    pointer-events: none;   /* Crucial: allows clicks to pass through to the select */
+    color: #666;
+}
