@@ -15,7 +15,7 @@ import ImageUploader from '../../../../components/forms/imageUpload/ImageUploade
 // import PlusSvg from '../../../../assets/svg/plus';
 
 // Service
-import { AddNewProduct } from '../;../../../../../services/NewProduct'
+import { AddNewProduct } from '../../../../services/AddNewProduct'
 
 //types
 import { type NewProductDataType, PRODUCT_CATEGORIES } from '../../../../types/productInterface/productInterface'
@@ -27,7 +27,6 @@ function NewProduct() {
         name: "",
         description: "",
         price: 0,
-        sellerId: "",
         category: "",
         subCategory: "",
         stock: 0
@@ -67,7 +66,19 @@ function NewProduct() {
         focusButton();
         setLoading(true);
 
-        const result = await AddNewProduct(formData);
+        const multiPartFormData: FormData = new FormData();
+        Object.entries(formData).forEach(([key, value]) => {
+            multiPartFormData.append(key, value);
+        });
+        images.forEach((image) => {
+            multiPartFormData.append('images', image.file);
+        });
+
+        // for (const pair of multiPartFormData.entries()) {
+        //     console.log(pair[0], pair[1]);
+        // }
+
+        const result = await AddNewProduct(multiPartFormData);
         setLoading(false);
         if ("newProduct" in result) {
             alertObj(result.message, "success");

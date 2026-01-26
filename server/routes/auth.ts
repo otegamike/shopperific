@@ -1,17 +1,18 @@
-import e, { Router } from "express";
+import { Router } from "express";
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
-import { connectDB } from "../utils/db.js";
 import { createToken } from "../utils/createToken.js";
 import {addDevice} from "../utils/addDevice.js";
-import { connectToDb } from "../middleware/connectToDb.js";
-import type { TypedRequest, TypedResponse, loginRequestBody, registerRequestBody, NewUSerOBj, ClientUser } from "../utils/types/utilTypes.js";
+import type { TypedRequest, TypedResponse, loginRequestBody, registerRequestBody, NewUSerOBj } from "../utils/types/utilTypes.js";
 
 // for Email Verification 
 import { genToken, verifyurl, hashToken } from "../services/EmailVerificationToken.js";
 import { sendVerifyEmail } from "../services/sendMail.js";
 import { getFromDb } from "../services/fetchFromDb.js";
 import { RegisterUserType } from "../models/User.js";
+
+//types 
+import type { ClientUser } from "../types/authenticationInterface.js";
 
 const router = Router();
 console.log("auth routes");
@@ -92,7 +93,7 @@ router.post("/login", async (req: TypedRequest<loginRequestBody>, res) => {
 
     if (email==="admin@admin.com"&&password==="Admin&&67") {
         clientUser = {  firstName: "Admin", email: email, role: "Admin" };
-        return res.status(200).json({message: "Admin Login Successful.", clientUser});
+        return res.status(200).json({message: "Admin Login Successful.", user: clientUser});
     }
 
     try {
@@ -133,7 +134,7 @@ router.post("/login", async (req: TypedRequest<loginRequestBody>, res) => {
         clientUser = { firstName: user.firstName, email: user.email, role: user.role };
 
         console.log("User logged in:", user);
-        return res.status(200).json({ message: "Login successful.", clientUser });
+        return res.status(200).json({ accessToken , user: clientUser });
 
     } catch (err) {
         console.error("Error during login:", err);

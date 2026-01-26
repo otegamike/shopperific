@@ -14,9 +14,9 @@ export const PRODUCT_CATEGORIES = [
     "Other"
 ] as const;
 
-export type Category = typeof PRODUCT_CATEGORIES[number] | "";
+export type Category = typeof PRODUCT_CATEGORIES[number] ;
 
-export interface NewProductDataType {
+export interface ClientProductDataType {
     name: string;
     description: string;
     price: number;
@@ -24,10 +24,3 @@ export interface NewProductDataType {
     subCategory: string;
     stock: number;
 }
-
-export interface ProductImageType {
-    file: File;
-    preview: string;
-}
-
-

@@ -1,5 +1,8 @@
 import { getDeviceId } from "./deviceId"
 
+// Types 
+import type { LoginCredentials } from "../types/authContextInterface";
+
 interface RegisterProps {
     deviceId: string,
     firstName: string,
@@ -47,7 +50,7 @@ export const register = async (newUser: RegisterProps) : Promise<
 
 }
 
-export const login = async ({email, password}: {email: string, password: string}) : Promise<
+export const login = async (credentials: LoginCredentials) : Promise<
     |{authorized: false, error: string}
     |{authorized: true, message: string, user: any}> => {
         try {
@@ -57,10 +60,7 @@ export const login = async ({email, password}: {email: string, password: string}
                     "Content-Type": "application/json",
                     "x-device-id": `${getDeviceId()}`
                 },
-                body: JSON.stringify({
-                    email,
-                    password
-                })
+                body: JSON.stringify(credentials)
             })
 
             const data = await response.json();

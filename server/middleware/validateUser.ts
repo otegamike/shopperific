@@ -64,6 +64,7 @@ export const validateUser = async (
     }
 
     if (!isVerified || !userObj) {
+        console.log("Unauthorized", "Couldn't verify user");
         return res.status(401).json({ message: "Unauthorized" });
     }
     

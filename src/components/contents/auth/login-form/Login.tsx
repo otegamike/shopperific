@@ -3,7 +3,7 @@ import "./login.css"
 import "../auth.css"
 
 //import hooks
-import { useState } from "react"
+import { useState , useEffect } from "react"
 import { useForm } from "../../../../hooks/useForm"
 
 //import components
@@ -12,20 +12,24 @@ import FormGroup from "../../../forms/FormGroup"
 import LoaderSvg from "../../../../assets/svg/loader"
 
 //import services
-import { login } from "../../../../services/authentication"
+import { loginService } from "../../../../services/authentication/loginService"
 
 //import utils
 import { alertObj } from "../../../../utils/alerts/alert"
 
+//itypes
+import type { LoginCredentials } from "../../../../types/authContextInterface"
 
 
 function Login({ switchForm }: { switchForm: (formType: "login" | "register" | "verifyEmail", email?: string) => void }) {
 
-  // hooks
-  const { formData, handleChange, handleValidation, isFormValid } = useForm({
+  const credentials: LoginCredentials = {
     email: "",
     password: ""
-  });
+  }
+
+  // hooks
+  const { formData, handleChange, handleValidation, isFormValid, validity } = useForm(credentials);
 
   const [loading, setLoading] = useState(false);
 
@@ -44,27 +48,32 @@ function Login({ switchForm }: { switchForm: (formType: "login" | "register" | "
     }
 
     // Send login request and await response.
-    const result = await login(formData);
-    if (!result.authorized) {
-      alertObj(result.error, "warning");
-    } else if (result.authorized) {
-      console.log(result.user);
-      localStorage.setItem("name", result.user.firstName);
-      localStorage.setItem("email", result.user.email);
-      localStorage.setItem("role", result.user.role);
+    await loginService(formData);
+    
+    // if (!result.authorized) {
+    //   alertObj(result.error, "warning");
+    // } else if (result.authorized) {
+    //   console.log(result.user);
+    //   localStorage.setItem("name", result.user.firstName);
+    //   localStorage.setItem("email", result.user.email);
+    //   localStorage.setItem("role", result.user.role);
 
-      alertObj(`${result.message} ${localStorage.getItem("role")}`, "success");
+    //   alertObj(`${result.message} ${localStorage.getItem("role")}`, "success");
 
-    }
+    // }
     setLoading(false);
   }
+
+  useEffect(()=>{
+    console.log(validity);
+  }, [validity])
 
   return (
     <>
       <div className="auth__form"> <h2>Login</h2>
         <form action="" onSubmit={handleSubmit}>
-          <FormGroup label="Email" type="text" name="email" id="email" formValue={formData.email} onChange={handleChange} validate={true} validateFunction={handleValidation} />
-          <FormGroup label="Password" type="password" name="password" id="password" formValue={formData.password} onChange={handleChange} validate={true} validateFunction={handleValidation} />
+          <FormGroup label="Email" type="text" name="email" id="email" formValue={formData.email} onChange={handleChange} validate={true} validateFunction={handleValidation} validity={validity.email}  />
+          <FormGroup label="Password" type="password" name="password" id="password" formValue={formData.password} onChange={handleChange} validate={true} validateFunction={handleValidation} validity={validity.password} />
 
           <Button content={loading ? <LoaderSvg /> : "Login"} type="main" className="login__btn full__btn center__content" />
         </form>

@@ -28,7 +28,7 @@ interface FormGroupProps {
   onChange?: ((e: ChangeEvent<HTMLInputElement>) => void) | ((e: ChangeEvent<HTMLTextAreaElement>) => void),
   validate?: boolean,
   validateFunction?: handleValidationType,
-  validity?: validityType
+  validity?: validityType;
 }
 
 function FormGroup({
@@ -57,7 +57,12 @@ function FormGroup({
 
   useEffect(() => {
     if (validity) {
-      setFormState({ state: validity.isValid ? "success" : "error", message: validity.message });
+      if ( name in validity ) {
+        setFormState({ 
+          state: validity.isValid ? "success" : "error",
+          message: validity.message 
+        });
+      }
     }
   }, [validity]);
 
@@ -74,8 +79,8 @@ function FormGroup({
 
       setFormState({ state: "loading", message: "Loading..." });
       setLoading(true);
-      const result = await validateFunction(name, formValue, required);
-      setFormState({ state: result.isValid ? "success" : "error", message: result.message });
+      await validateFunction(name, formValue, required);
+      // setFormState({ state: result.isValid ? "success" : "error", message: result.message });
       setLoading(false);
     }
 

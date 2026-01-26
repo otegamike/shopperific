@@ -42,7 +42,7 @@ router.post('/category/:category' , async (req , res) => {
 });
 
 // Save new product
-router.post("/new", requireSeller, upload.array("images", 5), async (req, res) => {
+router.post("/new", requireSeller, upload.array("images", 4), async (req, res) => {
     try {
 
       console.log("New product request received", req.body, req.files);

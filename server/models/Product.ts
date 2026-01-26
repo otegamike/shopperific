@@ -1,12 +1,16 @@
+// MongoDB models and types
 import { db , Types } from "../lib/mongoose.js";
 const { Schema, model, models } = db;
+
+// Types
+import type { Category } from "../types/productInterface.js";
 
 export interface ProductType {
   name: string;
   description: string;
   price: number;
   sellerId: string;
-  category?: string;
+  category?: Category;
   stock?: number;
   images?: string[];
   shopName: string;
