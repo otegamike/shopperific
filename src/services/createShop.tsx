@@ -3,7 +3,6 @@ import { getDeviceId } from "./deviceId";
 export type createShopType = {
     shopName: string,
     shopId: string,
-    shopLink: string,
     description: string
 }
 

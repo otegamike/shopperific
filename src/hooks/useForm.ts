@@ -1,23 +1,25 @@
 import { useState, useCallback, useMemo, type ChangeEvent } from 'react';
 import { validateForms } from '../utils/validateForms';
-import type { handleValidationType, CustomValidatorType, validityType } from '../types/ValidationInterface';
+import type { handleValidationType, CustomValidatorType, validityType, validityObjType, validationInterface, validityResult, HandleLoadingInterface, HandleLoadingProps } from '../types/ValidationInterface';
 
-export function useForm<T>(initialValues: T, customValidatorArray?: {key: string, customvalidator: CustomValidatorType}[] ) {
+export function useForm<T>(initialValues: T, customValidatorArray?: { key: string, customvalidator: CustomValidatorType }[]) {
 
     const [formData, setFormData] = useState<T>(initialValues);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [disableButton, setDisableButton] = useState<boolean>(false);
 
     // Initialize validity state: assume all fields start as false (invalid) 
-    const [validity, setValidity] = useState<Record<string, { isValid: boolean, message: string }>>(() => {
-        const initialValidity: Record<string, { isValid: boolean, message: string }> = {};
+    const [validity, setValidity] = useState<Partial<validityObjType<T>>>(() => {
+        const initialValidity: Partial<validityObjType<T>> = {};
         for (const key in initialValues) {
             // cast key to string to satisfy index signature
-            initialValidity[key as string] = { isValid: false, message: "" };
+            initialValidity[key as keyof T] = { isValid: false, message: "", showError: false };
         }
         return initialValidity;
     });
 
     // Handle Input Changes
-    const handleChange = useCallback((e: ChangeEvent< HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement >) => {
+    const handleChange = useCallback((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
@@ -25,10 +27,27 @@ export function useForm<T>(initialValues: T, customValidatorArray?: {key: string
         }));
     }, []);
 
+
+
+    const handleLoading : HandleLoadingInterface = useCallback(( loader, button ) => {
+        const loadingState = loader==="loading" ? true : false;
+        const buttonState = button ? (button==="disable" ? true : false) : loadingState;
+        setLoading(loadingState);
+        setDisableButton(buttonState);
+    }, []);
+
+    const setShowError = useCallback((name: keyof T, setTo: boolean) => {
+        setValidity(prev => ({
+            ...prev,
+            [name]: { ...prev[name], showError: setTo }
+        }));
+
+    }, []);
+
     // Handle Validation Updates
-    const handleValidation: handleValidationType = useCallback(async (key, value, required) => {
+    const handleValidation: handleValidationType<T> = useCallback(async (key, value, required = true) => {
         // Set type of result to validityType
-        let result: validityType = { isValid: false, message: "" };
+        let result: validityResult = { isValid: false, message: "" };
 
         // Check if custom validator is provided
         if (customValidatorArray && customValidatorArray.filter((validator) => validator.key === key)[0]) {
@@ -37,20 +56,17 @@ export function useForm<T>(initialValues: T, customValidatorArray?: {key: string
             // Check if custom validator is async
             if (customValidator.asyncFunction) {
                 result = await customValidator.validatorFunction(value)
-                console.log(result);
             } else {
                 result = customValidator.validatorFunction(value);
             }
         } else {
-            result = validateForms(key, value, required);
+            result = validateForms(key as string, value, required);
         }
 
         setValidity(prev => ({
             ...prev,
-            [key]: result
+            [key]: { ...prev[key], ...result }
         }));
-
-        console.log(validity);
 
         return result;
     }, []);
@@ -58,17 +74,27 @@ export function useForm<T>(initialValues: T, customValidatorArray?: {key: string
 
     const validateAll = useCallback(async () => {
         for (const key in formData) {
-            await handleValidation(key, (formData as any)[key], true);
+            const result = await handleValidation(key, (formData as any)[key], true);
+            if (result.isValid === false) setShowError(key, true);
         }
-    }, [validity]);
+    }, [formData]);
 
     // Derived State: Is the whole form valid?
     const isFormValid = useMemo(() => {
-        return Object.values(validity).every(status => status.isValid === true);
+        const valid = Object.values(validity)
+            .filter((status): status is validityType => !!status) // Type Guard
+            .every(status => status.isValid === true);
+
+        if (valid) setDisableButton(false);
+        return valid
     }, [validity]);
 
+    const buttonState = useMemo(() => {
+        return disableButton ? "disabled" : "default";
+    }, [disableButton]);
+
     const getValidity = useCallback((key: string) => {
-        return validity[key];
+        return validity[key as keyof T];
     }, [validity]);
 
     // Reset form to initial values
@@ -76,13 +102,26 @@ export function useForm<T>(initialValues: T, customValidatorArray?: {key: string
         setFormData(initialValues);
         // We might want to reset validity too, but for now let's keep it simple
         setValidity(() => {
-            const initialValidity: Record<string, { isValid: boolean, message: string }> = {};
+            const initialValidity: Partial<validityObjType<T>> = {};
             for (const key in initialValues) {
-                initialValidity[key as string] = { isValid: false, message: "" };
+                initialValidity[key] = { isValid: false, message: "", showError: false };
             }
             return initialValidity;
         });
     }, [initialValues]);
+
+    const validate: validationInterface<T> = {
+        validateFunction: handleValidation,
+        validity,
+        setShowError
+    }
+
+    const loadHandler: HandleLoadingProps = {
+        loading,
+        disableButton,
+        buttonState,
+        handleLoading
+    }
 
     return {
         formData,
@@ -93,6 +132,9 @@ export function useForm<T>(initialValues: T, customValidatorArray?: {key: string
         getValidity,
         setFormData,
         resetForm,
-        validateAll
+        validateAll,
+        setShowError,
+        validate,
+        loadHandler
     };
 }

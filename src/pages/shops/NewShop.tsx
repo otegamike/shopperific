@@ -2,14 +2,14 @@
 import FormGroup from '../../components/forms/FormGroup'
 import { useForm } from '../../hooks/useForm'
 import { useImageUploader } from '../../hooks/useImageUploader'
-import { useRef, useState, useEffect } from 'react';
+import { useState } from 'react';
 
 //Services
 import { type createShopType, validateShopId, createShop } from '../../services/createShop';
 
 //utils
 // import { useNavigate } from 'react-router-dom';
-import { alertObj } from '../../utils/alerts/alert';
+// import { alertObj } from '../../utils/alerts/alert';
 
 //Components
 import Header from '../../components/header/Header'
@@ -26,10 +26,9 @@ import type { ImageFileType } from '../../types/filesInterface';
 
 function NewShop() {
 
-  const { formData, handleChange, handleValidation } = useForm<createShopType>({
+  const { formData, validate, validateAll, isFormValid, loadHandler, handleChange } = useForm<createShopType>({
     shopName: "",
     shopId: "",
-    shopLink: "",
     description: ""
   }, [
     {
@@ -41,32 +40,25 @@ function NewShop() {
     }
   ]);
 
-  const [loading, setLoading] = useState(false);
+
   const [shopLogo, setShopLogo] = useState<ImageFileType[]>([]);
+  const { loading, buttonState, handleLoading } = loadHandler;
 
   const updateImage = useImageUploader(setShopLogo, shopLogo);
 
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const focusButton = () => {
-    buttonRef.current?.focus();
-  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    focusButton();
-    setLoading(true);
-    const result = await createShop(formData);
-    setLoading(false);
-    if ("created" in result) {
-      alertObj(result.message, "success");
-    } else {
-      alertObj(result.error, "error");
-    }
-  }
 
-  useEffect(() => {
-    console.log(shopLogo);
-  }, [shopLogo]);
+    handleLoading("loading");
+
+    await validateAll();
+    if (!isFormValid) return handleLoading("idle", "disable");
+    
+    await createShop(formData);
+    
+    handleLoading("idle");
+  }
 
   return (
     <>
@@ -82,11 +74,11 @@ function NewShop() {
 
             <form onSubmit={handleSubmit}>
 
-              <FormGroup name='shopName' label='Shop Name' variant='borderless' type='text' id='shopName' formValue={formData.shopName} onChange={handleChange} validate={true} validateFunction={handleValidation} />
-              <FormGroup name='shopId' label='Shop ID' variant='borderless' type='text' id='shopId' formValue={formData.shopId} onChange={handleChange} validate={true} validateFunction={handleValidation} />
+              <FormGroup name='shopName' label='Shop Name' variant='borderless' type='text' id='shopName' formValue={formData.shopName} onChange={handleChange} validate={validate} />
+              <FormGroup name='shopId' label='Shop ID' variant='borderless' type='text' id='shopId' formValue={formData.shopId} onChange={handleChange} validate={validate} />
               <FormGroup name='shopLink' label='Shop Link' variant='borderless' type='text' id='shopLink' value={(formData.shopId) ? `shopperific.netlify.app/shop/${formData.shopId}` : ""} disabled={true} />
-              <FormGroup name='description' label='Write a short note about your new shop...' variant='borderless' type='textarea' id='description' formValue={formData.description} onChange={handleChange} validate={true} validateFunction={handleValidation} />
-              <Button className='pill__btn tall full__btn createShop__btn center__content' content={loading ? <LoaderSvg /> : "Create Shop"} ref={buttonRef} />
+              <FormGroup name='description' label='Write a short note about your new shop...' variant='borderless' type='textarea' id='description' formValue={formData.description} onChange={handleChange} validate={validate} />
+              <Button className='pill__btn tall full__btn createShop__btn center__content' state={buttonState} content={loading ? <LoaderSvg /> : "Create Shop"} />
             </form>
 
 

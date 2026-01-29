@@ -62,6 +62,14 @@ export const validateForms =  ( key: string, value: string, required: boolean): 
             }
 
         
+    } else if (key.toLowerCase().includes("description")) {
+        const count = value.length;
+        const isValid = count >= 30;
+        if (!isValid) {
+            result = {isValid: false, message: "Description must be at least 30 characters long"};
+        } else if (isValid) {
+            result = {isValid: true, message: "Description is valid"};
+        }
     }
 
     return result;

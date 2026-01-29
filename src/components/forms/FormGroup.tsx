@@ -1,21 +1,22 @@
 // Components
 import Input from './input'
 import Textarea from './textarea'
-import FileUpload from './file'
 
 // React 
 import { useState, useEffect, type ChangeEvent } from 'react'
 
 // Types
-import type { handleValidationType, validityType } from '../../types/ValidationInterface'
+import type { validationInterface } from '../../types/ValidationInterface'
 
+// util
+import { alertObj } from '../../utils/alerts/alert'
 
-interface FormGroupProps {
+interface FormGroupProps<T> {
   variant?: string,
   label: string,
   multiple?: boolean,
-  type: "text" | "textarea" | "password" | "number" | "file",
-  name: string,
+  type: "text" | "textarea" | "password" | "number",
+  name: keyof T,
   id: string,
   value?: any,
   formValue?: any | string,
@@ -26,15 +27,12 @@ interface FormGroupProps {
   required?: boolean,
   disabled?: boolean,
   onChange?: ((e: ChangeEvent<HTMLInputElement>) => void) | ((e: ChangeEvent<HTMLTextAreaElement>) => void),
-  validate?: boolean,
-  validateFunction?: handleValidationType,
-  validity?: validityType;
+  validate?: validationInterface<T>
 }
 
-function FormGroup({
+function FormGroup<T>({
   variant,
   label,
-  multiple,
   type,
   name,
   id,
@@ -43,38 +41,30 @@ function FormGroup({
   maxLength,
   placeholder,
   className,
-  accept,
-  required = true,
+  required = false,
   disabled = false,
   onChange,
-  validate = false,
-  validateFunction,
-  validity
-}: FormGroupProps) {
+  validate
+}: FormGroupProps<T>) {
   const [loading, setLoading] = useState(false);
   const [formState, setFormState] = useState<{ state: "idle" | "loading" | "success" | "error", message: string }>({ state: "idle", message: "" });
+  const [showError, setShowError] = useState(false);
 
+  const { validateFunction, validity, setShowError: setShowErrorFromProps } = validate || {};
 
   useEffect(() => {
-    if (validity) {
-      if ( name in validity ) {
-        setFormState({ 
-          state: validity.isValid ? "success" : "error",
-          message: validity.message 
-        });
-      }
-    }
-  }, [validity]);
+    if (validity && validity[name]) {
+      setFormState({
+        state: validity[name].isValid ? "success" : "error",
+        message: validity[name].message
+      });
 
-  const formType = {
-    textarea: <Textarea className={`tall ${formState.state}`} variant={variant ? variant : ""} label={label} name={name} id={id} value={value} maxLength={maxLength} placeholder={placeholder} required={required} onBlur={() => validateForm()} onChange={onChange as (e: ChangeEvent<HTMLTextAreaElement>) => void} />,
-    text: <Input className={`tall ${formState.state}`} variant={variant} type={type} label={label} name={name} id={id} value={value} maxLength={maxLength} placeholder={placeholder} required={required} loading={loading} disabled={disabled} onBlur={() => validateForm()} onChange={onChange as (e: ChangeEvent<HTMLInputElement>) => void} />,
-    password: <Input className={`tall ${formState.state}`} variant={variant} type={type} label={label} name={name} id={id} value={value} maxLength={maxLength} placeholder={placeholder} required={required} loading={loading} disabled={disabled} onBlur={() => validateForm()} onChange={onChange as (e: ChangeEvent<HTMLInputElement>) => void} />,
-    number: <Input className={`tall ${formState.state}`} variant={variant} type={type} label={label} name={name} id={id} value={value} maxLength={maxLength} placeholder={placeholder} required={required} loading={loading} disabled={disabled} onBlur={() => validateForm()} onChange={onChange as (e: ChangeEvent<HTMLInputElement>) => void} />,
-    file: <FileUpload className={`tall ${formState.state}`} accept={accept} multiple={multiple} variant={variant} type={type} label={label} name={name} id={id} value={value} maxLength={maxLength} placeholder={placeholder} required={required} onBlur={() => validateForm()} onChange={onChange as (e: ChangeEvent<HTMLInputElement>) => void} />
-  }
+      setShowError(validity[name].showError);
+    }
+  }, [validity?.[name]]);
 
   const validateForm = async () => {
+    if (setShowErrorFromProps) setShowErrorFromProps(name, true);
     if (validate && validateFunction && typeof formValue === "string") {
 
       setFormState({ state: "loading", message: "Loading..." });
@@ -86,11 +76,28 @@ function FormGroup({
 
   }
 
+  const handleFocus = () => {
+    
+    if (setShowErrorFromProps) setShowErrorFromProps(name, false);
+  }
+
+  const formComponents = {
+    textInputs: <Input className={`tall ${showError ? formState.state : ""}`} variant={variant} type={type} label={label} name={name as string} id={id} value={value} maxLength={maxLength} placeholder={placeholder} required={required} loading={loading} disabled={disabled} onBlur={() => validateForm()} onFocus={handleFocus} onChange={onChange as (e: ChangeEvent<HTMLInputElement>) => void} />,
+    textareaInputs: <Textarea className={`tall ${showError ? formState.state : ""}`} variant={variant ? variant : ""} label={label} name={name as string} id={id} value={value} maxLength={maxLength} placeholder={placeholder} required={required} onBlur={() => validateForm()} onFocus={handleFocus} onChange={onChange as (e: ChangeEvent<HTMLTextAreaElement>) => void} />
+  }
+
+  const formType = {
+    textarea: formComponents.textareaInputs,
+    text: formComponents.textInputs,
+    password: formComponents.textInputs,
+    number: formComponents.textInputs
+  }
+
   return (
     <div className={`form__group ${className}`}>
       {variant !== "borderless" && <label className="label">{label}</label>}
-      {type && (formType[type] || <Input className={`tall ${formState.state}`} variant={variant} type={type} label={label} name={name} id={id} value={value} maxLength={maxLength} placeholder={placeholder} onBlur={validateForm} onChange={onChange as (e: ChangeEvent<HTMLInputElement>) => void} />)}
-      <p className={`message ${variant === "borderless" ? "borderless__msg" : ""} ${formState.state === "error" ? "error__message" : "hide"}`} >{formState.message}</p>
+      {type && (formType[type] || <Input className={`tall ${showError ? formState.state : ""}`} variant={variant} type={type} label={label} name={name as string} id={id} value={value} maxLength={maxLength} placeholder={placeholder} onBlur={validateForm} onChange={onChange as (e: ChangeEvent<HTMLInputElement>) => void} />)}
+      <p className={`message ${variant === "borderless" ? "borderless__msg" : ""} ${showError && formState.state === "error" ? "error__message" : "hide"}`} >{ formState.message }</p>
     </div>
   )
 }

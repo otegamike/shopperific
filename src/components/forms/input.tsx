@@ -17,10 +17,11 @@ interface inputType  {
   disabled?: boolean,
   loading?: boolean,
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void,
+  onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void,
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-function Input({ variant, type, label, name, id, value, maxLength, placeholder, className , required, disabled=false, loading=false, onBlur, onChange }: inputType) {
+function Input({ variant, type, label, name, id, value, maxLength, placeholder, className , required, disabled=false, loading=false, onBlur, onFocus, onChange }: inputType) {
   const [formType, setFormType ] = useState(type);
 
   return (
@@ -36,6 +37,7 @@ function Input({ variant, type, label, name, id, value, maxLength, placeholder, 
         disabled={disabled}
         maxLength={maxLength} 
         onBlur={onBlur} 
+        onFocus={onFocus}
       />
       {loading && <span className="form__icon"><Loading className="spinner" size={20} /></span>}
       {(formType === "text" && type==="password") && <span onClick={() => setFormType("password")} className="form__icon password__show"><PasswordShow size={25} /> </span>}
