@@ -116,7 +116,7 @@ router.post('/new',  async (req, res) => {
         isEmailVerified: false
     }
 
-    const storeToken = await findAndUpdate("user", {email, _id: toObjectId(userId as string) }, set )
+    const storeToken = await findAndUpdate("user", {email, _id: toObjectId(userId as string) }, set );
 
     // // Exit if generated token wasn't stored.
     // if (!storeToken.updated) {
