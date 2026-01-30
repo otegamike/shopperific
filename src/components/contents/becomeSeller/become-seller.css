@@ -1,0 +1,124 @@
+.become__seller__content {
+    margin: 0 auto;
+    font-family: system-ui, sans-serif;
+    color: #111;
+
+    .hero {
+        text-align: center;
+        padding: 3rem 1rem;
+        margin: 2rem 0;
+    }
+
+    .hero h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        line-height: 125%;
+
+        .logo {
+            color: var(--primary-color-700);
+            font-family: 'Cormorant Unicase', sans-serif;
+        }
+    }
+
+    .subtitle {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: #555;
+    }
+
+    .description {
+        max-width: 700px;
+        margin: 1rem auto 2rem;
+        color: #444;
+        text-align: center;
+    }
+
+    .primary-btn {
+        padding: 0.8rem 1.8rem;
+        font-size: 1rem;
+        border: none;
+        background: var(--primary-color-900);
+        color: #fff;
+        cursor: pointer;
+    }
+
+    .primary-btn:hover {
+        opacity: 0.9;
+    }
+
+    .section {
+        margin: 0;
+        margin-bottom: 3rem;
+        width: 100%;
+    }
+
+    .section h2 {
+        font-size: 1.6rem;
+        line-height: 125%;
+        margin-bottom: 1rem;
+    }
+
+    .list {
+        list-style: none;
+        padding-left: 0;
+        list-style-type: circle;
+    }
+
+    .list li {
+        padding: 0.4rem 0;
+        color: #333;
+    }
+
+    .steps {
+        margin: 1rem 0rem 1rem -1rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .step {
+
+        font-size: 1rem;
+        line-height: 0.9;
+        border: 1px solid #e5e5e5;
+        padding: 1.2rem;
+        border-radius: 8px;
+    }
+
+    .step h3 {
+        margin-bottom: 0.4rem;
+        font-size: 1rem;
+        line-height: 100%;
+    }
+
+    .step p {
+        font-size: 0.9rem;
+        line-height: 125%;
+    }
+
+    .muted {
+        background: #fafafa;
+        padding: 2rem;
+        border-radius: 8px;
+    }
+
+    .small-text {
+        font-size: 0.85rem;
+        color: #666;
+        margin-top: 1rem;
+    }
+
+    .faq__title {
+        margin-bottom: 1rem;
+    }
+
+    .faq {
+        margin-bottom: 1.2rem;
+        padding-left: 0.5rem;
+    }
+
+    .faq h4 {
+        margin-bottom: 0.3rem;
+    }
+
+}

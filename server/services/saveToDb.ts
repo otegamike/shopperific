@@ -38,8 +38,8 @@ export const findAndUpdate = async (
     set: object,
     options: object = { new: true , lean: true} )
     : Promise<
-        |{ updated: true, newData?: any}
-        |{ updated: false }> => {
+        |{ updated: true, found: true ;  newData?: any}
+        |{ updated: false, found: false }> => {
 
             console.log("Updating", model, "with", findBy, set, options);
 
@@ -55,21 +55,21 @@ export const findAndUpdate = async (
             } else if (model==="shop") {
                 newData = await Shop.findOneAndUpdate( findBy, set, options );
 
-            } else return { updated: false };
+            } else return { updated: false, found: false };
 
             if (!newData) {
                 console.log("Couldn't find or update.", model, findBy, set, options);
-                return { updated: false };
+                return { updated: false , found: false};
             }
 
             console.log("Updated", newData);
 
 
-            return { updated: true, newData };
+            return { updated: true, found: true, newData };
 
 
         } catch (err: any) {
             console.error("Couldn't find or save.",err.message, err);
-            return { updated: false }
+            return { updated: false, found: false }
         }
 }

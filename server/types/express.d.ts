@@ -1,9 +1,9 @@
-import { ReqUser } from "../utils/types/utilTypes";
+import type { ReqUserObj } from "./validationInterface.ts";
 
 declare global {
   namespace Express {
     interface Request {
-      user?: ReqUser;
+      user?: ReqUserObj;
     }
   }
 }

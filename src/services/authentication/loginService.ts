@@ -23,8 +23,8 @@ export const loginService = async (credentials: LoginCredentials)
 
            
         } catch (error : any) {
-            const { message : errorMsg } = error.response.data;
-            console.error("Login failed:", error);
+            const { errorMsg } = error.response.data;
+            console.error("Login failed:", errorMsg);
             
             alertObj(errorMsg, "error");
             return errorMsg? {errorMsg}: {errorMsg: "Error Connection to Server"};

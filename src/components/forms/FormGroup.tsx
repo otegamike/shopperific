@@ -8,9 +8,6 @@ import { useState, useEffect, type ChangeEvent } from 'react'
 // Types
 import type { validationInterface } from '../../types/ValidationInterface'
 
-// util
-import { alertObj } from '../../utils/alerts/alert'
-
 interface FormGroupProps<T> {
   variant?: string,
   label: string,

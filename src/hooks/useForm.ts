@@ -84,8 +84,6 @@ export function useForm<T>(initialValues: T, customValidatorArray?: { key: strin
         const valid = Object.values(validity)
             .filter((status): status is validityType => !!status) // Type Guard
             .every(status => status.isValid === true);
-
-        if (valid) setDisableButton(false);
         return valid
     }, [validity]);
 

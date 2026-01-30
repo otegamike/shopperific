@@ -49,4 +49,4 @@ export interface ClientUser {
     role: "buyer" | "seller" | "Admin";
 }
 
-export type ReqUser = baseReqUser & AccessToken & reqVariables;
+export type ReqUser = baseReqUser & reqVariables;

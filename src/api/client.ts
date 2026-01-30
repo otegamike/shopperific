@@ -7,6 +7,7 @@ import { getDeviceId } from '../services/deviceId';
 const api = axios.create({ baseURL: '/api', withCredentials: true });
 const deviceId = getDeviceId();
 
+
 // We set this from the AuthContext whenever the token changes
 let memoryToken: string | null = null;
 
@@ -27,7 +28,7 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
     (response) => {
         memoryToken = response.headers.authorization?.split(" ")[1];
-        console.log("Memory Token:", memoryToken);
+        
         return response;
     },
     (error) => {
@@ -36,3 +37,4 @@ api.interceptors.response.use(
 )
 
 export default api;
+export { memoryToken };

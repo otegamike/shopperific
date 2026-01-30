@@ -1,4 +1,4 @@
-import cloudinary from "../config/cloudinary";
+import cloudinary from "../config/cloudinary.js";
 import streamifier from "streamifier";
 
 export const uploadBuffer = (
@@ -11,7 +11,7 @@ export const uploadBuffer = (
         folder,
         resource_type: "image",
       },
-      (error, result) => {
+      (error: any, result: any) => {
         if (error || !result) return reject(error);
         resolve(result.secure_url);
       }

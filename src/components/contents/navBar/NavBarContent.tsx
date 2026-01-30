@@ -1,7 +1,13 @@
-import { Link } from "react-router-dom"
-import { useState } from "react"
 import "./nav-content.css"
+import { Link } from "react-router-dom"
 
+// utils
+import { capitalize } from "../../../utils/capitalize"
+
+// hooks
+import { useAuth } from "../../../hooks/useAuth"
+
+// components
 import Button from "../../buttons/button"
 import ShopSvg from "../../../assets/svg/shops"
 import CartSvg from "../../../assets/svg/products"
@@ -10,7 +16,9 @@ import ContactSvg from "../../../assets/svg/contact"
 import UserSvg from "../../../assets/svg/user"
 
 function NavBarContent() {
-  const [userName] = useState<string | null>(localStorage.getItem("name"));
+  const { user } = useAuth();
+  const userName = user?.firstName;
+  
   const ButtonPage = {
     signIn: "/auth",
     dashboard: "/dashboard"
@@ -20,7 +28,7 @@ function NavBarContent() {
     <ul className="panel__list">
       <div className="center__content panel__user" >
         {userName && <UserSvg size={70} fill="var(--secondary-color)" />}
-        {userName && <h4>{userName}</h4>}
+        {userName && <h4>{capitalize(userName)} | <span style={{color: "lightgreen"}}>{capitalize(user.role)}</span> </h4>} 
       </div>
 
 

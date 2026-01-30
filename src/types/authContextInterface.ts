@@ -2,8 +2,8 @@ import type { ClientUser } from "./clientUser";
 
 export interface AuthContextType {
   user: ClientUser | null;
-  accessToken: string | null;
-  login: (credentials: any) => Promise<void>;
+  updateUser: (newUser: ClientUser) => void ;
+  login: (credentials: LoginCredentials) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
 }

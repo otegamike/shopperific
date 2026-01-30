@@ -4,46 +4,40 @@ import "../auth.css"
 
 //import hooks
 import { useForm } from "../../../../hooks/useForm"
+import { useAuth } from "../../../../hooks/useAuth"
 
 //import components
 import Button from "../../../buttons/button"
 import FormGroup from "../../../forms/FormGroup"
 import LoaderSvg from "../../../../assets/svg/loader"
 
-//import services
-import { loginService } from "../../../../services/authentication/loginService"
-
 //import utils
 // import { alertObj } from "../../../../utils/alerts/alert"
 
 //itypes
-import type { LoginCredentials } from "../../../../types/authContextInterface"
+import { EmptyLoginCredentials , type LoginCredentials} from "../../../../types/authContextInterface"
 
 
 function Login({ switchForm }: { switchForm: (formType: "login" | "register" | "verifyEmail", email?: string) => void }) {
 
-  const credentials: LoginCredentials = {
-    email: "",
-    password: ""
-  }
-
   // hooks
-  const { formData, handleChange, validate, validateAll, loadHandler, isFormValid } = useForm(credentials);
+  const { login } = useAuth();
+  const { formData, handleChange, validate, validateAll, loadHandler, isFormValid } = useForm(EmptyLoginCredentials);
   const { loading, buttonState, handleLoading } = loadHandler;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    handleLoading("loading");
+    handleLoading("loading", "disable");
     
     // Return if fields are unValidated
     await validateAll();
     if (!isFormValid) {
-      handleLoading("idle", "disable");
+      handleLoading("idle", "enable");
       return; 
     }
 
     // Send login request and await response.
-    await loginService(formData);
+    await login(formData);
 
    
     handleLoading("idle");

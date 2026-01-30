@@ -12,7 +12,7 @@ import { getFromDb } from "../services/fetchFromDb.js";
 import { RegisterUserType } from "../models/User.js";
 
 //types 
-import type { ClientUser } from "../types/authenticationInterface.js";
+import type { ClientUser , LoginResponse } from "../types/authenticationInterface.js";
 
 const router = Router();
 console.log("auth routes");
@@ -81,13 +81,13 @@ router.post("/register", async (req: TypedRequest<registerRequestBody>, res: Typ
 }); 
 
 // Login Route
-router.post("/login", async (req: TypedRequest<loginRequestBody>, res) => { 
+router.post("/login", async (req: TypedRequest<loginRequestBody>, res: TypedResponse<LoginResponse>) => { 
     const { email, password } = req.body;
     const deviceId = req.headers["x-device-id"] as string;
     let clientUser: ClientUser;
 
     if (!email || !password) {
-        res.status(400).json({ message: "Email and password are required." });
+        res.status(400).json({ errorMsg: "Email and password are required." });
         return;
     }
 
@@ -100,13 +100,13 @@ router.post("/login", async (req: TypedRequest<loginRequestBody>, res) => {
         const user = await User.findOne({ email });
 
         if (!user) {
-            res.status(400).json({ message: "Email or Username not found. Create a new account." , incorrect: "username"});
+            res.status(400).json({ errorMsg: "incorrect username."});
             return;
         }
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
-            res.status(400).json({ message: "Password incorrect try again." , incorrect: "password" });
+            res.status(400).json({ errorMsg: "incorrect password." });
             console.log("Incorrect password for user:", email)
             return;
         }
@@ -134,11 +134,11 @@ router.post("/login", async (req: TypedRequest<loginRequestBody>, res) => {
         clientUser = { firstName: user.firstName, email: user.email, role: user.role };
 
         console.log("User logged in:", user);
-        return res.status(200).json({ accessToken , user: clientUser });
+        return res.status(200).json({user: clientUser , message: "Login successful." });
 
     } catch (err) {
         console.error("Error during login:", err);
-        res.status(500).json({ message: "Couldn't log you in. Please try again." });
+        res.status(500).json({ errorMsg: "Couldn't log you in. Please try again." });
     }
 
 });

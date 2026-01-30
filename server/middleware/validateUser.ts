@@ -6,6 +6,9 @@ import { decodeToken } from "../utils/decodeToken.js";
 import dotenv from "dotenv";
 import { checkTokenDb } from "../utils/checkTokenDb.js";
 
+// types 
+import type { ReqUserObj , userObj } from "../types/validationInterface.js";
+
 
 dotenv.config();
 
@@ -17,7 +20,7 @@ export const validateUser = async (
 ) => {
 
   //checks
-  let userObj: ReqUser | null = null;
+  let userObj: userObj | null = null;
   let isVerified = false;
   let newAccessToken = null;
 

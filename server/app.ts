@@ -12,6 +12,7 @@ import authRoutes from './routes/auth.js';
 import productsRoutes from './routes/products.js';
 import shopRoutes from './routes/shops.js'
 import verifyEmailRoute from  './routes/auth/verifyEmail.js'
+import sellerRoutes from './routes/seller.js'
 
 // Load environment variables from .env file
 dotenv.config();
@@ -45,7 +46,9 @@ app.use('/api/verify-email', verifyEmailRoute);
 
 app.use('/api/products', productsRoutes);
 
-app.use('/api/shops', shopRoutes );
+app.use('/api/sellers', sellerRoutes);
+
+app.use('/api/shops', shopRoutes);
 
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });
