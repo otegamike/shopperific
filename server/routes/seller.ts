@@ -33,7 +33,7 @@ router.post("/new", async(req: Request, res: TypedResponse<tSellerResponseSucces
     }
 
     const newRole: Role = "seller";
-    const findBy = { _id: toObjectId(userId) };
+    const findBy = { _id: toObjectId(userId as string) };
     const update = { role: newRole };
     const options = { new: false };
 
