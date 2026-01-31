@@ -70,7 +70,7 @@ function NewShop() {
               <h3>Create New Shop</h3>
             </div>
 
-            <ImageUploader updateImage={updateImage} maxImages={1} />
+            <ImageUploader images={shopLogo} updateImage={updateImage} maxImages={1} />
 
             <form onSubmit={handleSubmit}>
 

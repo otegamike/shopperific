@@ -1,7 +1,7 @@
 //Hooks and react 
 import { useForm } from '../../../../hooks/useForm';
 import { useImageUploader } from '../../../../hooks/useImageUploader';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState } from 'react';
 
 //Services
 
