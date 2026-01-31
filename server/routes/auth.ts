@@ -5,6 +5,12 @@ import { createToken } from "../utils/createToken.js";
 import {addDevice} from "../utils/addDevice.js";
 import type { TypedRequest, TypedResponse, loginRequestBody, registerRequestBody, NewUSerOBj } from "../utils/types/utilTypes.js";
 
+//utils
+import { setRefreshTokensArray } from "../utils/RefreshDBTokens.js";
+
+// types
+import type { userObj , Role } from "../types/validationInterface.js";
+
 // for Email Verification 
 import { genToken, verifyurl, hashToken } from "../services/EmailVerificationToken.js";
 import { sendVerifyEmail } from "../services/sendMail.js";
@@ -15,7 +21,6 @@ import { RegisterUserType } from "../models/User.js";
 import type { ClientUser , LoginResponse } from "../types/authenticationInterface.js";
 
 const router = Router();
-console.log("auth routes");
 
 // Register Route
 router.post("/register", async (req: TypedRequest<registerRequestBody>, res: TypedResponse<{ message: string, clientUser?: ClientUser }>) => {
@@ -51,12 +56,14 @@ router.post("/register", async (req: TypedRequest<registerRequestBody>, res: Typ
 
         // Create RefreshToken with user info
         const newUserid = newUser._id.toString();
-        const newUserObj: NewUSerOBj = { userId: newUserid, email: newUser.email, role: newUser.role };
-        const refreshToken = createToken(newUserObj , "refresh");
-        
-        // Add device and refreshToken to user's refreshTokens array
-        const refreshTokenArr = addDevice( [], deviceId, refreshToken, newUser.createdAt );
-        newUser.refreshTokens = refreshTokenArr;
+        const newUserObj: userObj = { 
+            userId: newUserid, email: 
+            newUser.email, role: 
+            newUser.role 
+        };
+
+        const {newRefreshTokenArr, refreshToken} = setRefreshTokensArray( newUserObj, deviceId, );
+        newUser.refreshTokens = newRefreshTokenArr;
         await newUser.save();
 
         // Set refresh token in HTTP-only cookie
@@ -113,13 +120,14 @@ router.post("/login", async (req: TypedRequest<loginRequestBody>, res: TypedResp
 
         // Create RefreshToken with user info
         const userId = user._id.toString();
-        const userObj: NewUSerOBj = { userId, email: user.email, role: user.role };
-        const refreshToken = createToken(userObj , "refresh");
-        const accessToken = createToken(userObj , "access");
+        const userObj: userObj = { 
+            userId, 
+            email: user.email, 
+            role: user.role 
+        };
 
-        // Add device and refreshToken to user's refreshTokens array
-        const refreshTokenArr = addDevice( user.refreshTokens, deviceId, refreshToken, new Date() );
-        user.refreshTokens = refreshTokenArr;
+        const {newRefreshTokenArr, refreshToken} = setRefreshTokensArray( userObj, deviceId, );
+        user.refreshTokens = newRefreshTokenArr;
         await user.save();
 
         res.cookie("refreshToken", refreshToken, {
@@ -129,9 +137,13 @@ router.post("/login", async (req: TypedRequest<loginRequestBody>, res: TypedResp
             maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         });
 
-        res.setHeader("Authorization", `Bearer ${accessToken}`);
+        res.setHeader("Authorization", `Bearer ${createToken(userObj, "access")}`);
 
-        clientUser = { firstName: user.firstName, email: user.email, role: user.role };
+        clientUser = { 
+            firstName: user.firstName, 
+            email: user.email, 
+            role: user.role 
+        };
 
         console.log("User logged in:", user);
         return res.status(200).json({user: clientUser , message: "Login successful." });

@@ -11,14 +11,14 @@ import { useState } from 'react'
 import type { ImageFileType, ImageUploaderHandlers } from '../../../types/filesInterface'
 
 interface ImageUploaderProps {
+    images: ImageFileType[];
     updateImage: ImageUploaderHandlers;
     maxImages?: number;
 }
 
-function ImageUploader({ updateImage, maxImages = 4 }: ImageUploaderProps) {
+function ImageUploader({ images, updateImage, maxImages = 4 }: ImageUploaderProps) {
 
-    const [images, setImages] = useState<ImageFileType[]>([])
-
+  
     const ImageUpload: React.FC<{ onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }> = ({ onChange }) => {
         return (
             <div className='image'>
@@ -27,14 +27,23 @@ function ImageUploader({ updateImage, maxImages = 4 }: ImageUploaderProps) {
                     upload image or drag and drop
                 </label>
 
-                <input className='hide' id='imageUpload' type="file" multiple={ maxImages > 1 } onChange={onChange} />
+                <input className='hide' id='imageUpload' type="file" multiple={maxImages > 1} onChange={onChange} />
             </div>
         );
     };
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const [isDragging, setIsDragging] = useState(false);
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement> | React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
-        const files = e.target.files;
+        let files: FileList | null = null;
+
+        if ('dataTransfer' in e) {
+            files = e.dataTransfer.files;
+        } else {
+            files = (e as React.ChangeEvent<HTMLInputElement>).target.files;
+        }
+
         if (files) {
             const fileArray = Array.from(files);
 
@@ -52,21 +61,70 @@ function ImageUploader({ updateImage, maxImages = 4 }: ImageUploaderProps) {
                 preview: URL.createObjectURL(file)
             }));
 
-            setImages(prev => [...prev, ...newImages]);
             updateImage.add(newImages);
 
-            // Reset input value
-            e.target.value = "";
+            // Reset input value if it's a change event
+            if ('target' in e && 'value' in e.target) {
+                (e.target as HTMLInputElement).value = "";
+            }
         }
     }
 
     const deleteImage = (index: number) => {
-        setImages(images.filter((_, i) => i !== index));
         updateImage.delete(index);
     }
 
+    const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(true);
+    };
+
+    const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Only set dragging to false if we're leaving the container itself
+        // or if we're moving outside the window (checking relatedTarget can be tricky with children)
+        // A simple timeout or check might be robust, but for now simple false is standard start.
+        // However, child elements trigger dragleave. 
+        // We'll use the onDragLeave on the container.
+        if (e.currentTarget.contains(e.relatedTarget as Node)) {
+            return;
+        }
+        setIsDragging(false);
+    };
+
+    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.dataTransfer) {
+            e.dataTransfer.dropEffect = 'copy';
+        }
+        setIsDragging(true);
+    }
+
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+        handleImageChange(e);
+    }
+
     return (
-        <div className='image__preview__container'>
+        <div
+            className={`image__preview__container ${isDragging ? 'dragging' : ''}`}
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+            style={{ position: 'relative' }} // ensure relative for absolute overlay
+        >
+            {isDragging && (
+                <div className="drop-overlay">
+                    Drop images here
+                </div>
+            )}
             <div className="image__preview no-scrollbar" style={images.length > 1 ? { overflowX: "auto" } : { overflowX: "hidden" }}>
                 {images.map((image, index) => (
                     <div className='image' key={index}>

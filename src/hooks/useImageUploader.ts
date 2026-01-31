@@ -15,9 +15,14 @@ export const useImageUploader = (
         setImages(images.filter((_, i) => i !== index));
     }
 
+    const resetImages = (): void => {
+        setImages([]);
+    }
+
     const updateImages = {
         add: addImages,
-        delete: deleteImage
+        delete: deleteImage,
+        reset: resetImages
     }
 
     return updateImages;

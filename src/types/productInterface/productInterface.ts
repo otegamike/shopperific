@@ -31,3 +31,17 @@ export interface ProductImageType {
 }
 
 
+export interface ProductType {
+    _id: string;
+    name: string;
+    description: string;
+    price: number;
+    sellerId: string;
+    category?: Category;
+    stock?: number;
+    images?: string[];
+    shopName: string;
+    shopId: string;
+    createdAt?: string;
+    updatedAt?: string;
+}

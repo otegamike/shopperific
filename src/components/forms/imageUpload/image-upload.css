@@ -10,7 +10,7 @@
         overflow-x: auto;
         scroll-snap-type: x mandatory;
         padding-bottom: 0.5rem;
-    
+
         & .image {
             position: relative;
             display: flex;
@@ -45,7 +45,7 @@
                 padding: 1rem;
                 color: var(--grey-color);
                 transition: background-color 0.3s ease-in-out;
-                
+
             }
 
             & .add__image:hover {
@@ -68,5 +68,26 @@
             }
         }
 
+    }
+
+    &.dragging {
+        border: 2px dashed var(--primary-color);
+    }
+
+    & .drop-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(255, 255, 255, 0.8);
+        color: var(--primary-color);
+        font-weight: bold;
+        font-size: 1.2rem;
+        z-index: 10;
+        pointer-events: none;
     }
 }

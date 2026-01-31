@@ -6,12 +6,13 @@ import { useRef, useState, useEffect } from 'react';
 //Services
 
 //utils
-import { alertObj } from '../../../../utils/alerts/alert';
+// import { alertObj } from '../../../../utils/alerts/alert';
 
 //Components
 import Button from '../../../../components/buttons/button';
 import FormGroup from '../../../../components/forms/FormGroup';
 import ImageUploader from '../../../../components/forms/imageUpload/ImageUploader';
+import LoaderSvg from '../../../../assets/svg/loader';
 // import PlusSvg from '../../../../assets/svg/plus';
 
 // Service
@@ -23,7 +24,7 @@ import type { ImageFileType } from '../../../../types/filesInterface'
 
 function NewProduct() {
 
-    const { formData, handleChange } = useForm<NewProductDataType>({
+    const { formData, handleChange, resetForm } = useForm<NewProductDataType>({
         name: "",
         description: "",
         price: 0,
@@ -74,23 +75,12 @@ function NewProduct() {
             multiPartFormData.append('images', image.file);
         });
 
-        // for (const pair of multiPartFormData.entries()) {
-        //     console.log(pair[0], pair[1]);
-        // }
 
-        const result = await AddNewProduct(multiPartFormData);
+        await AddNewProduct(multiPartFormData);
         setLoading(false);
-        if ("newProduct" in result) {
-            alertObj(result.message, "success");
-        } else {
-            alertObj(result.errormsg, "error");
-        }
+        resetForm();
+        setImages([]);
     }
-
-    useEffect(() => {
-        console.log(images);
-    }, [images])
-
 
     return (
         <div className='add__product'>
@@ -98,7 +88,7 @@ function NewProduct() {
                 <h5>Add New Product</h5>
             </div>
             {/* image uploader */}
-            <ImageUploader updateImage={updateImage} maxImages={4} />
+            <ImageUploader images={images} updateImage={updateImage} maxImages={4} />
 
             <form onSubmit={handleSubmit}>
 
@@ -113,7 +103,7 @@ function NewProduct() {
 
                 <CategorySelector value={formData.category} onChange={(e) => handleChange(e)} />
                 <FormGroup name='subCategory' label='Product Sub Category' type='text' className='form__select_container' variant='borderless' id='subCategory' onChange={handleChange} value={formData.subCategory} />
-                <Button type='main' className='full__btn' content={loading ? loading : "Add Product"} />
+                <Button type='main' className='full__btn center__content' content={loading ? <LoaderSvg size={20} /> : "Add Product"} />
 
             </form>
         </div>

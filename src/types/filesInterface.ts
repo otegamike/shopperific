@@ -6,4 +6,6 @@ export interface ImageFileType {
 export interface ImageUploaderHandlers {
     add: (images: ImageFileType[]) => void;
     delete: (index: number) => void;
+    reset: () => void;
+
 }
