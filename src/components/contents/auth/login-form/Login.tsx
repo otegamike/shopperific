@@ -5,6 +5,7 @@ import "../auth.css"
 //import hooks
 import { useForm } from "../../../../hooks/useForm"
 import { useAuth } from "../../../../hooks/useAuth"
+import { useNavigate } from "react-router-dom"
 
 //import components
 import Button from "../../../buttons/button"
@@ -18,12 +19,14 @@ import LoaderSvg from "../../../../assets/svg/loader"
 import { EmptyLoginCredentials , type LoginCredentials} from "../../../../types/authContextInterface"
 
 
-function Login({ switchForm }: { switchForm: (formType: "login" | "register" | "verifyEmail", email?: string) => void }) {
+function Login() {
 
   // hooks
+  const navigate = useNavigate();
   const { login } = useAuth();
   const { formData, handleChange, validate, validateAll, loadHandler, isFormValid } = useForm(EmptyLoginCredentials);
   const { loading, buttonState, handleLoading } = loadHandler;
+
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -39,11 +42,10 @@ function Login({ switchForm }: { switchForm: (formType: "login" | "register" | "
     // Send login request and await response.
     await login(formData);
 
+    navigate("/dashboard");
    
     handleLoading("idle");
   }
-
-
 
   return (
     <>
@@ -54,7 +56,7 @@ function Login({ switchForm }: { switchForm: (formType: "login" | "register" | "
 
           <Button content={loading ? <LoaderSvg /> : "Login"} state={ buttonState } type="main" className="login__btn full__btn center__content" />
         </form>
-        <p>Don't have an account? <a id="switch-form" onClick={() => switchForm("register")}>Register</a></p>
+        <p>Don't have an account? <a id="switch-form" href="/auth/register">Register</a></p>
       </div>
 
       <div className="auth__images">

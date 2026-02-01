@@ -1,21 +1,20 @@
 
 import type { Request, Response, NextFunction } from "express";
 import { createToken } from "../utils/createToken.js";
-import { ReqUser } from "../utils/types/utilTypes.js";
 import { decodeToken } from "../utils/decodeToken.js";
 import dotenv from "dotenv";
 import { checkTokenDb } from "../utils/checkTokenDb.js";
 
 // types 
-import type { ReqUserObj , userObj } from "../types/validationInterface.js";
-
+import type { userObj } from "../types/validationInterface.js";
+import type { TypedResponse } from "../utils/types/utilTypes.js";
 
 dotenv.config();
 
 
 export const validateUser = async (
   req: Request,
-  res: Response,
+  res: TypedResponse<{errorMsg: string , validated: boolean}>,
   next: NextFunction
 ) => {
 
@@ -68,7 +67,7 @@ export const validateUser = async (
 
     if (!isVerified || !userObj) {
         console.log("Unauthorized", "Couldn't verify user");
-        return res.status(401).json({ message: "Unauthorized" });
+        return res.status(401).json({ errorMsg: "Unauthorized" , validated: false});
     }
     
     if (newAccessToken) {

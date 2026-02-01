@@ -126,7 +126,7 @@ router.post("/login", async (req: TypedRequest<loginRequestBody>, res: TypedResp
             role: user.role 
         };
 
-        const {newRefreshTokenArr, refreshToken} = setRefreshTokensArray( userObj, deviceId, );
+        const {newRefreshTokenArr, refreshToken} = setRefreshTokensArray( userObj, deviceId, user.refreshTokens );
         user.refreshTokens = newRefreshTokenArr;
         await user.save();
 

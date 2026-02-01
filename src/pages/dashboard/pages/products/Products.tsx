@@ -1,11 +1,14 @@
 
 // hooks
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 // components
 import Button from "../../../../components/buttons/button"
 import Search from "../../../../components/contents/search/Search"
 import NewProduct from "./NewProduct"
+
+// services
+import { fetchDashboardProductsData } from "../../../../services/fetchDashboardData";
 
 function Products() {
 
@@ -14,6 +17,15 @@ function Products() {
   const ToggleNewProductForm = () => {
     setShowNewProductForm(!ShowNewProductForm);
   }
+
+  const fetchProductsData = async () => {
+    const productsData = await fetchDashboardProductsData();
+    return productsData;
+  }
+
+  useEffect(() => {
+    fetchProductsData();
+  }, []);
 
   return (
     <>

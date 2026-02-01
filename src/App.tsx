@@ -21,14 +21,15 @@ import Dashboard from './pages/dashboard/dashboard'
 import BecomeSeller from './pages/sellers/BecomeSeller'
 
 function App() {
-
   return (
     <>
       <AuthContextProvider>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/home" element={<Home />} />
-          <Route path="/auth" element={<SignIn />} />
+          <Route path="/auth/login" element={<SignIn form="login" />} />
+          <Route path="/auth/register" element={<SignIn form="register" />} />
+          <Route path="/auth/verify-email" element={<SignIn form="verifyEmail"/>} />
           <Route path="/products" element={<Products />} />
           <Route path="/shops" element={<Shops />} />
 

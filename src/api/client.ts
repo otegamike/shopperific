@@ -28,11 +28,14 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
     (response) => {
         memoryToken = response.headers.authorization?.split(" ")[1];
-        
         return response;
     },
     (error) => {
+      if (error.response.data.validated === false) {
+            window.location.href = "/auth/login?unvalidated=true";
+        }
         return Promise.reject(error);
+
     }
 )
 

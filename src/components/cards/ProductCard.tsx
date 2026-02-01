@@ -15,7 +15,7 @@ interface ProductCardProps {
 
 function ProductCard({ orientation = "row", className, loading = true, product }: ProductCardProps) {
     return (
-        <div className={`product__card ${orientation} ${className}`}>
+        <div className={`product__card  ${loading ? "loading" : ""} ${orientation} ${className}`} >
             <span className={`product__image  ${loading ? "skeleton__loader" : ""}`}>
                 {!loading && product?.images?.[0] && <img src={product.images[0]} alt={product.name} />}
             </span>
@@ -23,17 +23,38 @@ function ProductCard({ orientation = "row", className, loading = true, product }
                 <span className={`product__name ${loading ? "skeleton__loader" : ""}`}>
                     {!loading && product?.name}
                 </span>
+            </div> 
+            <span className="product__actions">
                 <span className={`product__price ${loading ? "skeleton__loader" : ""}`}>
-                        {!loading && `$${product?.price}`}
+                    {!loading && `$${product?.price}`}
                 </span>
-            </div> <span className="product__actions"> 
-            <button className={`product__button ${loading ? "skeleton__loader" : ""}`}>
-                {!loading && <>Add to Cart <CartCheck size={20} /></>}
-            </button></span>
-                
-            
+
+                <button className={`product__button ${loading ? "skeleton__loader" : ""}`}>
+                    {!loading && <CartCheck size={20} />}
+                </button>
+            </span>
+
+
         </div>
     )
 }
 
+export const ProductCardComponent: React.FC<{
+    product?: ProductType,
+    last?: boolean,
+    orientation?: "row" | "grid",
+    loading?: boolean
+}> = ({ product, orientation = "grid", loading = false }) => {
+    return (
+        <ProductCard
+            orientation={orientation}
+            loading={loading}
+            product={product}
+            key={product?._id}
+        />
+    )
+}
+
 export default ProductCard
+
+

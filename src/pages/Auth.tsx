@@ -10,11 +10,19 @@ import Registration from "../components/contents/auth/register-form/Registration
 import VerifyEmail from "../components/contents/auth/VerifyEmail"
 import { useState } from "react"
 
+// utils
+import { searchUrlParams } from "../utils/SearchUrlParams";
+import { alertObj } from "../utils/alerts/alert"
 
-function SignIn() {
+function SignIn({form}: {form:"login" | "register" | "verifyEmail" }) {
 
-  const [formType, setFormType] = useState<"login" | "register" | "verifyEmail">("login");
+  const [formType, setFormType] = useState<"login" | "register" | "verifyEmail">(form);
   const [userEmail, setUserEmail] = useState<string>("");
+
+  const urlParams = searchUrlParams();
+  const unvalidated = urlParams.get("unvalidated");
+
+  if (unvalidated) alertObj("Unable to validate your session. Please login again.", "error");
 
   const switchForm = (formType: "login" | "register" | "verifyEmail" , email?: string) => {
     setFormType(formType);
@@ -25,7 +33,7 @@ function SignIn() {
 
   const Form = (formType: "login" | "register" | "verifyEmail", email?: string) => {
     if (formType === "login") {
-      return <Login switchForm={switchForm} />
+      return <Login />
     } else if (formType === "register") {
       return <Registration switchForm={switchForm} />
     } else if (formType === "verifyEmail" && email) {

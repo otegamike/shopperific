@@ -13,6 +13,7 @@ import productsRoutes from './routes/products.js';
 import shopRoutes from './routes/shops.js'
 import verifyEmailRoute from  './routes/auth/verifyEmail.js'
 import sellerRoutes from './routes/seller.js'
+import dashboardRoutes from './routes/dashboard/products.js'
 
 // Load environment variables from .env file
 dotenv.config();
@@ -34,6 +35,8 @@ app.use ((req, res, next) => {
 // connect to database
 app.use( connectToDb );
 
+app.use('/api/dashboard', dashboardRoutes);
+
 // Log in and register routes
 app.use('/api/auth', authRoutes);
 
@@ -49,6 +52,7 @@ app.use('/api/products', productsRoutes);
 app.use('/api/sellers', sellerRoutes);
 
 app.use('/api/shops', shopRoutes);
+
 
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });

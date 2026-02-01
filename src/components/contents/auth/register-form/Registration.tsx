@@ -65,7 +65,7 @@ function Registration({ switchForm }: { switchForm: (formType: "login" | "regist
 
         <Button content={loading ? <LoaderSvg /> : "Register"} type="main" className="login__btn full__btn" state={buttonState} />
       </form>
-      <p>Already have an account? <a id="switch-form" onClick={() => switchForm("login")}>Login</a></p>
+      <p>Already have an account? <a id="switch-form" href="/auth/login">Login</a></p>
     </div>
   )
 }
