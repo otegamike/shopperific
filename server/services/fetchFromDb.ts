@@ -94,34 +94,30 @@ export const getUser = async (
 }
 
 export const getFromDb = async (
-    Model: "user" | "product" | "shop",
+    model: "user" | "product" | "shop",
     findBy: any,
     fields: string = "_id",
     reqLimit: number = 12, reqPage: number = 1)
     : Promise<{ found: boolean, data?: any, message?: string }> => {
 
 
-    let Data;
-    if (Model === "user") {
-        Data = User;
-    } else if (Model === "product") {
-        Data = Product;
-    } else if (Model === "shop") {
-        Data = Shop;
-    } else return { found: false };
+    const Model = getModels(model);
 
-    console.log(queryLog(findBy, Model), findBy);
-
+    console.log(queryLog(findBy, model), findBy);
 
     const page = Math.max(Number(reqPage) || 1, 1);
     const limit = Math.min(Number(reqLimit) || 12, 50);
 
     try {
-        const data = await Data.find((findBy === "all") ? {} : findBy)
+        const data = await Model.find((findBy === "all") ? {} : findBy)
             .select(fields)
             .skip((page - 1) * limit)
             .limit(limit)
             .lean();
+
+        if (!data) {
+            throw new Error(`couldn't find ${fields} with ${findBy} in ${model}`)
+        };
 
         return { found: true, data };
 
@@ -132,7 +128,7 @@ export const getFromDb = async (
 }
 
 export const findOneFromDB = async (
-    Model: models,
+    model: models,
     findBy: object,
     select: string,
     options: object = { lean: true }):
@@ -141,13 +137,17 @@ export const findOneFromDB = async (
         | { found: false }
     > => {
 
-    let Data = getModels(Model);
+    let Model = getModels(model);
 
     try {
-        const payload = await Data.findOne(findBy, select, options);
+        const payload = await Model.findOne(findBy, select, options);
+        if (!payload) { 
+            throw new Error(`couldn't find ${select} with ${findBy} in ${model}`);
+        };
         return { found: true, payload };
 
     } catch (err: any) {
+        console.log(err.message)
         return { found: false }
     }
 

@@ -35,8 +35,6 @@ app.use ((req, res, next) => {
 // connect to database
 app.use( connectToDb );
 
-app.use('/api/dashboard', dashboardRoutes);
-
 // Log in and register routes
 app.use('/api/auth', authRoutes);
 
@@ -46,6 +44,8 @@ app.use( validateUser );
 app.use('/api/verify-email', verifyEmailRoute);
 
 // app.use( isEmailVerified );
+
+app.use('/api/dashboard', dashboardRoutes);
 
 app.use('/api/products', productsRoutes);
 
