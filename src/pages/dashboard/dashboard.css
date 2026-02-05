@@ -10,7 +10,7 @@
         min-height: 85vh;
         display: grid;
         gap: 1rem;
-        grid-template-columns: minmax(200px, 250px) minmax(500px, 3fr);
+        grid-template-columns: 200px minmax(500px, 3fr);
 
         & .sidebar {
             position: relative;
@@ -21,12 +21,19 @@
             container-name: sidebar;
 
             & ul {
+                --color: var(--panel-color-darkest);
+                
                 display: flex;
                 flex-direction: column;
                 padding: 2rem 1rem;
 
+
+                & a {
+                    color: var(--color);
+                }
+
                 & li {
-                    --color: var(--panel-color-darker);
+                    
 
                     position: relative;
                     display: flex;
@@ -178,18 +185,23 @@
             }
         }
  */
+        & .dashboard__body__container {
+            height: 100vh;
+            overflow-y: auto;
 
-        & .dashboard__body {
-            background-color: var(--light-color);
-            border-radius: 1rem;
-            padding: 1rem;
+            & .dashboard__body {
+                background-color: var(--light-color);
+                border-radius: 1rem;
+                padding: 1rem;
+                min-height: 100%;
 
-            @container dashboard (width < 700px) {
-                & {
-                    padding-left: 3.6rem;
+                @container dashboard (width < 700px) {
+                    & {
+                        padding-left: 3.6rem;
+                    }
                 }
-            }
 
+            }
         }
     }
 
@@ -285,62 +297,4 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0.5rem;
-}
-
-.table__container {
-    margin-top: 1rem;
-
-    & .table {
-        display: grid;
-        grid-template-columns: repeat(6, 1fr);
-        border-radius: 0.5rem;
-        overflow: hidden;
-
-        & .table__header {
-            background-color: var(--primary-color-300);
-            padding: 0.3rem 0rem 0rem 0;
-        }
-
-        & .table__row {
-            display: grid;
-            grid-template-columns: subgrid;
-            grid-column: span 6;
-
-            & .table__cell {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 0.5rem;
-                font-size: 0.9rem;
-                color: var(--panel-color-darkest)
-            }
-
-        }
-
-        & .table__body {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            grid-column: span 6;
-
-            & .table__row {
-                background-color: var(--primary-color-50);
-
-                &:nth-child(even) {
-                    background-color: var(--primary-color-100);
-                }
-
-                &:hover {
-                    background-color: var(--primary-color-200);
-                }
-
-                & .table__cell {
-                    font-size: 0.85rem;
-                    color: var(--text-color)
-                }
-            }
-        }
-
-        
-
-    }
 }

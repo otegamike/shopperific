@@ -4,5 +4,6 @@ export interface SvgProps {
     className?: string;
     style?: React.CSSProperties;
     id?: string;
+    strokeWidth?: number;
     props?: any;
 }

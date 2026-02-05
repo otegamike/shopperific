@@ -17,8 +17,10 @@ import SignIn from './pages/Auth'
 import Products from './pages/products/Products'
 import Shops from './pages/shops/Shops'
 import NewShop from './pages/shops/NewShop'
-import Dashboard from './pages/dashboard/dashboard'
+import DashboardRoutes from './pages/dashboard/Routes'
 import BecomeSeller from './pages/sellers/BecomeSeller'
+
+
 
 function App() {
   return (
@@ -38,7 +40,7 @@ function App() {
               <Route path="/new-shop" element={<NewShop />} />
             </Route>
             <Route path="/become-seller" element={<BecomeSeller />} />
-            <Route path="/dashboard" element={<Dashboard />} />
+            {DashboardRoutes()}
           </Route>
         </Routes>
       </AuthContextProvider>

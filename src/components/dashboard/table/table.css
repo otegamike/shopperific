@@ -1,0 +1,74 @@
+
+.table__container {
+    margin-top: 1rem;
+    --column-count: 6;
+    --template-column: 1fr 2fr 1fr 1fr 1fr 1fr;
+
+    & .table {
+        display: grid;
+        grid-template-columns: repeat(var(--table-column-count), 1fr);
+        border-radius: 0.5rem;
+        overflow: hidden;
+
+        & .table__header {
+            background-color: var(--primary-color-300);
+            padding: 0.3rem 0rem 0rem 0;
+        }
+
+        & .table__row {
+            display: grid;
+            grid-template-columns: var(--template-column);
+            grid-column: span var(--column-count);
+            padding-right: 0.5rem;
+
+            & .table__cell {
+                display: flex;
+                align-items: flex-start;
+                justify-content: flex-start;
+                padding: 0.5rem;
+                padding-right: 0;
+                font-size: 0.9rem;
+                color: var(--panel-color-darkest);
+                max-height: 4lh;
+                overflow: hidden;
+
+                & .cell__content {
+                   width: 100%;
+                   height: 100%;
+                   overflow: hidden;
+                }
+
+                & img {
+                    height: 100%;
+                }
+            }
+
+        }
+
+        & .table__body {
+            display: grid;
+            grid-template-columns: var(--template-column);
+            grid-column: span var(--column-count);
+
+            & .table__row {
+                background-color: var(--primary-color-50);
+
+                &:nth-child(even) {
+                    background-color: var(--primary-color-100);
+                }
+
+                &:hover {
+                    background-color: var(--primary-color-200);
+                }
+
+                & .table__cell {
+                    font-size: 0.85rem;
+                    color: var(--text-color)
+                }
+            }
+        }
+
+        
+
+    }
+}

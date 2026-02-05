@@ -8,6 +8,9 @@ import { useRef, useState } from 'react';
 //utils
 // import { alertObj } from '../../../../utils/alerts/alert';
 
+//motion
+import { motion } from "framer-motion"
+
 //Components
 import Button from '../../../../components/buttons/button';
 import FormGroup from '../../../../components/forms/FormGroup';
@@ -83,7 +86,12 @@ function NewProduct() {
     }
 
     return (
-        <div className='add__product'>
+        <motion.div className='add__product' 
+            initial={{ opacity: 0, y: -20 , height: "0px"}} 
+            animate={{ opacity: 1, y: 0 , height: "auto"}} 
+            exit={{ opacity: 0, y: -20 , height: "0px"}} 
+            transition={{ duration: 0.5 }}>
+                
             <div className='dashboard__subheading'>
                 <h5>Add New Product</h5>
             </div>
@@ -106,7 +114,7 @@ function NewProduct() {
                 <Button type='main' className='full__btn center__content' content={loading ? <LoaderSvg size={20} /> : "Add Product"} />
 
             </form>
-        </div>
+        </motion.div>
     )
 }
 

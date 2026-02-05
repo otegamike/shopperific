@@ -4,6 +4,9 @@ import axios from 'axios';
 // services
 import { getDeviceId } from '../services/deviceId';
 
+// util
+import { alertObj } from '../utils/alerts/alert';
+
 const api = axios.create({ baseURL: '/api', withCredentials: true });
 const deviceId = getDeviceId();
 
@@ -31,7 +34,13 @@ api.interceptors.response.use(
         return response;
     },
     (error) => {
-      if (error.response.data.validated === false) {
+
+      const serverError = error.response.data;
+      if (serverError.connectionFailed) {
+        alertObj(serverError.message, "error");
+      }
+
+      if (serverError.validated === false) {
             window.location.href = "/auth/login?unvalidated=true";
         }
         return Promise.reject(error);

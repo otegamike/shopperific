@@ -11,6 +11,6 @@ export const connectToDb = async(
     next();
   } catch (err) {
     console.error("DB connection failed", err);
-    res.status(500).json({ message: "Database connection failed" });
+    res.status(500).json({ connectionFailed:true, message: "Database connection failed" });
   }
 }

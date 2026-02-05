@@ -1,13 +1,13 @@
-import type { DashboardProductsDataStats } from "../../types/dashboardDataType";
+import type { DashboardProductsDataStats } from "../../../types/dashboardDataType";
 
 
 type StatsProps = {
   productsDataStats: DashboardProductsDataStats;
 }
-function Stats({productsDataStats}: StatsProps) {
+function Stats({ productsDataStats }: StatsProps) {
   return (
     <>
-    <div className="stats__container"><div className="stats no-scrollbar">
+      <div className="stats__container"><div className="stats no-scrollbar">
         <div className="stat__card">
           <h5>Total Products</h5>
           <p>{productsDataStats.totalProducts}</p>

@@ -11,11 +11,11 @@ export const fetchDashboardProductsData = async ():
     try {
         const response = await api.post("/dashboard/products");
         const { data } = response;
-        const {productsStats, productsData} = data;
-        console.log(data);
-        console.log("productsData", productsData);
-        console.log("productsStats", productsStats);
-        return {productsStats, productsData};
+        const { docCount, docData } = data;
+
+        console.log("data", data);
+        return {productsStats: docCount, productsData: docData};
+       
     } catch (error: any) {
         console.error("Error fetching dashboard data:", error.message);
         return { errorMsg: "Error fetching dashboard data" }

@@ -1,5 +1,5 @@
-import Button from "../buttons/button"
-import Search from "../contents/search/Search"
+import Button from "../../buttons/button"
+import Search from "../../contents/search/Search"
 
 
 function Filters() {

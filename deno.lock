@@ -34,6 +34,7 @@
         "npm:eslint-plugin-react-refresh@~0.4.24",
         "npm:eslint@^9.39.1",
         "npm:express@^5.2.1",
+        "npm:framer-motion@^12.31.0",
         "npm:globals@^16.5.0",
         "npm:gsap@^3.14.2",
         "npm:jsonwebtoken@^9.0.3",
