@@ -32,14 +32,15 @@ interface SidebarProps {
 export default function Sidebar({ active, isSidebarOpen, handleSidebarOpen, handleActive }: SidebarProps) {
 
   const isMobile = useMediaQuery(600);
+  const sidebarStates = isMobile ? (isSidebarOpen ? "open" : "closed") : "desktop";
 
   return (
     <motion.div className="sidebar no-sidebar"
       style={isMobile ? sidebarStyle : {}}>
 
       <motion.ul
-        variants={isMobile ? sidebarUlVariants : {}}
-        animate={isMobile ? isSidebarOpen ? "open" : "closed" : ""}
+        variants={ sidebarUlVariants }
+        animate={sidebarStates}
         style={isMobile ? ulStyles : {}}
         onClick={() => handleSidebarOpen(true)}>
         {/* down arrow */}
@@ -70,50 +71,64 @@ const ulStyles: React.CSSProperties = {
   backgroundColor: "var(--background-color)",
   width: "150px",
   height: "40px",
-  overflow: " hidden",
   padding: "0rem",
+  overflow: "hidden",
   paddingLeft: "0",
   paddingTop: "0rem",
   borderRadius: "1rem",
 
 }
 
+
 const sidebarUlVariants: Variants = {
   open: {
-    // "--display": "flex",
     "--active-background-color": "var(--primary-color-400)",
     "--active-color": "var(--light-color)",
     backgroundColor: "var(--background-grey)",
     backdropFilter: "blur(10px)",
-    border: "1px solid var(--background-grey)",
-    height: "auto",
+    border: "1px solid var(--background-color-lighter)",
+    height: "19.5625rem",
     padding: "1rem",
     width: "calc(150px + (2*var(--rem)))",
     transition: {
       duration: 0.4,
       ease: "easeInOut",
-      // Custom property overrides for smooth color transitions
-      // "--display": { duration: 0 },
       "--active-background-color": { duration: 0 },
       "--active-color": { duration: 0 },
     },
   },
+
   closed: {
-    // "--display": "none",
     "--active-background-color": "transparent",
     "--active-color": "var(--panel-color-darkest)",
-    backgroundColor: "var(--background-color)",
-    height: "40px",
+    backgroundColor: "var(--background-grey)",
+    backdropFilter: "blur(10px)",
+    border: "1px solid var(--background-color-lighter)",
+    height: "2.5rem",
     padding: "0rem",
-    width: "150px",
+    width: "9.375rem",
     transition: {
       duration: 0.4,
       ease: "easeInOut",
-      // Delay display none so content doesn't vanish mid-animation
-      // "--display": { delay: 0.4, duration: 0 },
       "--active-background-color": { duration: 0 },
       "--active-color": { duration: 0 },
     },
   },
+
+  desktop: {
+    "--active-background-color": "var(--primary-color-400)",
+    "--active-color": "var(--light-color)",
+    opacity: 1,
+    height: "auto",
+    display: "flex",
+    padding: "1.5rem 1rem",
+    transition: {
+      duration: 0.4,
+      ease: "easeInOut",
+      display: { duration: 0 },
+      height: { delay: 0.1, duration: 0.4 }
+
+    }
+  }
 };
 

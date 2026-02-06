@@ -44,23 +44,9 @@ router.post("/products", async (req: Request, res) => {
         limit: limit
     }
 
-    const productsCount = await aggregateCount("product", countParameters, projectionParameters);
+    const dashboardProductsData = await aggregateCount("product", countParameters, projectionParameters);
 
-    // GetProduct Parameters
-    // const {limit, page} = req.body;
-    // const findBy = {sellerId};
-    // const selectFields = "-_id images name description price stock category";
-
-    // const getProducts = await getFromDb("product", findBy, selectFields, limit, page);
-
-    // const DashboardProductsData = {
-    //     productsStats: productsCount,
-    //     productsData: getProducts.data
-    // }
-    
-
-    // console.log(DashboardProductsData);
-    return res.status(200).json(productsCount);
+    return res.status(200).json(dashboardProductsData);
 
     
 

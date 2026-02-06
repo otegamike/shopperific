@@ -70,6 +70,11 @@
                         background-color: var(--primary-color-300);
                         color: var(--color);
                         border-radius: 0.5rem;
+                        transition: color 0.4s ease-in-out , background-color 0.4s ease-in-out;
+
+                        & svg {
+                            --color: var(--light-color);
+                        }
                     }
 
                     &:hover {
@@ -112,7 +117,11 @@
 
                             & svg {
                                 --color: var(--active-color);
+
+                                
                             }
+
+                            
                         }
                         
                     }
@@ -172,25 +181,32 @@
         & .dashboard__body__container {
             height: 100vh;
             overflow-y: auto;
-            --header-left-padding: 2.5rem;
+            
 
             & .dashboard__body {
                 background-color: var(--light-color);
                 border-radius: 1rem;
                 padding: 1rem;
                 min-height: 100%;
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
 
-                & .dashboard__header {
-                    padding-left: var(--header-left-padding);
-                    transition: padding-left 0.4s ease-in-out;
+                & h4 {
+                    display: flex;
+                    align-items: center;
+                    width: fit-content;
+                    gap: 0.5rem;
                 }
 
-
-
-                @container dashboard (width < 700px) {
-                    & {
-                        padding-left: 3.6rem;
+                & .dashboard__header {
+                
+                    @container dashboard (width < 600px) {
+                        & h4 {
+                            visibility: hidden;
+                        }
                     }
+                
                 }
 
             }

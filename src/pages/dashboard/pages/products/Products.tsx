@@ -7,6 +7,7 @@ import useMediaQuery from "../../../../hooks/useMediaQuery"
 import { motion, AnimatePresence } from "framer-motion"
 
 // components
+import ProductsSvg from "../../../../assets/svg/products"
 import AddPlus from "../../../../assets/svg/AddPlus"
 import NewProduct from "./NewProduct"
 import Filters from "../../../../components/dashboard/filters/Filters"
@@ -78,7 +79,7 @@ function Products() {
   else return (
     <>
       <div className="dashboard__header">
-        <h4>Products</h4>
+        <h4><ProductsSvg fill='black' size={20} /> Products</h4>
         <motion.button 
           className="pill__btn button--secondary" 
           id="panel-button" 
