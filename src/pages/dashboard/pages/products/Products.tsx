@@ -85,7 +85,7 @@ function Products() {
           variants={productFormVariants}
           animate={ShowNewProductForm ? "open" : "closed"}
           transition={{ duration: 0.4 }}
-          style={{display:"flex", gap: "0.2rem", alignItems: "center", padding: "0.5rem", paddingRight: "1rem", marginRight: "0px", marginTop: "-1rem", marginBottom: "-1rem" }} 
+          style={{display:"flex", gap: "0.2rem", alignItems: "center", padding: "0.5rem", paddingRight: "1rem", marginRight: "0px", marginTop: "-1rem", marginBottom: "-1rem" , scale:0.85, y:8, x:20}} 
           onClick={() => ToggleNewProductForm()}
         >
           <AddPlus animate={ShowNewProductForm ? "open" : "closed"} strokeWidth={3} />

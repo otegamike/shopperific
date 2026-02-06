@@ -12,9 +12,9 @@ export default function ProductTable({ productsData, tableColumns }: ProductTabl
 
     const templateColumn = tableColumns.map((key) => {
         if (key === "description") return "3fr";
-        if (key === "name") return "2fr";
-        if (key === "price") return "0.6fr";
-        if (key === "stock") return "0.6fr";
+        if (key === "name") return "1.8fr";
+        if (key === "price") return "0.7fr";
+        if (key === "stock") return "0.7fr";
         if (key === "images") return "1fr";
         return "1fr";
     }).join(" ");

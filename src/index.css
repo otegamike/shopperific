@@ -52,6 +52,7 @@
 
   /* variables */
   --background-color: #E0E0E0;
+  --background-grey: hsl(0 0% 88% / 0.2);
   --grey-color: #999999;
   --grey-color-dark: #d9d9d9;
   --grey-color-light: #f2f2f2;
