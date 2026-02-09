@@ -36,6 +36,8 @@ export default function Sidebar({ active, isSidebarOpen, handleSidebarOpen, hand
 
   return (
     <motion.div className="sidebar no-sidebar"
+      variants={sidebarContainerVariants}
+      animate={sidebarStates==="desktop"? "desktop": "mobile"}
       style={isMobile ? sidebarStyle : {}}>
 
       <motion.ul
@@ -79,6 +81,14 @@ const ulStyles: React.CSSProperties = {
 
 }
 
+const sidebarContainerVariants: Variants = {
+  desktop: {
+    position: "relative"
+  },
+  mobile: {
+    position: "absolute"
+  }
+}
 
 const sidebarUlVariants: Variants = {
   open: {
@@ -119,13 +129,15 @@ const sidebarUlVariants: Variants = {
     "--active-background-color": "var(--primary-color-400)",
     "--active-color": "var(--light-color)",
     opacity: 1,
-    height: "auto",
+    height: "100%",
+    width: "auto",
+    backgroundColor: "transparent",
+    borderRadius: "1rem",
     display: "flex",
     padding: "1.5rem 1rem",
     transition: {
       duration: 0.4,
       ease: "easeInOut",
-      display: { duration: 0 },
       height: { delay: 0.1, duration: 0.4 }
 
     }

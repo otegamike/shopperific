@@ -13,9 +13,11 @@
         & .table__header {
             background-color: var(--primary-color-300);
             padding: 0.3rem 0rem 0rem 0;
+
         }
 
         & .table__row {
+            position: relative;
             display: grid;
             grid-template-columns: var(--template-column);
             grid-column: span var(--column-count);
@@ -61,6 +63,10 @@
                     background-color: var(--primary-color-200);
                 }
 
+                &:hover .table__actions {
+                    opacity: 1;
+                }
+
                 & .table__cell {
                     font-size: 0.85rem;
                     color: var(--text-color)
@@ -70,5 +76,31 @@
 
         
 
+    }
+}
+
+.table__actions {
+    --button-color: var(--primary-color-600);
+
+    position:absolute;
+    display: flex;
+    gap: 0.5rem;
+    right: 0.3rem;
+    bottom: 0.3rem;
+    width: fit-content;
+    height: fit-content;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+
+    & .table__action__btn {
+        border: 1.5px solid var(--button-color);
+        background-color: var(--primary-color-100);
+        border-radius: 0.4rem;
+        padding: 0.3rem;
+        cursor: pointer;
+
+        &:hover {
+            background-color: var(--primary-color-300);
+        }
     }
 }

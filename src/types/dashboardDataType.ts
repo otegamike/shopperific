@@ -6,6 +6,7 @@ export interface DashboardProductsDataStats {
 }
 
 export interface DashboardProductsData {
+    _id: string;
     name: string;
     images: string[];
     description: string;
@@ -23,3 +24,4 @@ export const emptyProductsDataStats: DashboardProductsDataStats = {
     outOfStock: 0,
     totalInventory: 0
 }
+

@@ -14,25 +14,26 @@ import CartSvg from "../../../assets/svg/products"
 import AboutSvg from "../../../assets/svg/about"
 import ContactSvg from "../../../assets/svg/contact"
 import UserSvg from "../../../assets/svg/user"
+import type { ClientUser } from "../../../types/clientUser"
 
 function NavBarContent() {
   const { user } = useAuth();
   const userName = user?.firstName;
-  
+
   const ButtonPage = {
-    signIn: "/auth",
+    signIn: "/auth/login",
     dashboard: "/dashboard"
   }
+  
 
   return (
     <ul className="panel__list">
       <div className="center__content panel__user" >
-        {userName && <UserSvg size={70} fill="var(--secondary-color)" />}
-        {userName && <h4>{capitalize(userName)} | <span style={{color: "lightgreen"}}>{capitalize(user.role)}</span> </h4>} 
+        {usernameComponet(user)}
       </div>
 
 
-      <li className="panel__button"><Link to={userName ? ButtonPage.dashboard : ButtonPage.signIn} ><Button type="main" className="full__btn" id="panel-button" content={userName ? "Dashboard" : "Sign up"} /></Link></li>
+      <li className="panel__button"><Link to={userName ? ButtonPage.dashboard : ButtonPage.signIn} ><Button type="main" className="full__btn" id="panel-button" content={userName ? "Dashboard" : "Sign in"} /></Link></li>
       <li><Link className="panel-item" to="/shops"><ShopSvg size={20} />Shops</Link></li>
       <li><Link className="panel-item" to="/products"><CartSvg size={20} />Products</Link></li>
       <li><Link className="panel-item" to="/about"><AboutSvg size={20} />About</Link></li>
@@ -42,3 +43,25 @@ function NavBarContent() {
 }
 
 export default NavBarContent
+
+
+const usernameComponet = (user: ClientUser | null): React.ReactNode => {
+    const userName = user?.firstName;
+    let component;
+    if (!userName) {
+        component = (
+          <>
+            <UserSvg size={70} fill="var(--secondary-color)" />
+            <h4>Guest</h4>
+          </>
+        )
+    } else {
+      component = (
+        <>
+          <UserSvg size={70} fill="var(--secondary-color)" />
+          <h4>{capitalize(userName)} | <span style={{ color: "lightgreen" }}>{capitalize(user.role)}</span> </h4>
+        </>
+      )
+    }
+    return component;
+  }

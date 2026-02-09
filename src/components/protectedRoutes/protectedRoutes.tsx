@@ -20,7 +20,7 @@ const ProtectedRoute = () => {
   // We use 'state' to save the current location so we can send them back after login.
   if (!user) {
     alertObj("You must be logged in to access this page", "error");
-    return <Navigate to="/auth" state={{ from: location }} replace />;
+    return <Navigate to="/auth/login" state={{ from: location }} replace />;
   }
 
   // 3. If logged in, render the actual route content

@@ -4,6 +4,7 @@ import "./dashboard.css"
 //react
 import { useState } from "react"
 import { useLocation } from "react-router-dom"
+import { motion, type Variants } from "framer-motion"
 
 // React Router
 import { Outlet } from "react-router-dom"
@@ -11,6 +12,9 @@ import { Outlet } from "react-router-dom"
 // Components 
 import Header from "../../components/header/Header"
 import Sidebar from "./sidebar/Sidebar"
+
+// hooks
+import useMediaQuery from "../../hooks/useMediaQuery"
 
 export interface DashboardPagesInterface {
   overview: React.ReactNode;
@@ -26,6 +30,8 @@ function dashboard() {
   const location = useLocation();
   const page = location.pathname.split("/")[2] as keyof DashboardPagesInterface;
   
+  const isMobile = useMediaQuery(600) ;
+
   // sidebar open state
   const [isSidebarOPen, setIsSidebarOpen] = useState<boolean>(false);
   // active page state
@@ -48,14 +54,19 @@ function dashboard() {
     <>
       <Header navbar={true} />
       <main className="center__content dashboard__container">
-        <div className="dashboard__page">
+        <motion.div variants={dashboardPageVariants} animate={isMobile?"mobile":"desktop"} className="dashboard__page">
+
+          {/* sidebar */}
           <Sidebar active={active} isSidebarOpen={isSidebarOPen} handleSidebarOpen={handleSidebarOpen} handleActive={handleActive} />
-          <div className="dashboard__body__container no-scrollbar">
+          
+          {/* dashboard body */}
+          <div id="dashboard-body-container" className="dashboard__body__container no-scrollbar">
             <div style={ isSidebarOPen? {"--header-left-padding":"2.5rem", paddingLeft: "1rem" }as React.CSSProperties :{paddingLeft: "1rem"}} className="dashboard__body" onClick={() => handleSidebarOpen(false)}>
               <Outlet />
             </div>
           </div>
-        </div>
+          
+        </motion.div>
 
       </main>
     </>
@@ -63,3 +74,12 @@ function dashboard() {
 }
 
 export default dashboard
+
+const dashboardPageVariants: Variants = {
+  mobile: {
+    gridTemplateColumns: "1fr"
+  },
+  desktop: {
+    gridTemplateColumns: "200px minmax(200px, 3fr)"
+  }
+} ;

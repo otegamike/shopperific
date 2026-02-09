@@ -1,5 +1,5 @@
 export interface SvgProps {
-    size?: number;
+    size?: number | string;
     fill?: string;
     className?: string;
     style?: React.CSSProperties;

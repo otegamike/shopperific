@@ -66,6 +66,8 @@
   --panel-color-darkest-transparent: hsl(240 38% 5% / 0.3);
   
   --text-color: hsl(240, 12%, 53%);
+  --text-color-dark: hsl(240, 12%, 30%);
+
 
   --panel-color-dark-hover:#100f24;
   --panel-color-dark-transparent: hsl(200 0% 8% / 0.4);
