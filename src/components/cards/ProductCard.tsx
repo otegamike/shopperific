@@ -1,4 +1,5 @@
-
+// react
+import { Link } from "react-router-dom";
 
 import "./card.css"
 import type { ProductType } from "../../types/productInterface/productInterface";
@@ -16,6 +17,7 @@ interface ProductCardProps {
 function ProductCard({ orientation = "row", className, loading = true, product }: ProductCardProps) {
     return (
         <div className={`product__card  ${loading ? "loading" : ""} ${orientation} ${className}`} >
+            <Link to={`/product/${product?._id}`}>
             <span className={`product__image  ${loading ? "skeleton__loader" : ""}`}>
                 {!loading && product?.images?.[0] && <img src={product.images[0]} alt={product.name} />}
             </span>
@@ -33,6 +35,7 @@ function ProductCard({ orientation = "row", className, loading = true, product }
                     {!loading && <CartCheck size={20} />}
                 </button>
             </span>
+            </Link>
 
 
         </div>

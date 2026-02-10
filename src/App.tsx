@@ -15,6 +15,7 @@ import './App.css'
 import Home from './pages/Home'
 import SignIn from './pages/Auth'
 import Products from './pages/products/Products'
+import Product from './pages/products/Product'
 import Shops from './pages/shops/Shops'
 import NewShop from './pages/shops/NewShop'
 import DashboardRoutes from './pages/dashboard/Routes'
@@ -33,6 +34,7 @@ function App() {
           <Route path="/auth/register" element={<SignIn form="register" />} />
           <Route path="/auth/verify-email" element={<SignIn form="verifyEmail"/>} />
           <Route path="/products" element={<Products />} />
+          <Route path="/product/:id" element={<Product />} />
           <Route path="/shops" element={<Shops />} />
 
           <Route element={<ProtectedRoute />}>

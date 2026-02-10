@@ -30,6 +30,17 @@ router.post('/category/:category', async (req, res) => {
   return res.status(200).json(fetchProduct.products);
 });
 
+// Get product by id
+router.post('/product/:id', async (req, res) => {
+  const id = req.params.id;
+
+  const fetchProduct = await getProduct({ _id: id });
+
+  if (!fetchProduct.found) { return res.status(500).json({ message: "error fetching products" }) }
+  console.log(fetchProduct.products);
+  return res.status(200).json(fetchProduct.products);
+});
+
 // Save new product
 router.post("/new", requireSeller, upload.array("images", 4), async (req, res) => {
   try {
