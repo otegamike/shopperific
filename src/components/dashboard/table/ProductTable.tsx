@@ -15,6 +15,7 @@ import DeleteSvg from "../../../assets/svg/DeleteSvg";
 import LoaderSvg from "../../../assets/svg/loader";
 import CollapseSvg from "../../../assets/svg/Collapse";
 
+
 // services
 import { deleteProduct } from "../../../services/DashboardDataServices";
 
@@ -39,8 +40,6 @@ export default function ProductTable({ productsData, tableColumns, handleActions
         if (key === "images") return "1fr";
         return "1fr";
     }).join(" ");
-
-
     if (productsData.length === 0) {
         return <p>No products found</p>
     }
@@ -118,6 +117,9 @@ export const TableActions = ({ productId, handleActions, panelStyles, buttonStyl
     const isExpanded = handleActions.isExpanded(productId);
 
     const handleDeleteProduct = async () => {
+        if (isExpanded) {
+            handleActions.collapse();
+        }
         setIsDeleting(true);
         const deleteProductResponse = await deleteProduct([productId]);
         if (deleteProductResponse.deleted) {
@@ -138,7 +140,7 @@ export const TableActions = ({ productId, handleActions, panelStyles, buttonStyl
     }
 
     return (
-            <div className="table__actions" style={{ "--button-color": buttonColor, ...panelStyles } as React.CSSProperties}>
+            <div className={`table__actions table__actions__${productId}`} style={{ "--button-color": buttonColor, ...panelStyles } as React.CSSProperties}>
                     <button className="table__action__btn"><EditSvg size={size} fill={buttonColor} /></button>
 
                     <button className="table__action__btn" onClick={handleDeleteProduct}>

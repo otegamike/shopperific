@@ -1,4 +1,5 @@
 import api from "../api/client";
+import { alertObj } from "../utils/alerts/alert";
 
 // types
 import type { DashboardProductsData, DashboardProductsDataStats } from "../types/dashboardDataType";
@@ -26,6 +27,7 @@ export const fetchDashboardProductsData = async ():
         console.error("Error fetching dashboard data:", error.message);
         const dashboardDataCache = localStorage.getItem("dashboardDataCache");
         if (dashboardDataCache) {
+            alertObj("couldn't connect to our servers. loading cached data", "warning")
             return JSON.parse(dashboardDataCache);
         }
         return { errorMsg: "Error fetching dashboard data" }

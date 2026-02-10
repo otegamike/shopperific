@@ -6,18 +6,23 @@ export interface Position {
 }
 
 export const getRelativePosition = (parent: HTMLElement | null, child: HTMLElement | null): Position | void => {
-    if (!parent || !child) {
-        console.warn("Target parent or child element not found in DOM.");
+    if (!child) {
+        console.warn("Target child element not found in DOM.");
+        return;
+    }
+
+    if (!parent) {
+        console.warn("Target parent element not found in DOM.");
         return;
     }
     
-    const parentRect = parent.getBoundingClientRect();
+    // const parentRect = parent.getBoundingClientRect();
     const childRect = child.getBoundingClientRect();
     
 
     const relativePosition = {
-        top: Math.round(childRect.top - parentRect.top + parent.scrollTop),
-        left: Math.round(childRect.left - parentRect.left + parent.scrollLeft),
+        top: Math.round(childRect.top) + 16,
+        left: Math.round(childRect.left) - 16,
         width: childRect.width,
         height: childRect.height
 

@@ -1,7 +1,7 @@
 
 // hooks
 import { useState, useEffect } from "react"
-import { createPortal } from "react-dom";
+import { useExpandPanel } from "../../../../hooks/useExpandPanel";
 
 import useMediaQuery from "../../../../hooks/useMediaQuery"
 
@@ -17,20 +17,17 @@ import Stats from "../../../../components/dashboard/stats/Stats"
 import Oops from "../../../../components/errorComponent/Oops"
 import ProductTable from "../../../../components/dashboard/table/ProductTable"
 import { TableActions } from "../../../../components/dashboard/table/ProductTable";
-
+import { ExpandPanel } from "../../../../components/panels/expandPanel/ExpandPanel";
+import LoadingComponent from "../../../../components/loader/Loading";
 
 // services
 import { fetchDashboardProductsData } from "../../../../services/DashboardDataServices";
 
 // types
 import type { DashboardProductsDataStats, DashboardProductsData } from "../../../../types/dashboardDataType";
-import type { Position } from "../../../../utils/calculateDimentions";
 
 // Dashboard data
 import { emptyProductsDataStats, defaultTableColumns, mobileTableColumns } from "../../../../types/dashboardDataType";
-
-// util
-import { getRelativePosition } from "../../../../utils/calculateDimentions";
 
 
 export interface ProductActions {
@@ -42,7 +39,6 @@ export interface ProductActions {
 
 function Products() {
 
-
   const isMobile = useMediaQuery(768);
   const tableColumns = isMobile ? mobileTableColumns : defaultTableColumns;
 
@@ -50,9 +46,11 @@ function Products() {
     errorState: false,
     errorMsg: ""
   });
+  // loading state
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   // expand product
-  const [expandProps, setExpandProps] = useState<{ id: string, scrollTop: number, initialPosition: Position } | null>(null);
+  const { expandProps, handleExpandPanel, handleCollapsePanel, mountId } = useExpandPanel("table__actions", "dashboard-body-container");
 
   // products data
   const [productsData, setProductsData] = useState<DashboardProductsData[]>([]);
@@ -66,12 +64,13 @@ function Products() {
 
   // fetch products data
   const fetchProductsData = async () => {
-
+    setIsLoading(true);
     const DashboardProductsData = await fetchDashboardProductsData();
 
     // if there's an error.
     if ("errorMsg" in DashboardProductsData) {
       setErrorObj({ errorState: true, errorMsg: DashboardProductsData.errorMsg });
+      setIsLoading(false);
       return;
     }
 
@@ -79,6 +78,7 @@ function Products() {
 
     setProductsDataStats(productsStats);
     setProductsData(productsData);
+    setIsLoading(false);
   }
 
   // const handleEditProduct = (product: DashboardProductsData) => {
@@ -98,65 +98,24 @@ function Products() {
     return true
   }
 
-  const handleExpandProduct = (e: React.MouseEvent<HTMLButtonElement>, productid: string) => {
-    const container = document.getElementById("dashboard-body-container");
-    const nearestActionPanel = e.currentTarget.closest<HTMLElement>(".action__panel");
-
-    const initialPosition = getRelativePosition(container, nearestActionPanel )
-
-    if (container && initialPosition) {
-      const scroolPosition = container.scrollTop;
-      console.log(scroolPosition);
-
-      container.style.overflow = "hidden";
-
-      setExpandProps({ id: productid, scrollTop: scroolPosition, initialPosition });
-
-    }
-  }
-
-  const handleCollapsePanel = () => {
-    const container = document.getElementById("dashboard-body-container");
-
-    if (container) {
-      container.style.overflow = "auto";
-    }
-    setExpandProps(null);
-  }
-
-
-
   const handleActions: ProductActions = {
     delete: handleDeleteProduct,
-    expand: handleExpandProduct,
+    expand: handleExpandPanel,
     isExpanded: (productid: string) => expandProps?.id === productid,
     collapse: handleCollapsePanel
   }
-
-
 
   useEffect(() => {
     fetchProductsData();
   }, []);
 
   if (errorObj.errorState) return <Oops message={errorObj.errorMsg} retry={fetchProductsData} />
-
+  else if (isLoading) return <LoadingComponent />
   else return (
     <>
       <div className="dashboard__header">
         <h4><ProductsSvg fill='black' size={20} /> Products</h4>
-        <motion.button
-          className="pill__btn button--secondary"
-          id="panel-button"
-          variants={productFormVariants}
-          animate={ShowNewProductForm ? "open" : "closed"}
-          transition={{ duration: 0.4 }}
-          style={{ display: "flex", gap: "0.2rem", alignItems: "center", padding: "0.5rem", paddingRight: "1rem", marginRight: "-1.5rem", marginTop: "-2rem", marginBottom: "-2rem", scale: 0.85 }}
-          onClick={() => ToggleNewProductForm()}
-        >
-          <AddPlus animate={ShowNewProductForm ? "open" : "closed"} strokeWidth={3} />
-          {ShowNewProductForm ? "close" : "Add Product"}
-        </motion.button>
+        <AddProductButton ShowNewProductForm={ShowNewProductForm} ToggleNewProductForm={ToggleNewProductForm} />
       </div>
 
       <AnimatePresence>
@@ -169,28 +128,15 @@ function Products() {
         <ProductTable productsData={productsData} tableColumns={tableColumns} handleActions={handleActions} />
         <AnimatePresence>
           {expandProps && (
-            <EditPortal>
-              <motion.div
-                className="expand__container"
-                style={{ top: expandProps.scrollTop }}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                <motion.div className="expand__content" 
-                initial={{ opacity: 0, top:expandProps.initialPosition?.top + "px", left: expandProps.initialPosition?.left + "px", width: expandProps.initialPosition?.width + "px", height: expandProps.initialPosition?.height + "px" }}
-                animate={{ opacity: 1, top: 0, left: 0, width: "100%", height: "100%" }} 
-                transition={{ duration: 0.4 }}
-                >
+            <ExpandPanel expandProps={expandProps} mountId={mountId}>
                   <TableActions
                     productId={expandProps.id}
                     type="expand"
                     handleActions={handleActions}
+                    panelStyles={{opacity: 1, top: "1rem", right: "1rem", bottom: "none"}}
                   />
-                  <button className="close__button" onClick={() => handleCollapsePanel()}>close</button>
-                </motion.div>
-              </motion.div>
-            </EditPortal>)}
+            </ExpandPanel>
+            )}
         </AnimatePresence>
       </LayoutGroup>
     </>
@@ -210,8 +156,21 @@ const productFormVariants = {
   }
 }
 
-function EditPortal({ children }: { children: React.ReactNode }) {
-  const mount = document.getElementById("dashboard-body-container");
-  if (!mount) return null; // Safety check
-  return createPortal(children, mount);
+
+
+const AddProductButton = ({ShowNewProductForm, ToggleNewProductForm}: {ShowNewProductForm: boolean, ToggleNewProductForm: () => void}) => {
+  return (
+    <motion.button
+          className="pill__btn button--secondary"
+          id="panel-button"
+          variants={productFormVariants}
+          animate={ShowNewProductForm ? "open" : "closed"}
+          transition={{ duration: 0.4 }}
+          style={{ display: "flex", gap: "0.2rem", alignItems: "center", padding: "0.5rem", paddingRight: "1rem", marginRight: "-1.5rem", marginTop: "-2rem", marginBottom: "-2rem", scale: 0.85 }}
+          onClick={() => ToggleNewProductForm()}
+        >
+          <AddPlus animate={ShowNewProductForm ? "open" : "closed"} strokeWidth={3} />
+          {ShowNewProductForm ? "close" : "Add Product"}
+        </motion.button>
+  )
 }
