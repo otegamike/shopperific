@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 // hooks
 import { useParams } from "react-router-dom";
 import { fetchProduct } from "../../services/fetchProducts";
-import { useNavigate } from "react-router-dom";
+
 
 // hooks
 import { usePage } from "../../hooks/usePage";
@@ -15,9 +15,11 @@ import type { ProductType } from "../../types/productInterface/productInterface"
 
 // component 
 import Page from "../../components/Page";
+import ProductDetails, { ProductHeading } from "../../components/product/ProductDetails";
 
-// svg
-import BackButton from "../../assets/svg/backButton";
+// utils
+import { getCachedData } from "../../utils/cacheData";
+
 
 function Product() {
     const { id } = useParams();
@@ -30,9 +32,9 @@ function Product() {
         const res = await fetchProduct(id!);
 
         if ("errorMsg" in res) {
-            setLoading(false); 
+            setLoading(false);
             handleError({ errorState: true, errorMsg: res.errorMsg });
-            return; 
+            return;
         }
 
         setProduct(res);
@@ -40,8 +42,17 @@ function Product() {
     }
 
     useEffect(() => {
-        loadProduct();
+        // loadProduct();
+        setLoading(false);
+        const { productsData } = getCachedData(`dashboardDataCache`);
+        console.log("productCache", productsData);
+        if (productsData) {
+            setProduct(productsData[4]);
+        }
     }, []);
+
+
+
 
     const handleRetry = () => {
         setLoading(true);
@@ -49,30 +60,10 @@ function Product() {
     }
 
     return (
-        <Page title="Product" pageHeading={<PageHeading productName={product?.name || ""} />} errorObj={{...errorObj, retry: handleRetry }} isLoading={isLoading} >
-            <img src={product?.images?product?.images[0]:""} alt="" />
-            <h2>{product?.name}</h2>
-            <p>{product?.description}</p>
-            <p>{product?.price}</p>
-            <p>{product?.stock}</p>
-            <p>{product?.category}</p>
-            <p>{product?.shopName}</p>
-            <p>{product?.createdAt}</p>
-            <p>{product?.updatedAt}</p>
+        <Page title="Product" pageHeading={<ProductHeading productName={product?.name || ""} />} errorObj={{ ...errorObj, retry: handleRetry }} isLoading={isLoading} >
+            {product && <ProductDetails product={product} />}
         </Page>
     )
 }
 
 export default Product
-
-const PageHeading = ({productName}: {productName: string}) => {
-    const navigate = useNavigate();
-    const goToPreviousPage = () => {
-        navigate(-1);
-    }
-    return (
-        <>
-            <h4 style={{ cursor: "pointer"}} onClick={() => goToPreviousPage()}>{<BackButton size={20} fill="var(--text-primary)" />} Products / {productName}</h4>
-        </>
-    )
-}
