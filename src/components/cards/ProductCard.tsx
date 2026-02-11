@@ -1,5 +1,5 @@
 // react
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import "./card.css"
 import type { ProductType } from "../../types/productInterface/productInterface";
@@ -15,9 +15,14 @@ interface ProductCardProps {
 }
 
 function ProductCard({ orientation = "row", className, loading = true, product }: ProductCardProps) {
+   
+    const navigate = useNavigate();
+    const goToProduct = () => {
+        navigate(`/product/${product?._id}`);
+    }
+
     return (
-        <div className={`product__card  ${loading ? "loading" : ""} ${orientation} ${className}`} >
-            <Link to={`/product/${product?._id}`}>
+        <div onClick={goToProduct} className={`product__card  ${loading ? "loading" : ""} ${orientation} ${className}`} >
             <span className={`product__image  ${loading ? "skeleton__loader" : ""}`}>
                 {!loading && product?.images?.[0] && <img src={product.images[0]} alt={product.name} />}
             </span>
@@ -35,9 +40,6 @@ function ProductCard({ orientation = "row", className, loading = true, product }
                     {!loading && <CartCheck size={20} />}
                 </button>
             </span>
-            </Link>
-
-
         </div>
     )
 }

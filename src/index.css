@@ -53,6 +53,7 @@
   /* variables */
   --background-color: #E0E0E0;
   --background-grey: hsl(0 0% 88% / 0.2);
+  --background-transparent-light: hsl(0 0% 95% / 0.3);
   --grey-color: #999999;
   --grey-color-dark: #d9d9d9;
   --grey-color-light: #f2f2f2;
@@ -67,6 +68,7 @@
   
   --text-color: hsl(240, 12%, 53%);
   --text-color-dark: hsl(240, 12%, 30%);
+  --text-color-darker: hsl(240, 10%, 20%);
 
 
   --panel-color-dark-hover:#100f24;

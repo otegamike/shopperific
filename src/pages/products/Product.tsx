@@ -18,7 +18,7 @@ import Page from "../../components/Page";
 import ProductDetails, { ProductHeading } from "../../components/product/ProductDetails";
 
 // utils
-import { getCachedData } from "../../utils/cacheData";
+// import { getCachedData } from "../../utils/cacheData";
 
 
 function Product() {
@@ -42,13 +42,13 @@ function Product() {
     }
 
     useEffect(() => {
-        // loadProduct();
-        setLoading(false);
-        const { productsData } = getCachedData(`dashboardDataCache`);
-        console.log("productCache", productsData);
-        if (productsData) {
-            setProduct(productsData[4]);
-        }
+        loadProduct();
+        // setLoading(false);
+        // const { productsData } = getCachedData(`dashboardDataCache`);
+        // console.log("productCache", productsData);
+        // if (productsData) {
+        //     setProduct(productsData[4]);
+        // }
     }, []);
 
 
