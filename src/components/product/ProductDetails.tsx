@@ -24,12 +24,14 @@ function ProductDetails({ product }: ProductDetailsProps) {
         <div className="product__details">
             <ProductImageCarousel images={product.images || []} />
             <div className="product__info">
-                <h1 className="product__name">{product.name}</h1>
+                <div className="product__name__container">
+                    <p className="product__shopName">{product.shopName}</p>
+                    <h1 className="product__name">{product.name}</h1>
+                </div>
                 <p className="product__price">${product.price}</p>
                 <p className="product__description">{product.description}</p>
                 <p className="product__stock">{product.stock}</p>
                 <p className="product__category">{product.category}</p>
-                <p className="product__shopName">{product.shopName}</p>
             </div>
         </div>
     )
