@@ -1,3 +1,5 @@
+import type { ProductDataType } from "./productInterface/productInterface";
+
 export interface DashboardProductsDataStats {
     totalProducts: number;
     inStock: number;
@@ -5,15 +7,17 @@ export interface DashboardProductsDataStats {
     totalInventory: number;
 }
 
-export interface DashboardProductsData {
-    _id: string;
-    name: string;
-    images: string[];
-    description: string;
-    price: number;
-    stock: number;
-    category: string;
-}
+ export type DashboardProductsData = ProductDataType;
+
+// {
+//     _id: string;
+//     name: string;
+//     images: string[];
+//     description: string;
+//     price: number;
+//     stock: number;
+//     category: string;
+// }
 
 export const defaultTableColumns: (keyof DashboardProductsData)[] = ["images", "name", "description", "price", "stock", "category"];
 export const mobileTableColumns: (keyof DashboardProductsData)[] = ["images", "name", "price", "stock", "category"];

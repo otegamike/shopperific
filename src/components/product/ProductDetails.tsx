@@ -13,6 +13,7 @@ import BackButton from "../../assets/svg/backButton";
 
 // hooks
 import { useNavigate } from "react-router-dom";
+import { useElementOnScreen } from "../../hooks/useElementOnScreen";
 
 interface ProductDetailsProps {
     product: ProductType;
@@ -48,19 +49,23 @@ export const ProductHeading = ({ productName }: { productName: string }) => {
     return (
         <>
             <div className="product__header">
-                <div className="back" onClick={() => goToPreviousPage()}>
+                <span className="back" onClick={() => goToPreviousPage()}>
                     <BackButton size={15} fill="var(--text-primary)" />
-                    Products 
-                </div> <span className="slash">|</span> {productName}
+                    Products
+                </span> <span className="slash">|</span> {productName}
             </div>
         </>
     )
 }
 
 
-const ProductImageCarousel = ({images}: {images: string[]}) => {
+const observerOptions = { threshold: 0.95 };
 
+const ProductImageCarousel = ({ images }: { images: string[] }) => {
+
+    const [containerRef, isVisible] = useElementOnScreen(observerOptions);
     const [activeImage, setActiveImage] = useState<number>(0);
+    const [isHovered, setIsHovered] = useState<boolean>(false);
 
     const focusImage = (index: number) => {
         setActiveImage(index);
@@ -73,14 +78,15 @@ const ProductImageCarousel = ({images}: {images: string[]}) => {
     }, [activeImage]);
 
     useEffect(() => {
+        if (!isVisible || isHovered) return;
         const interval = setInterval(() => {
             setActiveImage((prev) => (prev + 1) % (images.length || 1));
-        }, 3000);
+        }, 3500);
         return () => clearInterval(interval);
-    }, [images.length, activeImage]);
+    }, [images.length, activeImage, isVisible, isHovered]);
 
     return (
-        <div className="product__images__container">
+        <div ref={containerRef} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} className="product__images__container">
             <div className="product__images no-scrollbar">
                 {images.map((image, index) => {
                     return <img key={image} id={`image-${index}`} src={image} alt="" />

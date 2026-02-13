@@ -25,7 +25,11 @@ import { AddNewProduct } from '../../../../services/AddNewProduct'
 import { type NewProductDataType, PRODUCT_CATEGORIES } from '../../../../types/productInterface/productInterface'
 import type { ImageFileType } from '../../../../types/filesInterface'
 
-function NewProduct() {
+
+interface ProductFormProps {
+    reloadProductsData: () => void;
+}
+function ProductForm({ reloadProductsData }: ProductFormProps) {
 
     const { formData, handleChange, resetForm } = useForm<NewProductDataType>({
         name: "",
@@ -83,6 +87,8 @@ function NewProduct() {
         setLoading(false);
         resetForm();
         setImages([]);
+        reloadProductsData();
+
     }
 
     return (
@@ -118,4 +124,4 @@ function NewProduct() {
     )
 }
 
-export default NewProduct
+export default ProductForm

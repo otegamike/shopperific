@@ -11,7 +11,7 @@ import { motion, AnimatePresence, LayoutGroup } from "framer-motion"
 // components
 import ProductsSvg from "../../../../assets/svg/products"
 import AddPlus from "../../../../assets/svg/AddPlus"
-import NewProduct from "./NewProduct"
+import ProductForm from "./ProductForm"
 import Filters from "../../../../components/dashboard/filters/Filters"
 import Stats from "../../../../components/dashboard/stats/Stats"
 import Oops from "../../../../components/errorComponent/Oops"
@@ -19,6 +19,7 @@ import ProductTable from "../../../../components/dashboard/table/ProductTable"
 import { TableActions } from "../../../../components/dashboard/table/ProductTable";
 import { ExpandPanel } from "../../../../components/panels/expandPanel/ExpandPanel";
 import LoadingComponent from "../../../../components/loader/Loading";
+import ProductDetails from "../../../../components/product/ProductDetails";
 
 // services
 import { fetchDashboardProductsData } from "../../../../services/DashboardDataServices";
@@ -55,6 +56,11 @@ function Products() {
   // products data
   const [productsData, setProductsData] = useState<DashboardProductsData[]>([]);
   const [productsDataStats, setProductsDataStats] = useState<DashboardProductsDataStats>(emptyProductsDataStats);
+  const [newData, setNewData] = useState<number>(0);
+
+  const reloadProductsData = () => {
+    setNewData((prev) => prev + 1);
+  }
 
   // new product form
   const [ShowNewProductForm, setShowNewProductForm] = useState<boolean>(false);
@@ -107,7 +113,7 @@ function Products() {
 
   useEffect(() => {
     fetchProductsData();
-  }, []);
+  }, [newData]);
 
   if (errorObj.errorState) return <Oops message={errorObj.errorMsg} retry={fetchProductsData} />
   else if (isLoading) return <LoadingComponent />
@@ -119,7 +125,7 @@ function Products() {
       </div>
 
       <AnimatePresence>
-        {ShowNewProductForm && <NewProduct />}
+        {ShowNewProductForm && <ProductForm reloadProductsData={reloadProductsData} />}
       </AnimatePresence>
 
       <Stats productsDataStats={productsDataStats} />
@@ -133,8 +139,9 @@ function Products() {
                     productId={expandProps.id}
                     type="expand"
                     handleActions={handleActions}
-                    panelStyles={{opacity: 1, top: "1rem", right: "1rem", bottom: "none"}}
+                    panelStyles={{opacity: 1, top: "1rem", right: "1rem", bottom: "none", zIndex: 10}}
                   />
+                  <ProductDetails product={productsData.filter((product) => product._id === expandProps.id)[0]} />
             </ExpandPanel>
             )}
         </AnimatePresence>

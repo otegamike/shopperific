@@ -16,7 +16,7 @@ interface ExpandPanelProps {
 }
 
 export const ExpandPanel = ({expandProps, children, mountId}: ExpandPanelProps) => {
-
+  const duration = 0.4;
   const {scrollTop, initialPosition} = expandProps;
   const {top, left, width, height} = initialPosition;
   return (
@@ -28,11 +28,11 @@ export const ExpandPanel = ({expandProps, children, mountId}: ExpandPanelProps) 
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
       >
-        <motion.div className="expand__content" layout
+        <motion.div className="expand__content no-scrollbar" layout
         initial={{position: "fixed", top:top + "px", left: left + "px", width: width + "px", height: height + "px" }}
-        animate={{position: "relative", top: 0, left: 0, width: "100%", height: "100%" }} 
+        animate={{position: "relative", top: 0, left: 0, width: "100%", height: "100%", transition: { duration: duration, position: { delay: duration , duration: 0} } }} 
         exit={{position: "fixed", top:top + "px", left: left + "px", width: width + "px", height: height + "px" }}
-        transition={{ duration: 0.4 }}
+        transition={{ duration: duration }}
         >
          {children}
         </motion.div>

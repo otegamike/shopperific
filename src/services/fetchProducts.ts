@@ -4,7 +4,7 @@ import { cacheData, getCachedData } from "../utils/cacheData";
 // api
 import api from "../api/client";
 // types
-import type { ProductType } from "../types/productInterface/productInterface";
+import type { ProductDataType } from "../types/productInterface/productInterface";
 
 export const fetchProducts = async (page: number = 1, limit: number = 12) => {
     try {
@@ -24,7 +24,7 @@ export const fetchProducts = async (page: number = 1, limit: number = 12) => {
     }
 }
 
-export const fetchProduct = async (id: string): Promise<ProductType | { errorMsg: string }> => {
+export const fetchProduct = async (id: string): Promise<ProductDataType | { errorMsg: string }> => {
     try {
         const response = await api.post(`products/product/${id}`);
         const { data } = response;

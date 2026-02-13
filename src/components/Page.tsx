@@ -31,7 +31,7 @@ function Page({children, pageHeading, title, errorObj, isLoading, pageClass}: Pa
                     {errorObj.errorState ? 
                         <Oops message={errorObj.errorMsg} retry={errorObj.retry} /> 
                         : 
-                        (isLoading ? <LoadingComponent /> : children)
+                        (isLoading ? <LoadingComponent height='80vh' /> : children)
                     }
                 </section>
             </main>
