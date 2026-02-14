@@ -14,11 +14,8 @@ import { usePage } from "../../hooks/usePage";
 import type { ProductType } from "../../types/productInterface/productInterface";
 
 // component 
-import Page from "../../components/Page";
+import Page, { PageBody } from "../../components/Page";
 import ProductDetails, { ProductHeading } from "../../components/product/ProductDetails";
-
-// utils
-// import { getCachedData } from "../../utils/cacheData";
 
 
 function Product() {
@@ -31,9 +28,15 @@ function Product() {
         setLoading(true);
         const res = await fetchProduct(id!);
 
-        if ("errorMsg" in res) {
+        if (res && "errorMsg" in res) {
             setLoading(false);
             handleError({ errorState: true, errorMsg: res.errorMsg });
+            return;
+        }
+
+        if (!res) {
+            setLoading(false);
+            handleError({ errorState: true, errorMsg: "Product not found" });
             return;
         }
 
@@ -43,25 +46,19 @@ function Product() {
 
     useEffect(() => {
         loadProduct();
-        // setLoading(false);
-        // const { productsData } = getCachedData(`dashboardDataCache`);
-        // console.log("productCache", productsData);
-        // if (productsData) {
-        //     setProduct(productsData[4]);
-        // }
     }, []);
 
 
 
 
-    const handleRetry = () => {
-        setLoading(true);
-        loadProduct();
-    }
+
 
     return (
-        <Page title="Product" pageHeading={<ProductHeading productName={product?.name || ""} />} errorObj={{ ...errorObj, retry: handleRetry }} isLoading={isLoading} >
-            {product && <ProductDetails product={product} />}
+        <Page>
+            <ProductHeading productName={product?.name || ""} productCategory={product?.category || ""} />
+            <PageBody errorObj={errorObj} isLoading={isLoading} >
+                {product && <ProductDetails product={product} />}
+            </PageBody>
         </Page>
     )
 }

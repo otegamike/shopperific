@@ -10,14 +10,10 @@ import type { ErrorObject } from '../hooks/usePage'
 
 interface PageProps {
     children: React.ReactNode;
-    title: string;
-    pageHeading?: React.ReactNode;
-    errorObj: ErrorObject & { retry: () => void };
-    isLoading: boolean;
     pageClass?: string;
 }
 
-function Page({children, pageHeading, title, errorObj, isLoading, pageClass}: PageProps) {
+function Page({children, pageClass}: PageProps) {
    
 
 
@@ -27,12 +23,7 @@ function Page({children, pageHeading, title, errorObj, isLoading, pageClass}: Pa
         <div>
             <main className='center__content'>
                 <section className={`section ${pageClass? pageClass : ""}`} style={{ paddingLeft: "1rem" }} >
-                    { pageHeading? pageHeading :  <h3>{title}</h3> }
-                    {errorObj.errorState ? 
-                        <Oops message={errorObj.errorMsg} retry={errorObj.retry} /> 
-                        : 
-                        (isLoading ? <LoadingComponent height='80vh' /> : children)
-                    }
+                    {children}
                 </section>
             </main>
         </div>
@@ -41,3 +32,20 @@ function Page({children, pageHeading, title, errorObj, isLoading, pageClass}: Pa
 }
 
 export default Page
+
+interface PageBodyProps {
+    children: React.ReactNode;
+    errorObj: ErrorObject & { retry?: () => void };
+    isLoading: boolean;
+}
+
+export const PageBody = ({children, errorObj, isLoading}: PageBodyProps) => {
+   
+   const defaultRetry = () => {
+     window.location.reload();
+   }
+
+   if (errorObj.errorState) {console.log("errorObj", errorObj.errorMsg); return <Oops message={errorObj.errorMsg || "Something went wrong"} retry={errorObj.retry || defaultRetry} /> }
+   if (isLoading) return <LoadingComponent height='80vh' />
+   return children
+}

@@ -12,8 +12,11 @@ import type { ProductType } from '../../types/productInterface/productInterface'
 import BackButton from "../../assets/svg/backButton";
 
 // hooks
-import { useNavigate } from "react-router-dom";
+import { useNavigate, type To } from "react-router-dom";
 import { useElementOnScreen } from "../../hooks/useElementOnScreen";
+
+// util
+import { capitalize } from "../../utils/capitalize";
 
 interface ProductDetailsProps {
     product: ProductType;
@@ -40,23 +43,30 @@ function ProductDetails({ product }: ProductDetailsProps) {
 
 export default ProductDetails
 
-export const ProductHeading = ({ productName }: { productName: string }) => {
+
+///////////////////////PRODUCT HEADING///////////////////////
+
+
+export const ProductHeading = ({ productName, productCategory }: { productName: string, productCategory: string }) => {
     const navigate = useNavigate();
-    const goToPreviousPage = () => {
-        navigate(-1);
+    const navigateTo = (page: To) => {
+        navigate(page);
     }
 
     return (
         <>
             <div className="product__header">
-                <span className="back" onClick={() => goToPreviousPage()}>
+                <span className="header__link" onClick={() => navigateTo("/products")}>
                     <BackButton size={15} fill="var(--text-primary)" />
                     Products
-                </span> <span className="slash">|</span> {productName}
+                </span> <span className="slash">|</span> <span onClick={() => navigateTo(`/products/category/${productCategory}`)} className="header__link">{capitalize(productCategory)}</span> <span className="slash">|</span> {productName}
             </div>
         </>
     )
 }
+
+
+///////////////////////PRODUCT CAROUSEL///////////////////////
 
 
 const observerOptions = { threshold: 0.95 };

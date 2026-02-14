@@ -23,9 +23,9 @@ export interface Facet {
 
 export const aggregateCount = async (
     model: Models,
-    aggregateCountObjArr: AggregateCountObj[],
+    aggregateCountObjArr?: AggregateCountObj[],
     projectionParameters?: Record<string, ProjectionParameters>
-) => {
+) : Promise<{ found: boolean; [key: string]: any; docCount: Record<string, number> } | { found: false; errorMsg: string }> => {
     try {
         const facet: Facet = {};
         const pipelineKeys: (keyof ProjectionParameters)[] = [
@@ -48,20 +48,23 @@ export const aggregateCount = async (
         }
 
         // 2. Handle Dynamic Counts/Sums with "COUNT" suffix
-        aggregateCountObjArr.forEach(({ fieldName, filter, sumField }) => {
-            const countKey = `${fieldName}COUNT`;
-            if (sumField) {
-                facet[countKey] = [
-                    { $match: filter },
-                    { $group: { _id: null, total: { $sum: `$${sumField}` } } }
-                ];
-            } else {
-                facet[countKey] = [
-                    { $match: filter },
-                    { $count: "count" }
-                ];
-            }
-        });
+        if (aggregateCountObjArr) {
+            aggregateCountObjArr.forEach(({ fieldName, filter, sumField }) => {
+                const countKey = `${fieldName}COUNT`;
+                if (sumField) {
+                    facet[countKey] = [
+                        { $match: filter },
+                        { $group: { _id: null, total: { $sum: `$${sumField}` } } }
+                    ];
+                } else {
+                    facet[countKey] = [
+                        { $match: filter },
+                        { $count: "count" }
+                    ];
+                }
+            });
+        }
+
 
         const Model = getModels(model);
         const rawResult = await Model.aggregate([{ $facet: facet }]);
@@ -91,10 +94,11 @@ export const aggregateCount = async (
         });
 
         // Spread docData so named results are top-level properties
-        return { ...docData, docCount };
+        return { ...docData, docCount, found: true };
 
     } catch (err: any) {
         console.error("Aggregation Error:", err.message);
-        throw err;
+        console.error("Aggregation Error:", err);
+        return { found: false, errorMsg: err.message };
     }
 };

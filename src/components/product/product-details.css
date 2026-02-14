@@ -133,26 +133,40 @@
 }
 
 .product__header {
-    color: var(--text-color-darker);
+    color: var(--text-color);
     font-size: 0.9rem;
     font-weight: 500;
+    text-wrap: wrap;
 
-    .back {
+    .header__link {
         --color: var(--primary-color);
+        --color-hover: var(--primary-color-600);
 
+        width: fit-content;
         cursor: pointer;
-        display: flex;
-        align-items: center;
+        display: inline-flex;
         gap: 0.3rem;
         color: var(--color);
 
         & svg {
             fill: var(--color);
+            position: relative;
+            top: 0.15rem;
+        }
+
+        &:hover {
+            color: var(--color-hover);
+            & svg {
+                fill: var(--color-hover);
+            }
         }
     }
 
     .slash {
+        position: relative;
         color: #999;
+        top: -0.15rem;
+
     }
 }
 

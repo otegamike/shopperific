@@ -14,7 +14,7 @@ const queryLog = (findBy: any, model: string) => {
 export const getProduct = async (
     findBy: any,
     reqLimit: number = 12, reqPage: number = 1,
-    fields: string = "name price description images shopName")
+    fields: string = "name price category description images shopName")
     : Promise<{ found: boolean, products?: any, message?: string }> => {
 
     console.log(queryLog(findBy, "Products"));
@@ -130,7 +130,7 @@ export const getFromDb = async (
 export const findOneFromDB = async (
     model: models,
     findBy: object,
-    select: string,
+    selectFields: string  = "",
     options: object = { lean: true }):
     Promise<
         | { found: true, payload: object }
@@ -140,9 +140,52 @@ export const findOneFromDB = async (
     let Model = getModels(model);
 
     try {
-        const payload = await Model.findOne(findBy, select, options);
+        const payload = await Model.findOne(findBy, selectFields, options);
         if (!payload) { 
-            throw new Error(`couldn't find ${select} with ${findBy} in ${model}`);
+            throw new Error(`couldn't find ${selectFields} with ${findBy} in ${model}`);
+        };
+        return { found: true, payload };
+
+    } catch (err: any) {
+        console.log(err.message)
+        return { found: false }
+    }
+
+}
+
+export interface DBQueryParameters {
+    findBy?: object,
+    selectFields?: string | object,
+    options?: object,
+    pagination?: { limit: number, page: number }
+}
+
+export const getManyFromDB = async (
+    model: models,
+    queryParameters: DBQueryParameters = {}):
+    Promise<
+        | { found: true, payload: object }
+        | { found: false }
+    > => {
+
+    const findBy = queryParameters.findBy || {};
+    const selectFields = queryParameters.selectFields || "";
+    const options = queryParameters.options || { lean: true };
+    const pagination = queryParameters.pagination || { limit: 12, page: 1 };
+
+    const limit = Math.min(pagination.limit, 50);
+    const page = Math.max(pagination.page, 1);
+
+
+    const skip = (page - 1) * limit;
+
+
+    let Model = getModels(model);
+
+    try {
+        const payload = await Model.find(findBy, selectFields, { skip, limit, ...options });
+        if (!payload) { 
+            throw new Error(`couldn't find ${selectFields} with ${findBy} in ${model}`);
         };
         return { found: true, payload };
 
