@@ -14,8 +14,8 @@ import { usePage } from "../../hooks/usePage";
 import type { ProductType } from "../../types/productInterface/productInterface";
 
 // component 
-import Page, { PageBody } from "../../components/Page";
-import ProductDetails, { ProductHeading } from "../../components/product/ProductDetails";
+import Page, { PageBody , PageNavigation, type navLinksProps } from "../../components/Page";
+import ProductDetails from "../../components/product/ProductDetails";
 
 
 function Product() {
@@ -49,13 +49,16 @@ function Product() {
     }, []);
 
 
+    const navigation: navLinksProps[] = [
+        { label: "Categories", path: "/products/categories" }
+    ]
 
 
 
 
     return (
         <Page>
-            <ProductHeading productName={product?.name || ""} productCategory={product?.category || ""} />
+            <PageNavigation navLinks={isLoading? navigation : [...navigation, { label: `${product?.category}`, path: `/products/category/${product?.category}` }]} currentPage={product?.name || ""} />
             <PageBody errorObj={errorObj} isLoading={isLoading} >
                 {product && <ProductDetails product={product} />}
             </PageBody>

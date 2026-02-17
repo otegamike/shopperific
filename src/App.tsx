@@ -21,7 +21,7 @@ import NewShop from './pages/shops/NewShop'
 import DashboardRoutes from './pages/dashboard/Routes'
 import BecomeSeller from './pages/sellers/BecomeSeller'
 import Categories from './pages/products/Categories'
-
+import Category from './pages/products/Category'
 
 function App() {
   return (
@@ -35,7 +35,7 @@ function App() {
           <Route path="/auth/verify-email" element={<SignIn form="verifyEmail"/>} />
           <Route path="/products" element={<Products />} />
           <Route path="/products/categories" element={<Categories />} />
-          <Route path="/products/category/:category" element={<Products />} />
+          <Route path="/products/category/:category" element={<Category />} />
           <Route path="/product/:id" element={<Product />} />
 
           <Route path="/shops" element={<Shops />} />

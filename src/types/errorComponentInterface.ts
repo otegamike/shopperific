@@ -10,7 +10,7 @@ export interface ErrorComponentProps {
 
 export interface InfiniteScrollErrorInterface {
     errorState: boolean;
-    errorMsg: string;
+    errorMsg?: string;
     retry: () => void;
 }
 

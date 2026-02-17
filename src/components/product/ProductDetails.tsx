@@ -47,7 +47,7 @@ export default ProductDetails
 ///////////////////////PRODUCT HEADING///////////////////////
 
 
-export const ProductHeading = ({ productName, productCategory }: { productName: string, productCategory: string }) => {
+export const ProductHeading = ({ productName, productCategory }: { productName?: string, productCategory?: string }) => {
     const navigate = useNavigate();
     const navigateTo = (page: To) => {
         navigate(page);
@@ -59,7 +59,9 @@ export const ProductHeading = ({ productName, productCategory }: { productName: 
                 <span className="header__link" onClick={() => navigateTo("/products")}>
                     <BackButton size={15} fill="var(--text-primary)" />
                     Products
-                </span> <span className="slash">|</span> <span onClick={() => navigateTo(`/products/category/${productCategory}`)} className="header__link">{capitalize(productCategory)}</span> <span className="slash">|</span> {productName}
+                </span> 
+                {productCategory && <><span className="slash">|</span> <span onClick={() => navigateTo(`/products/category/${productCategory}`)} className="header__link">{capitalize(productCategory)}</span></>} 
+                {productName && <><span className="slash">|</span> {productName}</>}
             </div>
         </>
     )
@@ -99,7 +101,7 @@ const ProductImageCarousel = ({ images }: { images: string[] }) => {
         <div ref={containerRef} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} className="product__images__container">
             <div className="product__images no-scrollbar">
                 {images.map((image, index) => {
-                    return <img key={image} id={`image-${index}`} src={image} alt="" />
+                    return <img key={image} className={index === activeImage ? "active-image" : ""} id={`image-${index}`} src={image} alt="" />
                 })}
             </div>
             <div className="product__image__dots center__content" >

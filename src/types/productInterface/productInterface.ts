@@ -61,3 +61,9 @@ export interface ProductDataType {
     updatedAt: string;
 }
 
+export interface ProductCategoriesDataType {
+    categoryName: string;
+    ProductCount: number;
+    displayImageUrl: string;
+}
+

@@ -4,9 +4,9 @@ import { cacheData, getCachedData } from "../utils/cacheData";
 // api
 import api from "../api/client";
 // types
-import type { ProductDataType } from "../types/productInterface/productInterface";
+import type { ProductDataType, ProductCategoriesDataType } from "../types/productInterface/productInterface";
 
-export const fetchProducts = async (page: number = 1, limit: number = 12) => {
+export const fetchProducts = async (page: number = 1, limit: number = 12): Promise<ProductDataType | { errorMsg: string }> => {
     try {
         const response = await api.post(`/products?page=${page}&limit=${limit}`)
         const products = response.data;
@@ -28,15 +28,35 @@ export const fetchProduct = async (id: string): Promise<ProductDataType | { erro
     try {
         const response = await api.post(`products/product/${id}`);
         const { data } = response;
-        console.log("data", data);
 
         const product = data;
         cacheData(`product-${id}`, product);
-        console.log("product", product);
         return product;
 
     } catch (error: any) {
         const cachedProduct = getCachedData(`product-${id}`);
+        if (cachedProduct) {
+            alertObj("couldn't connect to our servers. loading cached data" , "warning")
+            return cachedProduct;
+        }
+        alertObj("Failed to fetch products", "error");
+        return { errorMsg: "Failed to fetch products" };
+    }
+}
+
+export const fetchProductsByCategory = async (category: string, page: number = 1, limit: number = 12): Promise<ProductDataType | { errorMsg: string }> => {
+    try {
+        const response = await api.post(`products/category/${category}?page=${page}&limit=${limit}`);
+        const { data } = response;
+        console.log("data", data);
+
+        const product = data;
+        cacheData(`product-${category}-${page}-${limit}`, product);
+        console.log("product", product);
+        return product;
+
+    } catch (error: any) {
+        const cachedProduct = getCachedData(`product-${category}-${page}-${limit}`);
         if (cachedProduct) {
             alertObj("couldn't connect to our servers. loading cached data" , "warning")
             console.log("cachedProduct", cachedProduct);
@@ -47,13 +67,13 @@ export const fetchProduct = async (id: string): Promise<ProductDataType | { erro
     }
 }
 
-export const fetchProductCategories = async (page: number = 1, limit: number = 12): Promise<ProductDataType | { errorMsg: string }> => {
+export const fetchProductCategories = async (page: number = 1, limit: number = 12): Promise<ProductCategoriesDataType[] | { errorMsg: string }> => {
     try {
         const response = await api.post(`products/categories?page=${page}&limit=${limit}`);
         const { data } = response;
         console.log("data", data);
 
-        const productCategories = data;
+        const productCategories: ProductCategoriesDataType[] = data;
         cacheData(`product-categories`, productCategories);
         console.log("productCategories", productCategories);
         return productCategories;
@@ -65,6 +85,7 @@ export const fetchProductCategories = async (page: number = 1, limit: number = 1
             console.log("cachedProductCategories", cachedProductCategories);
             return cachedProductCategories;
         }
+
         alertObj("Failed to fetch products categories", "error");
         return { errorMsg: "Failed to fetch products categories" };
     }

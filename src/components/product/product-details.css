@@ -6,6 +6,9 @@
     gap: 1rem;
     padding: 1rem;
 
+    container-type: inline-size;
+    container-name: product__details__container;
+
     .product__images__container {
         overflow: hidden;
         position: relative;
@@ -24,11 +27,15 @@
         scroll-snap-type: x mandatory;
         transition: all 0.3s ease;
 
+        /* & .active-image {
+        } */
+
         img {
             width: 100%;
             aspect-ratio: var(--aspect-ratio);
             object-fit: cover;
             scroll-snap-align: start;
+            transition: all 0.3s ease;
         }
 
         &:hover {
@@ -127,6 +134,22 @@
         font-family: 'Courier New', Courier, monospace;
         letter-spacing: 0.1rem;
         font-weight: 700;
+    }
+
+    @container product__details__container (width > 500px) {
+        & .product__images__container {
+            max-width: 100%;
+
+            .product__images {
+                max-width: 100%;
+                aspect-ratio: auto;
+
+                img {
+                    max-height: 550px;
+
+                }
+            }
+        }
     }
 
 

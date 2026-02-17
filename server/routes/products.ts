@@ -33,7 +33,7 @@ router.post('/', async (req, res) => {
   return res.status(200).json(products);
 })
 
-// Get products by Categories
+// Get product categories
 
 router.post('/categories', async (req, res) => {
   const categories: ProjectionParameters = {
@@ -52,8 +52,18 @@ router.post('/categories', async (req, res) => {
   if (!fetchCategories.found) { return res.status(500).json({ errorMsg: "error fetching products categories" }) }
 
   const productCategories  = fetchCategories.categories;
-  console.log("productCategories", productCategories);
-  return res.status(200).json(productCategories);
+
+  // const productCategoriesKeys: string[] = [ "categoryName", "ProductCount", "displayImageUrl" ];
+  const productCategoriesData = productCategories.map((category: any) => {
+    return {
+      categoryName: category._id,
+      ProductCount: category.count,
+      displayImageUrl: category.firstProduct.images[0]
+    }
+  })
+
+  console.log("productCategories", productCategoriesData);
+  return res.status(200).json(productCategoriesData);
 })
 
 router.post('/category/:category', async (req, res) => {
