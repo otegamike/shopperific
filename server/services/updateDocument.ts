@@ -44,7 +44,7 @@ export const findAndUpdate = async (
                 throw new Error("Couldn't find or update.");
             }
 
-            console.log("Updated", newData);
+            console.log("Updated");
             return { updated: true, found: true, newData };
 
         } catch (err: any) {

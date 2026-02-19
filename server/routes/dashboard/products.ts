@@ -2,35 +2,44 @@ import { Router, Request } from "express";
 import { requireSeller } from "../../middleware/requireSeller.js";
 
 // services
-import { aggregateCount, type AggregateCountObj, ProjectionParameters } from "../../services/DbAggregationPipeline.js";
+import { queryDatabase, type AggregateCountObj, ProjectionParameters } from "../../services/DbAggregationPipeline.js";
 import { findAndUpdate } from "../../services/updateDocument.js";
 import { deleteByIds } from "../../services/updateDocument.js";
+import { countDocuments } from "../../services/countDocuments.js";
 
 // types
 import type { TypedResponse } from "../../utils/types/utilTypes.js";
 import type { tResponseError } from "../../types/routesInterface.js";
+
+// utils
+import { toObjectId } from "../../lib/mongoose.js";
 
 const router = Router();
 
 // Load Dashboard Data
 router.post("/products", requireSeller, async (req: Request, res) => {
     const sellerId = req.user?.userId;
+    const { currentShop } = req.body;
     const { limit, page } = req.body;
+    console.log("currentShop", currentShop)
 
     if (!sellerId) {
         console.log("invalid seller id.")
         return res.status(400).json({ errorMsg: "Seller not found" });
     }
 
+    const currentShopRef = currentShop ? { shopRef: toObjectId(currentShop) } : {};
+    const match = { sellerId, ...currentShopRef };
+
     const countParameters: AggregateCountObj[] = [
-        { fieldName: "totalProducts", filter: { sellerId } },
-        { fieldName: "inStock", filter: { sellerId, stock: { $gt: 0 } } },
-        { fieldName: "outOfStock", filter: { sellerId, stock: { $eq: 0 } } },
-        { fieldName: "totalInventory", filter: { sellerId }, sumField: "stock" }
+        { fieldName: "totalProducts", match },
+        { fieldName: "inStock", match: { ...match, stock: { $gt: 0 } } },
+        { fieldName: "outOfStock", match: { ...match, stock: { $eq: 0 } } },
+        { fieldName: "totalInventory", match, sumField: "stock" }
     ]
 
     const productsData: ProjectionParameters = {
-        match: { sellerId },
+        match,
         project: {
             _id: 1,
             images: 1,
@@ -47,7 +56,7 @@ router.post("/products", requireSeller, async (req: Request, res) => {
     }
 
     const productsByCategory: ProjectionParameters = {
-        match: { sellerId },
+        match,
         group: {
             _id: "$category",
             count: { $sum: 1 }
@@ -59,9 +68,13 @@ router.post("/products", requireSeller, async (req: Request, res) => {
         }
     }
 
-    const dashboardProductsData = await aggregateCount("product", countParameters, { productsData, productsByCategory });
+    const dashboardProductsData = await queryDatabase("product", countParameters, { productsData, productsByCategory });
 
-    console.log(dashboardProductsData)
+    if (dashboardProductsData.found) {
+        const totalProducts = dashboardProductsData.docCount.totalProducts;
+        
+        await findAndUpdate("shop", { sellerId }, { productsCount: totalProducts });
+    }
     return res.status(200).json(dashboardProductsData);
 
 });
@@ -105,6 +118,10 @@ router.post("/products/delete/", requireSeller, async (req: Request, res: TypedR
     if (!deletedProducts.deleted) {
         return res.status(400).json({ errorMsg: "Encounted an error deleting products: " });
     }
+
+    const totalProducts = await countDocuments("product", { sellerId });
+    console.log(totalProducts);
+    await findAndUpdate("shop", { sellerId }, { productsCount: totalProducts });
 
     return res.status(200).json({ message: `${deletedProducts.deletedCount} Product${deletedProducts.deletedCount === 1 ? "" : "s"} deleted successfully` })
 })

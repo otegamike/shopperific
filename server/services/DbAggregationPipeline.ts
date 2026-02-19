@@ -3,13 +3,13 @@ import { PipelineStage } from 'mongoose';
 
 export interface AggregateCountObj {
     fieldName: string;
-    filter: object;
+    match: object;
     sumField?: string;
 }
 
 export interface ProjectionParameters {
     match?: object;
-    group?: { _id: any; [prop: string]: any };
+    group?: { _id: any;[prop: string]: any };
     project?: object;
     addFields?: object;
     sort?: Record<string, 1 | -1>;
@@ -21,11 +21,11 @@ export interface Facet {
     [key: string]: PipelineStage.FacetPipelineStage[];
 }
 
-export const aggregateCount = async (
+export const queryDatabase = async (
     model: Models,
     aggregateCountObjArr?: AggregateCountObj[],
     projectionParameters?: Record<string, ProjectionParameters>
-) : Promise<{ found: boolean; [key: string]: any; docCount: Record<string, number> } | { found: false; errorMsg: string }> => {
+): Promise<{ found: true; [key: string]: any; docCount: Record<string, number> } | { found: false; errorMsg: string }> => {
     try {
         const facet: Facet = {};
         const pipelineKeys: (keyof ProjectionParameters)[] = [
@@ -49,16 +49,16 @@ export const aggregateCount = async (
 
         // 2. Handle Dynamic Counts/Sums with "COUNT" suffix
         if (aggregateCountObjArr) {
-            aggregateCountObjArr.forEach(({ fieldName, filter, sumField }) => {
+            aggregateCountObjArr.forEach(({ fieldName, match, sumField }) => {
                 const countKey = `${fieldName}COUNT`;
                 if (sumField) {
                     facet[countKey] = [
-                        { $match: filter },
+                        { $match: match },
                         { $group: { _id: null, total: { $sum: `$${sumField}` } } }
                     ];
                 } else {
                     facet[countKey] = [
-                        { $match: filter },
+                        { $match: match },
                         { $count: "count" }
                     ];
                 }
@@ -79,7 +79,7 @@ export const aggregateCount = async (
                     const cleanKey = key.slice(0, -5);
                     const dataArray = rawResult[0][key];
                     const entry = dataArray[0];
-                    
+
                     docCount[cleanKey] = entry ? (entry.count || entry.total || 0) : 0;
                 } else {
                     // Standard data results (like your productsByCategory)
@@ -88,9 +88,9 @@ export const aggregateCount = async (
             }
         }
 
-        console.log("Aggregation Success:", { 
-            dataSets: Object.keys(docData), 
-            counts: docCount 
+        console.log("Aggregation Success:", {
+            dataSets: Object.keys(docData),
+            counts: docCount
         });
 
         // Spread docData so named results are top-level properties

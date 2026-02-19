@@ -7,7 +7,9 @@ export interface userObj {
 }
 
 export interface reqVariables {
-    shopOwnerId?: string;
+    shopRef?: string;
+    sellerId?: string;
+    shopId?: string;
     shopName?: string;
     productId?: string;
     orderId?: string;

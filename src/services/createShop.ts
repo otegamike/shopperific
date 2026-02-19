@@ -1,5 +1,8 @@
 import { getDeviceId } from "./deviceId";
 
+// api
+import api from '../api/client';
+
 export type createShopType = {
     shopName: string,
     shopId: string,
@@ -38,39 +41,51 @@ export const checkShopId = async (shopId: string): Promise<| { error: string } |
 }
 
 export const createShop = async (
-    shopData: createShopType)
+    shopFormData: FormData)
     : Promise<| { error: string } | { created: true; message: string }> => {
 
-
-    const { shopName, shopId, description } = shopData;
-    if (!shopName || !shopId || !description) {
-        return { error: "All fields are required." };
-    }
-
-    try {
-        const result: Response = await fetch('./api/shops/new', {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "x-device-id": `${getDeviceId()}`
-            },
-            body: JSON.stringify({
-                shopName,
-                shopId,
-                description
-            })
-
-        })
-
-        if (result.status === 201) {
-            return { created: true, message: "Shop created successfully." };
-        } else {
+        try {
+            const response = await api.post("/shops/new", shopFormData);
+            
+            if (response.status === 201) {
+                return { created: true, message: "Shop created successfully." };
+            } else {
+                return { error: "Error establishing a connection. please try again" };
+            }
+        } catch (error) {
+            console.error(error);
             return { error: "Error establishing a connection. please try again" };
         }
-    } catch (err: any) {
-        console.error(err.message, err);
-        return { error: "Error establishing a connection. please try again" };
-    }
+
+    // const { shopName, shopId, description } = shopData;
+    // if (!shopName || !shopId || !description) {
+    //     return { error: "All fields are required." };
+    // }
+
+    // try {
+    //     const result: Response = await fetch('./api/shops/new', {
+    //         method: "POST",
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //             "x-device-id": `${getDeviceId()}`
+    //         },
+    //         body: JSON.stringify({
+    //             shopName,
+    //             shopId,
+    //             description
+    //         })
+
+    //     })
+
+    //     if (result.status === 201) {
+    //         return { created: true, message: "Shop created successfully." };
+    //     } else {
+    //         return { error: "Error establishing a connection. please try again" };
+    //     }
+    // } catch (err: any) {
+    //     console.error(err.message, err);
+    //     return { error: "Error establishing a connection. please try again" };
+    // }
 
 }
 

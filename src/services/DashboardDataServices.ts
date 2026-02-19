@@ -5,13 +5,13 @@ import { alertObj } from "../utils/alerts/alert";
 import type { DashboardProductsData, DashboardProductsDataStats } from "../types/dashboardDataType";
 
 // fetch dashboard data
-export const fetchDashboardProductsData = async (): 
+export const fetchDashboardProductsData = async (currentShop: string = ""): 
     Promise<
         | {productsStats: DashboardProductsDataStats, productsData: DashboardProductsData[]}
         | {errorMsg: string}
     > => {
     try {
-        const response = await api.post("/dashboard/products");
+        const response = await api.post("/dashboard/products", {currentShop});
         const { data } = response;
         const { docCount, productsData, productsByCategory } = data;
         

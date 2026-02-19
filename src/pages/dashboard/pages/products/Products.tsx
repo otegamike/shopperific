@@ -26,6 +26,7 @@ import { fetchDashboardProductsData } from "../../../../services/DashboardDataSe
 
 // types
 import type { DashboardProductsDataStats, DashboardProductsData } from "../../../../types/dashboardDataType";
+import type { ShopListType } from "../../../../types/shopsInterface";
 
 // Dashboard data
 import { emptyProductsDataStats, defaultTableColumns, mobileTableColumns } from "../../../../types/dashboardDataType";
@@ -56,10 +57,20 @@ function Products() {
   // products data
   const [productsData, setProductsData] = useState<DashboardProductsData[]>([]);
   const [productsDataStats, setProductsDataStats] = useState<DashboardProductsDataStats>(emptyProductsDataStats);
+  const [currentShop, setCurrentShop] = useState<string>("");
+  const [shopList, setShopsList] = useState<ShopListType[]>([]);
   const [newData, setNewData] = useState<number>(0);
 
   const reloadProductsData = () => {
     setNewData((prev) => prev + 1);
+  }
+
+  const changeCurrentShop = (shop: string) => {
+    setCurrentShop(shop);
+  }
+
+  const updateShopList = (shopList: ShopListType[]) => {
+     setShopsList(shopList)
   }
 
   // new product form
@@ -71,7 +82,7 @@ function Products() {
   // fetch products data
   const fetchProductsData = async () => {
     setIsLoading(true);
-    const DashboardProductsData = await fetchDashboardProductsData();
+    const DashboardProductsData = await fetchDashboardProductsData(currentShop);
 
     // if there's an error.
     if ("errorMsg" in DashboardProductsData) {
@@ -113,7 +124,7 @@ function Products() {
 
   useEffect(() => {
     fetchProductsData();
-  }, [newData]);
+  }, [newData, currentShop]);
 
   if (errorObj.errorState) return <Oops message={errorObj.errorMsg} retry={fetchProductsData} />
   else if (isLoading) return <LoadingComponent />
@@ -125,27 +136,29 @@ function Products() {
       </div>
 
       <AnimatePresence>
-        {ShowNewProductForm && <ProductForm reloadProductsData={reloadProductsData} />}
+        {ShowNewProductForm && <ProductForm reloadProductsData={reloadProductsData} shopList={shopList} />}
       </AnimatePresence>
 
       <Stats productsDataStats={productsDataStats} />
-      <Filters />
-      <LayoutGroup>
-        <ProductTable productsData={productsData} tableColumns={tableColumns} handleActions={handleActions} />
-        <AnimatePresence>
-          {expandProps && (
-            <ExpandPanel expandProps={expandProps} mountId={mountId}>
-                  <TableActions
-                    productId={expandProps.id}
-                    type="expand"
-                    handleActions={handleActions}
-                    panelStyles={{opacity: 1, top: "1rem", right: "1rem", bottom: "none", zIndex: 10}}
-                  />
-                  <ProductDetails product={productsData.filter((product) => product._id === expandProps.id)[0]} />
-            </ExpandPanel>
-            )}
-        </AnimatePresence>
-      </LayoutGroup>
+      <div className="dashboard__products__section">
+        <Filters currentShop={currentShop} changeCurrentShop={changeCurrentShop} updateShopList={updateShopList} shopList={shopList} />
+        <LayoutGroup>
+          <ProductTable productsData={productsData} tableColumns={tableColumns} handleActions={handleActions} />
+          <AnimatePresence>
+            {expandProps && (
+              <ExpandPanel expandProps={expandProps} mountId={mountId}>
+                    <TableActions
+                      productId={expandProps.id}
+                      type="expand"
+                      handleActions={handleActions}
+                      panelStyles={{opacity: 1, top: "1rem", right: "1rem", bottom: "none", zIndex: 10}}
+                    />
+                    <ProductDetails product={productsData.filter((product) => product._id === expandProps.id)[0]} />
+              </ExpandPanel>
+              )}
+          </AnimatePresence>
+        </LayoutGroup>
+      </div>
     </>
   )
 }

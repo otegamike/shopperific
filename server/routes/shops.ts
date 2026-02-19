@@ -7,19 +7,39 @@ import { ShopReqBody } from "../models/Shop.js";
 import { TypedRequest} from "../utils/types/utilTypes.js";
 import { toObjectId } from "../lib/mongoose.js";
 import { ShopSchema } from "../models/Shop.js";
-import { getShop } from "../services/fetchFromDb.js";
+import { getShop, getManyFromDB } from "../services/fetchFromDb.js";
+import { upload } from "../middleware/upload.js";
+import { uploadBuffer } from "../utils/uploadToCloudinary.js";
+
 
 const router = Router();
-// get all shops
+
+////////////////// GET ALL SHOPS ////////////////////
 router.post("/", async (req, res) => { 
-     const fetchShop = await getShop("all",  Number(req.query.limit), Number(req.query.page));
-    
-      if (!fetchShop.found) { return res.status(500).json({message: "error fetching shops"}) }
+
+    const { sellerId } = req.body;
+    const findBy = sellerId? { sellerId} : {} ;
+
+    const pagination = {
+        limit: Number(req.query.limit),
+        page: Number(req.query.page)
+    }
+
+    const options = {
+        sort: { createdAt: -1 },
+        lean: true
+    }
      
-      return res.status(200).json(fetchShop.shops);
+    const fetchShop = await getManyFromDB("shop", { findBy, options, pagination });
+
+    
+    if (!fetchShop.found) { return res.status(500).json({message: "error fetching shops"}) }
+    
+    const shops = fetchShop.payload;
+    return res.status(200).json(shops);
 });
 
-// get shop by shop Id
+///////////////// GET SHOP BY SHOP ID ///////////////
 router.get("/:shopId", async (req, res) => {
     const shopId = req.params.shopId;
     
@@ -30,6 +50,7 @@ router.get("/:shopId", async (req, res) => {
     return res.status(200).json(fetchShop.shops);
 });
 
+///////////////// CHECK IF SHOP ID IS AVAILABLE //////////////
 router.post("/shop-id", async (req, res) => {
     const shopId = req.body.shopId;
     console.log(shopId);
@@ -54,10 +75,9 @@ router.post("/shop-id", async (req, res) => {
     
 });
 
-// create a new shop
-router.post("/new", async (req: TypedRequest<ShopReqBody>, res: Response ) => { 
+///////////////// CREATE NEW SHOP ////////////////
+router.post("/new", upload.single("displayImage"),  async (req: TypedRequest<ShopReqBody>, res: Response ) => { 
     const { shopName , shopId , description } = req.body;
-
 
     console.log('creating new shop');
     if ( !req.user) {
@@ -65,12 +85,21 @@ router.post("/new", async (req: TypedRequest<ShopReqBody>, res: Response ) => {
         return res.status(403).json({message: "Unvalidated Access is Forbiden."});
     }
 
+    const sellerId = req.user.userId;
+
     // Check if feilds are filled. 
     if ( !shopName || !shopId || !description ) {
         return res.status(403).json({message: "Shop name, unique Shop id and description are required."});
     }
 
+    if (!req.file) {
+        return res.status(403).json({message: "Display image is required."});
+    }
+
     try {
+        const displayImage: Express.Multer.File = req.file;
+
+        const displayImageUrl = await uploadBuffer(displayImage.buffer, "Shop display image");
 
         // check if Shop ID is taken
         const [existingShop, totalShops] = await Promise.all([
@@ -83,11 +112,11 @@ router.post("/new", async (req: TypedRequest<ShopReqBody>, res: Response ) => {
             return res.status(403).json({message: `${shopId} is already taken. Try another one`});
         }
 
-        const sellerId = totalShops;
-        const owner = toObjectId(req.user.userId) ;
+        const sellerIndex = totalShops;
+        const userRef = toObjectId(req.user.userId) ;
 
-        const shopObj:ShopSchema = {
-            shopName, shopId, description, sellerId, owner
+        const shopObj: Partial<ShopSchema> = {
+            shopName, shopId, description, displayImageUrl, sellerIndex, sellerId, userRef
         }
 
         const newShop = new Shop({

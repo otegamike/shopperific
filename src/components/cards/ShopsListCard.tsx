@@ -12,33 +12,33 @@ export function ShopsListCard({loading = true, shopData }: CategoryCardProps) {
     const navigate = useNavigate();
 
     const handleNavigate = () => {
-        navigate(`/products/category/${shopData.name}`);
+        navigate(`/products/category/${shopData.shopName}`);
     }
 
   return (
     <li className={`list__card`} onClick={handleNavigate}>
         <span className={`list__display__image ${loading ? "skeleton__loader" : ""}`}>
-            <img src={shopData.displayImageUrl} alt={shopData.name} />
+            <img src={shopData.displayImageUrl} alt={shopData.shopName} />
         </span>
         <span className="list__group">
-            <span className={`list__title ${loading ? "skeleton__loader" : ""}`}>{shopData.name}</span>
+            <span className={`list__title ${loading ? "skeleton__loader" : ""}`}>{shopData.shopName}</span>
             <span className={`list__info ${loading ? "skeleton__loader" : ""}`}>{shopData.productsCount} products</span>
         </span>
     </li>
   )
 }
 
-interface CategoriesProps {
+interface ShopsListProps {
     className?: string;
     loading?: boolean;
-    productsCategoryData: ShopDataType[];
+    shopsData: ShopDataType[];
 }
 
-export default function Categories ({ className, loading = true, productsCategoryData }: CategoriesProps) {
+export default function ShopsList ({ className, loading = true, shopsData }: ShopsListProps) {
     return (
         <ul className={`list__container ${className}`} tabIndex={1}>
-            {productsCategoryData.map((productCategoryData) => (
-                <ShopsListCard loading={loading} key={productCategoryData.name} shopData={productCategoryData} />
+            {shopsData.map((shopData) => (
+                <ShopsListCard loading={loading} key={shopData.shopName} shopData={shopData} />
             ))}
         </ul>
     )

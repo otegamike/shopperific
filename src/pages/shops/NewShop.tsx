@@ -9,7 +9,7 @@ import { type createShopType, validateShopId, createShop } from '../../services/
 
 //utils
 // import { useNavigate } from 'react-router-dom';
-// import { alertObj } from '../../utils/alerts/alert';
+import { alertObj } from '../../utils/alerts/alert';
 
 //Components
 import Header from '../../components/header/Header'
@@ -44,7 +44,7 @@ function NewShop() {
   const [shopLogo, setShopLogo] = useState<ImageFileType[]>([]);
   const { loading, buttonState, handleLoading } = loadHandler;
 
-  const updateImage = useImageUploader(setShopLogo, shopLogo);
+  const { updateImages, appendImagesToFormData } = useImageUploader(setShopLogo, shopLogo);
 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -52,10 +52,16 @@ function NewShop() {
 
     handleLoading("loading");
 
+    if (!shopLogo.length) {
+      alertObj("Please upload a shop logo", "error");
+      return handleLoading("idle", "enable");
+    }
+    const shopFormData = appendImagesToFormData(formData, "displayImage");
+
     await validateAll();
     if (!isFormValid) return handleLoading("idle", "disable");
     
-    await createShop(formData);
+    await createShop(shopFormData);
     
     handleLoading("idle");
   }
@@ -70,7 +76,7 @@ function NewShop() {
               <h3>Create New Shop</h3>
             </div>
 
-            <ImageUploader images={shopLogo} updateImage={updateImage} maxImages={1} />
+            <ImageUploader images={shopLogo} name="displayImage" updateImage={updateImages} maxImages={1} />
 
             <form onSubmit={handleSubmit}>
 

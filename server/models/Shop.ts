@@ -7,7 +7,19 @@ export interface ShopReqBody {
     description: String;
 }
 
-export type ShopSchema = ShopReqBody & { sellerId: Number, owner: Types.ObjectId };
+export interface ShopDataType {
+    shopName: String;
+    shopId: String;
+    displayImageUrl: string;
+    description: String;
+    productsCount: Number;
+    salesCount: Number;
+    sellerIndex: Number;
+    sellerId: String;
+    userRef: Types.ObjectId;
+}
+
+export type ShopSchema = ShopDataType;
 
 const ShopSchema = new Schema<ShopSchema> (
   {
@@ -26,15 +38,38 @@ const ShopSchema = new Schema<ShopSchema> (
         type: String,
         required: true,
     },
-    sellerId: {
+    displayImageUrl: {
+        type: String,
+        required: true,
+        trim: true,
+    },
+    productsCount: {
+        type: Number,
+        required: true,
+        trim: true,
+        default: 0
+    },
+    salesCount: {
+        type: Number,
+        required: true,
+        trim: true,
+        default: 0
+    },
+    sellerIndex: {
         type: Number,
         required: true
     },
-    owner: {
+    sellerId: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    userRef: {
         type: Schema.Types.ObjectId,
         ref: "User",
         required: true,
     },
+
   },
   {
     timestamps: true,

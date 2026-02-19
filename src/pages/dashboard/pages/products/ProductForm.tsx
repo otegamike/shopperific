@@ -16,7 +16,7 @@ import Button from '../../../../components/buttons/button';
 import FormGroup from '../../../../components/forms/FormGroup';
 import ImageUploader from '../../../../components/forms/imageUpload/ImageUploader';
 import LoaderSvg from '../../../../assets/svg/loader';
-// import PlusSvg from '../../../../assets/svg/plus';
+import { ShopSelect } from '../../../../components/dashboard/filters/Filters';
 
 // Service
 import { AddNewProduct } from '../../../../services/AddNewProduct'
@@ -24,14 +24,16 @@ import { AddNewProduct } from '../../../../services/AddNewProduct'
 //types
 import { type NewProductDataType, PRODUCT_CATEGORIES } from '../../../../types/productInterface/productInterface'
 import type { ImageFileType } from '../../../../types/filesInterface'
-
+import type { ShopListType } from '../../../../types/shopsInterface';
 
 interface ProductFormProps {
     reloadProductsData: () => void;
+    shopList: ShopListType[];
 }
-function ProductForm({ reloadProductsData }: ProductFormProps) {
+function ProductForm({ reloadProductsData, shopList }: ProductFormProps) {
 
-    const { formData, handleChange, resetForm } = useForm<NewProductDataType>({
+    const { formData, handleChange, updateSpecificField, resetForm } = useForm<NewProductDataType>({
+        currentShop: "",
         name: "",
         description: "",
         price: 0,
@@ -44,7 +46,7 @@ function ProductForm({ reloadProductsData }: ProductFormProps) {
     const [loading, setLoading] = useState(false);
     const [images, setImages] = useState<ImageFileType[]>([]);
 
-    const updateImage = useImageUploader(setImages, images);
+    const { updateImages, appendImagesToFormData } = useImageUploader(setImages, images);
 
     // refs
     const buttonRef = useRef<HTMLButtonElement>(null);
@@ -69,19 +71,16 @@ function ProductForm({ reloadProductsData }: ProductFormProps) {
         );
     };
 
+    const changeCurrentShop = (shop: string) => {
+       updateSpecificField("currentShop", shop)
+    }
+
     const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
         focusButton();
         setLoading(true);
 
-        const multiPartFormData: FormData = new FormData();
-        Object.entries(formData).forEach(([key, value]) => {
-            multiPartFormData.append(key, value);
-        });
-        images.forEach((image) => {
-            multiPartFormData.append('images', image.file);
-        });
-
+        const multiPartFormData = appendImagesToFormData(formData, "images");
 
         await AddNewProduct(multiPartFormData);
         setLoading(false);
@@ -98,11 +97,13 @@ function ProductForm({ reloadProductsData }: ProductFormProps) {
             exit={{ opacity: 0, y: -20 , height: "0px"}} 
             transition={{ duration: 0.5 }}>
                 
-            <div className='dashboard__subheading'>
+            <div className='dashboard__subheading' style={{display: "flex", justifyContent: "space-between", alignItems: "baseline"}}>
                 <h5>Add New Product</h5>
+                <ShopSelect shopList={shopList} currentShop={formData.currentShop} changeCurrentShop={changeCurrentShop} />
             </div>
+            <h2>{formData.currentShop} </h2>
             {/* image uploader */}
-            <ImageUploader images={images} updateImage={updateImage} maxImages={4} />
+            <ImageUploader images={images} updateImage={updateImages} maxImages={4} />
 
             <form onSubmit={handleSubmit}>
 

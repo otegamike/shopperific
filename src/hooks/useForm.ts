@@ -27,6 +27,13 @@ export function useForm<T>(initialValues: T, customValidatorArray?: { key: strin
         }));
     }, []);
 
+    const updateSpecificField = useCallback((fieldName: keyof T, value: string | number) => {
+        setFormData(prev => ({
+            ...prev,
+            [fieldName]: value
+        }));
+    }, [formData])
+
 
 
     const handleLoading : HandleLoadingInterface = useCallback(( loader, button ) => {
@@ -125,6 +132,7 @@ export function useForm<T>(initialValues: T, customValidatorArray?: { key: strin
         formData,
         validity, // Exposed in case we need specific field validity
         handleChange,
+        updateSpecificField,
         handleValidation,
         isFormValid,
         getValidity,

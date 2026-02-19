@@ -14,9 +14,10 @@ interface ImageUploaderProps {
     images: ImageFileType[];
     updateImage: ImageUploaderHandlers;
     maxImages?: number;
+    name?: string;
 }
 
-function ImageUploader({ images, updateImage, maxImages = 4 }: ImageUploaderProps) {
+function ImageUploader({ images, updateImage, maxImages = 4, name = "images" }: ImageUploaderProps) {
 
   
     const ImageUpload: React.FC<{ onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }> = ({ onChange }) => {
@@ -27,7 +28,7 @@ function ImageUploader({ images, updateImage, maxImages = 4 }: ImageUploaderProp
                     upload image or drag and drop
                 </label>
 
-                <input className='hide' id='imageUpload' type="file" multiple={maxImages > 1} onChange={onChange} />
+                <input className='hide' id='imageUpload' type="file" name={name} multiple={maxImages > 1} onChange={onChange} />
             </div>
         );
     };

@@ -17,12 +17,14 @@ export const PRODUCT_CATEGORIES = [
 export type Category = typeof PRODUCT_CATEGORIES[number] | "";
 
 export interface NewProductDataType {
+    currentShop: string;
     name: string;
     description: string;
     price: number;
     category: Category;
     subCategory: string;
     stock: number;
+    [key: string]: string | number | Category;
 }
 
 export interface ProductImageType {
