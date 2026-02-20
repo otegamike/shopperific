@@ -20,31 +20,39 @@ import { ShopSelect } from '../../../../components/dashboard/filters/Filters';
 
 // Service
 import { AddNewProduct } from '../../../../services/AddNewProduct'
+import { editProduct } from '../../../../services/DashboardDataServices';
 
 //types
 import { type NewProductDataType, PRODUCT_CATEGORIES } from '../../../../types/productInterface/productInterface'
 import type { ImageFileType } from '../../../../types/filesInterface'
 import type { ShopListType } from '../../../../types/shopsInterface';
+import type { DashboardProductsData } from '../../../../types/dashboardDataType';
 
 interface ProductFormProps {
-    reloadProductsData: () => void;
+    reloadProductsData?: () => Promise<void>;
     shopList: ShopListType[];
+    editMode?: boolean;
+    productData?: DashboardProductsData;
 }
-function ProductForm({ reloadProductsData, shopList }: ProductFormProps) {
+function ProductForm({ reloadProductsData, shopList, editMode, productData }: ProductFormProps) {
 
     const { formData, handleChange, updateSpecificField, resetForm } = useForm<NewProductDataType>({
-        currentShop: "",
-        name: "",
-        description: "",
-        price: 0,
-        category: "",
-        subCategory: "",
-        stock: 0
+        currentShop: productData?.shopRef || "",
+        name: productData?.name ||  "",
+        description: productData?.description || "",
+        price: productData?.price || 0,
+        category: productData?.category || "",
+        subCategory: productData?.subCategory || "",
+        stock: productData?.stock || 0
     })
 
     // states
     const [loading, setLoading] = useState(false);
-    const [images, setImages] = useState<ImageFileType[]>([]);
+    const [images, setImages] = useState<ImageFileType[]>(productData?
+        productData?.images.map((image) => ({
+            file: null,
+            preview: image
+        })) : []);
 
     const { updateImages, appendImagesToFormData } = useImageUploader(setImages, images);
 
@@ -82,16 +90,22 @@ function ProductForm({ reloadProductsData, shopList }: ProductFormProps) {
 
         const multiPartFormData = appendImagesToFormData(formData, "images");
 
-        await AddNewProduct(multiPartFormData);
+        if (!editMode) {
+            await AddNewProduct(multiPartFormData);
+            resetForm();
+            setImages([]);
+        } else if (editMode && productData) {
+            await editProduct(productData?._id, multiPartFormData);
+        }
+
         setLoading(false);
-        resetForm();
-        setImages([]);
-        reloadProductsData();
+
+        if (reloadProductsData) reloadProductsData();
 
     }
 
     return (
-        <motion.div className='add__product' 
+        <motion.div className={`add__product ${editMode ? "edit__mode" : ""}`} 
             initial={{ opacity: 0, y: -20 , height: "0px"}} 
             animate={{ opacity: 1, y: 0 , height: "auto"}} 
             exit={{ opacity: 0, y: -20 , height: "0px"}} 
@@ -99,9 +113,8 @@ function ProductForm({ reloadProductsData, shopList }: ProductFormProps) {
                 
             <div className='dashboard__subheading' style={{display: "flex", justifyContent: "space-between", alignItems: "baseline"}}>
                 <h5>Add New Product</h5>
-                <ShopSelect shopList={shopList} currentShop={formData.currentShop} changeCurrentShop={changeCurrentShop} />
+                <ShopSelect shopList={shopList} id="form__shoplist" currentShop={formData.currentShop} changeCurrentShop={changeCurrentShop} />
             </div>
-            <h2>{formData.currentShop} </h2>
             {/* image uploader */}
             <ImageUploader images={images} updateImage={updateImages} maxImages={4} />
 

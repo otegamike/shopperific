@@ -11,6 +11,7 @@ export interface ProductType {
   price: number;
   sellerId: string;
   category?: Category;
+  subCategory?: string;
   stock?: number;
   images?: string[];
   shopName: string;
@@ -40,6 +41,10 @@ const ProductSchema = new Schema<ProductType>(
     category: {
       type: String,
       required: true
+    },
+    subCategory: {
+      type: String,
+      required: false
     },
     stock: {
       type: Number,

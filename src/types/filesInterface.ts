@@ -1,5 +1,5 @@
 export interface ImageFileType {
-    file: File;
+    file: File | null;
     preview: string;
 }
 

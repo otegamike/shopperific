@@ -35,14 +35,16 @@ export const fetchDashboardProductsData = async (currentShop: string = ""):
 }
 
 // edit product
-export const editProduct = async (id: string, productData: Partial<DashboardProductsData>): 
+export const editProduct = async (productId: string, formData: FormData): 
     Promise<
         | {updated: true, message: string}
         | {updated: false, errorMsg: string}
     > => {
     try {
-        const response = await api.put(`/dashboard/products/edit`, {id, ...productData});
+        const response = await api.put(`/dashboard/products/edit/${productId}`, formData);
         const { message } = response.data;
+
+        alertObj("Product updated successfully", "success");
         return { updated: true, message };
 
     } catch (error: any) {

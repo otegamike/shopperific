@@ -139,9 +139,13 @@ export const TableActions = ({ productId, handleActions, panelStyles, buttonStyl
         }
     }
 
+    const handleEditProduct = () => {
+        handleActions.toggleEditMode();
+    }
+
     return (
             <div className={`table__actions table__actions__${productId}`} style={{ "--button-color": buttonColor, ...panelStyles } as React.CSSProperties}>
-                    <button className="table__action__btn"><EditSvg size={size} fill={buttonColor} /></button>
+                    <button className="table__action__btn" onClick={handleEditProduct}><EditSvg size={size} fill={buttonColor} /></button>
 
                     <button className="table__action__btn" onClick={handleDeleteProduct}>
                     {isDeleting ?

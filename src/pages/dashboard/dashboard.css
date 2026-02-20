@@ -226,31 +226,6 @@
 
 }
 
-.filter__container {
-    container-type: inline-size;
-    container-name: filter;
-}
-
-.filters {
-    position: relative;
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 0.5rem;
-
-    & .filter__btns {
-        display: flex;
-        align-items: center;
-        justify-content: right;
-        gap: 0.5rem;
-    }
-}
-
-@container filter (width < 600px) {
-    .filters {
-        grid-template-columns: 1fr;
-    }
-}
-
 .stats__container {
     container-type: inline-size;
     container-name: stats;
@@ -293,6 +268,15 @@
 
 .add__product {
     margin: 2rem 0;
+
+    &.edit__mode {
+        margin: 3.5rem 0 0 0;
+        width: 100%;
+        background-color: var(--light-color);
+        padding: 0.5rem ;
+        border: 1.5px solid var(--background-color);
+        border-radius:0 0 1rem 1rem;
+    }
 
     & .dashboard__subheading {
         margin-bottom: 1rem;

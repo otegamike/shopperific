@@ -1,10 +1,20 @@
 // types
 import type { ImageFileType, ImageUploaderHandlers } from '../types/filesInterface'
 
+// react
+import { useState } from 'react';
+
 export const useImageUploader = (
     setImages: React.Dispatch<React.SetStateAction<ImageFileType[]>>,
     images: ImageFileType[])
-    : { updateImages: ImageUploaderHandlers, appendImagesToFormData: (formData: Record<string, string | number>, imageFieldName: string) => FormData } => {
+    : { 
+        updateImages: ImageUploaderHandlers, 
+        appendImagesToFormData: (formData: Record<string, string | number>, imageFieldName: string) => FormData,
+        imageToDelete: string[] 
+    } => {
+
+    // deleteImage
+    const [imageToDelete, setImageToDelete] = useState<string[]>([]);
 
     // image uploader handlers
     const addImages = (images: ImageFileType[]): void => {
@@ -12,6 +22,11 @@ export const useImageUploader = (
     }
 
     const deleteImage = (index: number): void => {
+        const imageFile = images[index];
+
+        if (imageFile && !imageFile.file) {
+            setImageToDelete(prev => [...prev, imageFile.preview]);
+        }
         setImages(images.filter((_, i) => i !== index));
     }
 
@@ -23,12 +38,17 @@ export const useImageUploader = (
         const multiPartForm = new FormData();
         
         images.forEach((image) => {
+            if (!image.file) return;
             multiPartForm.append(imageFieldName, image.file);
         });
 
         Object.entries(formData).forEach(([key, value]) => {
             multiPartForm.append(key, value.toString());
         });
+
+        if (imageToDelete) {
+            multiPartForm.append("imageToDelete", JSON.stringify(imageToDelete) )
+        }
 
         return multiPartForm;
 
@@ -43,6 +63,7 @@ export const useImageUploader = (
 
     return {
         updateImages,
-        appendImagesToFormData
+        appendImagesToFormData,
+        imageToDelete
     };
 }

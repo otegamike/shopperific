@@ -37,6 +37,7 @@ export interface ProductActions {
   expand: (e: React.MouseEvent<HTMLButtonElement>, productid: string) => void;
   isExpanded: (productid: string) => boolean;
   collapse: () => void;
+  toggleEditMode: () => void;
 }
 
 function Products() {
@@ -54,16 +55,16 @@ function Products() {
   // expand product
   const { expandProps, handleExpandPanel, handleCollapsePanel, mountId } = useExpandPanel("table__actions", "dashboard-body-container");
 
+  // edit mode 
+  const [ editMode, setEditMode ] = useState<boolean>(false);
+
   // products data
   const [productsData, setProductsData] = useState<DashboardProductsData[]>([]);
   const [productsDataStats, setProductsDataStats] = useState<DashboardProductsDataStats>(emptyProductsDataStats);
   const [currentShop, setCurrentShop] = useState<string>("");
   const [shopList, setShopsList] = useState<ShopListType[]>([]);
-  const [newData, setNewData] = useState<number>(0);
 
-  const reloadProductsData = () => {
-    setNewData((prev) => prev + 1);
-  }
+ 
 
   const changeCurrentShop = (shop: string) => {
     setCurrentShop(shop);
@@ -98,9 +99,24 @@ function Products() {
     setIsLoading(false);
   }
 
+  const backgroundReload = async () => {
+   const DashboardProductsData = await fetchDashboardProductsData(currentShop);
+
+   if ("errorMsg" in DashboardProductsData) {
+     return;
+   }
+   const { productsStats, productsData } = DashboardProductsData;
+   setProductsDataStats(productsStats);
+   setProductsData(productsData);
+  }
+
   // const handleEditProduct = (product: DashboardProductsData) => {
 
   // }
+
+  const productDataById = (id: string ) : DashboardProductsData | undefined => {
+    return productsData.filter((product) => product._id === id)[0];
+  }
 
   const handleDeleteProduct = (productid: string): boolean => {
     setProductsData(prevProductsData => prevProductsData.filter((product) => product._id !== productid));
@@ -115,16 +131,21 @@ function Products() {
     return true
   }
 
+  const toggleEditMode = () => {
+    setEditMode(prev => !prev);
+  }
+
   const handleActions: ProductActions = {
     delete: handleDeleteProduct,
     expand: handleExpandPanel,
     isExpanded: (productid: string) => expandProps?.id === productid,
-    collapse: handleCollapsePanel
+    collapse: handleCollapsePanel,
+    toggleEditMode: toggleEditMode
   }
 
   useEffect(() => {
     fetchProductsData();
-  }, [newData, currentShop]);
+  }, [currentShop]);
 
   if (errorObj.errorState) return <Oops message={errorObj.errorMsg} retry={fetchProductsData} />
   else if (isLoading) return <LoadingComponent />
@@ -136,7 +157,7 @@ function Products() {
       </div>
 
       <AnimatePresence>
-        {ShowNewProductForm && <ProductForm reloadProductsData={reloadProductsData} shopList={shopList} />}
+        {ShowNewProductForm && <ProductForm reloadProductsData={backgroundReload} shopList={shopList} />}
       </AnimatePresence>
 
       <Stats productsDataStats={productsDataStats} />
@@ -153,7 +174,10 @@ function Products() {
                       handleActions={handleActions}
                       panelStyles={{opacity: 1, top: "1rem", right: "1rem", bottom: "none", zIndex: 10}}
                     />
-                    <ProductDetails product={productsData.filter((product) => product._id === expandProps.id)[0]} />
+                    {editMode?
+                      <ProductForm shopList={shopList} productData={productDataById(expandProps.id)} reloadProductsData={backgroundReload} editMode={editMode} /> :
+                      <ProductDetails product={productsData.filter((product) => product._id === expandProps.id)[0]} />
+                    }
               </ExpandPanel>
               )}
           </AnimatePresence>

@@ -23,6 +23,30 @@ export const saveTo = async (
         }
 }
 
+export const updateOne = async (
+    model: Models,
+    findBy: object,
+    set: object,
+    options: object = { new: true , lean: true}
+) => {
+    try {
+        const Model = getModels(model);
+        const updatedData = await Model.findOneAndUpdate(findBy, set, options);
+
+        if (!updatedData) {
+            console.log("Couldn't find or update.", model, findBy, set, options);
+            throw new Error("Couldn't find or update.");
+        }
+
+        console.log("Updated");
+        return { updated: true, found: true, newData: updatedData };
+
+    } catch (err: any) {
+        console.error("Couldn't find or update.",err.message, err);
+        return { updated: false, found: false, errorMsg: "Couldn't find or update." }
+    }
+}
+
 
 export const findAndUpdate = async (
     model: Models,

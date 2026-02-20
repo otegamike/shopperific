@@ -50,7 +50,11 @@ function ImageUploader({ images, updateImage, maxImages = 4, name = "images" }: 
 
             // Filter duplicates
             const uniqueFiles = fileArray.filter(file =>
-                !images.some(img => img.file.name === file.name && img.file.size === file.size)
+                !images.some((img) => {
+                    if (!img.file) return false;
+                    img.file.name === file.name && img.file.size === file.size 
+                })
+                   
             );
 
             // Limit to remaining slots

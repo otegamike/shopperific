@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { requireSeller } from "../middleware/requireSeller.js";
 import { upload } from "../middleware/upload.js";
-import { uploadBuffer } from "../utils/uploadToCloudinary.js";
+import { uploadBuffer } from "../utils/CloudinaryHelpers.js";
 import { toObjectId } from "../lib/mongoose.js";
 import Product from "../models/Product.js";
 import { getProduct } from "../services/fetchFromDb.js";
@@ -103,11 +103,10 @@ router.post('/product/:id', async (req, res) => {
 });
 
 // Save new product
-router.post("/new", requireSeller, upload.array("images", 4), async (req, res) => {
+router.post("/new", upload.array("images", 4), requireSeller, async (req, res) => {
 
   const { currentShop, ...productData } = req.body;
   try {
-    console.log("New product request received", req.body);
 
     if (!req.user?.shopRef) {
       return res.status(400).json({ error: "Couldn't validate your ShopId" });

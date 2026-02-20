@@ -15,7 +15,6 @@ export const requireSeller = async (req: Request, res: Response, next: NextFunct
 
     const shop = await Shop.findOne({ sellerId: req.user.userId, ...currentShopRef });
     
-    console.log("requireSeller:", currentShop, shop);
     if (shop) {
        req.user.sellerId = shop.sellerId;
        req.user.shopRef = shop._id.toString();

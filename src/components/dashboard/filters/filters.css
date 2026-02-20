@@ -1,0 +1,30 @@
+
+.filter__container {
+    container-type: inline-size;
+    container-name: filter;
+}
+
+.filters {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.5rem;
+
+    & .filter__btns {
+        display: flex;
+        align-items: center;
+        justify-content: right;
+        gap: 0.5rem;
+
+        & .filter__btn {
+            margin: 0px;
+            padding: 0.4rem 0.8rem;
+        }
+    }
+}
+
+@container filter (width < 600px) {
+    .filters {
+        grid-template-columns: 1fr;
+    }
+}

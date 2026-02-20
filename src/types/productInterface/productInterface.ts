@@ -55,10 +55,12 @@ export interface ProductDataType {
     price: number;
     sellerId: string;
     category: Category;
+    subCategory: string;
     stock: number;
     images: string[];
     shopName: string;
     shopId: string;
+    shopRef: string;
     createdAt: string;
     updatedAt: string;
 }

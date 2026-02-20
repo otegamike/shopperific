@@ -1,3 +1,5 @@
+import "./filters.css"
+
 import Button from "../../buttons/button"
 import Search from "../../contents/search/Search"
 
@@ -38,9 +40,9 @@ function Filters({currentShop, changeCurrentShop, updateShopList, shopList}: Fil
     <div className="filter__container"><div className="filters">
         <Search />
         <div className="filter__btns">
-          <Button type="tetirary" id="category" className="pill__btn" content="category" />
-          <Button type="tetirary" id="status" className="pill__btn" content="status" />
-          <ShopSelect shopList={shopList} currentShop={currentShop} changeCurrentShop={changeCurrentShop} />
+          <Button type="tetirary" id="category" className="pill__btn filter__btn" content="category" />
+          <Button type="tetirary" id="status" className="pill__btn filter__btn" content="status" />
+          <ShopSelect style={{ maxWidth: "9rem" }} shopList={shopList} currentShop={currentShop} changeCurrentShop={changeCurrentShop} />
         </div>
       </div></div>
     </>
@@ -53,12 +55,21 @@ interface ShopSelectProps {
   shopList: ShopListType[];
   currentShop: string;
   changeCurrentShop: (shop: string) => void;
+  style?: React.CSSProperties;
+  className?: string;
+  id?: string;
 }
 
-export const ShopSelect = ({shopList, currentShop, changeCurrentShop}: ShopSelectProps) => {
+export const ShopSelect = ({shopList, currentShop, changeCurrentShop, style, className, id}: ShopSelectProps) => {
   
   return (
-    <select id="shops" className="pill__btn button--tetirary" value={currentShop} onChange={(e) => changeCurrentShop(e.target.value)}>
+    <select 
+      id={id || "shops"}
+      className={`${className?className:""} filter__btn pill__btn button--tetirary`}
+      style={{ transition: "all 0.3s ease-in-out" , ...style}}
+      value={currentShop}
+      onChange={(e) => changeCurrentShop(e.target.value)}
+    >
       <option value="">All shops</option>
       {shopList && shopList.map((shop) => (
         <option key={shop.shopName} value={shop.shop_id}>{shop.shopName}</option>
