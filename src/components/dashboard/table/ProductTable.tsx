@@ -115,6 +115,7 @@ export const TableActions = ({ productId, handleActions, panelStyles, buttonStyl
 
     // Check if panel is expanded
     const isExpanded = handleActions.isExpanded(productId);
+    const isInEditMode = handleActions.isInEditMode(productId);
 
     const handleDeleteProduct = async () => {
         if (isExpanded) {
@@ -139,8 +140,17 @@ export const TableActions = ({ productId, handleActions, panelStyles, buttonStyl
         }
     }
 
-    const handleEditProduct = () => {
-        handleActions.toggleEditMode();
+    const handleEditProduct = (e: React.MouseEvent<HTMLButtonElement>) => {
+        if (isExpanded && isInEditMode) {
+            handleActions.toggleEditMode("off");
+            return;
+        } else if (isExpanded && !isInEditMode) {
+            handleActions.toggleEditMode("on");
+            return;
+        } else {
+            handleActions.expand(e, productId);
+            handleActions.toggleEditMode("on");
+        }
     }
 
     return (

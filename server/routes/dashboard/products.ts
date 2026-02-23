@@ -45,16 +45,6 @@ router.post("/products", requireSeller, async (req: Request, res) => {
 
     const productsData: ProjectionParameters = {
         match,
-        project: {
-            _id: 1,
-            images: 1,
-            name: 1,
-            description: 1,
-            price: 1,
-            stock: 1,
-            category: 1,
-            updatedAt: 1
-        },
         sort: { updatedAt: -1 },
         skip: page,
         limit: limit

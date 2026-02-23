@@ -82,7 +82,7 @@ function NewShop() {
 
               <FormGroup name='shopName' label='Shop Name' variant='borderless' type='text' id='shopName' formValue={formData.shopName} onChange={handleChange} validate={validate} />
               <FormGroup name='shopId' label='Shop ID' variant='borderless' type='text' id='shopId' formValue={formData.shopId} onChange={handleChange} validate={validate} />
-              <FormGroup name='shopLink' label='Shop Link' variant='borderless' type='text' id='shopLink' value={(formData.shopId) ? `shopperific.netlify.app/shop/${formData.shopId}` : ""} disabled={true} />
+              <FormGroup name='shopLink' label='Shop Link' variant='borderless' type='text' id='shopLink' value={`shopperific.netlify.app/shop/${formData.shopId}`} disabled={true} />
               <FormGroup name='description' label='Write a short note about your new shop...' variant='borderless' type='textarea' id='description' formValue={formData.description} onChange={handleChange} validate={validate} />
               <Button className='pill__btn tall full__btn createShop__btn center__content' state={buttonState} content={loading ? <LoaderSvg /> : "Create Shop"} />
             </form>

@@ -36,8 +36,9 @@ export interface ProductActions {
   delete: (productid: string) => boolean;
   expand: (e: React.MouseEvent<HTMLButtonElement>, productid: string) => void;
   isExpanded: (productid: string) => boolean;
+  isInEditMode: (productid: string) => boolean;
   collapse: () => void;
-  toggleEditMode: () => void;
+  toggleEditMode: (state?: "on" | "off") => void;
 }
 
 function Products() {
@@ -131,7 +132,11 @@ function Products() {
     return true
   }
 
-  const toggleEditMode = () => {
+  const toggleEditMode = (state?: "on" | "off") => {
+    if (state) {
+      setEditMode(state === "on");
+      return;
+    }
     setEditMode(prev => !prev);
   }
 
@@ -139,6 +144,7 @@ function Products() {
     delete: handleDeleteProduct,
     expand: handleExpandPanel,
     isExpanded: (productid: string) => expandProps?.id === productid,
+    isInEditMode: (productid: string) => editMode && expandProps?.id === productid,
     collapse: handleCollapsePanel,
     toggleEditMode: toggleEditMode
   }

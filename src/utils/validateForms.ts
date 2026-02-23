@@ -1,3 +1,4 @@
+import type { ValidatorFunctionType } from "../types/ValidationInterface";
 
 interface validateForms {
     formType: "login" | "register" | "verifyEmail";
@@ -11,9 +12,9 @@ export const validateForms =  ( key: string, value: string, required: boolean): 
         isValid: false,
         message: ""
     }  
+
     
-    if ( required && value.trim() === "" )  {
-        console.log(value);
+    if ( required && typeof value === "string" && value?.trim() === "" )  {
         return result = { isValid: false, message: "This field is required" } 
     }
     
@@ -23,7 +24,7 @@ export const validateForms =  ( key: string, value: string, required: boolean): 
     if (key.toLowerCase().includes("name")) {
         const isValid = nameRegex.test(value);
         if (!isValid) {
-            result = {isValid: false, message: "Name contains invalid characters"};
+            result = {isValid: false, message: "Name contains invalid characters or is empty"};
         } else if (isValid) {
             result = {isValid: true, message: "Name is valid"};
         }
@@ -63,15 +64,66 @@ export const validateForms =  ( key: string, value: string, required: boolean): 
 
         
     } else if (key.toLowerCase().includes("description")) {
-        const count = value.length;
-        const isValid = count >= 30;
-        if (!isValid) {
-            result = {isValid: false, message: "Description must be at least 30 characters long"};
-        } else if (isValid) {
-            result = {isValid: true, message: "Description is valid"};
+        if (typeof value === "string") {
+            const count = value.length || 0;
+            const isValid = count >= 30;
+            if (!isValid) {
+                result = {isValid: false, message: "Description must be at least 30 characters long"};
+            } else if (isValid) {
+                result = {isValid: true, message: "Description is valid"};
+            }
+        } else {
+            result = {isValid: false, message: "Description must be a string"};
         }
     }
 
     return result;
    
 }
+
+
+export const numberValidator: ValidatorFunctionType = ( value: string) => {
+   const priceRegex = /^[0-9]+(\.[0-9]+)?$/;
+
+    const isFormatValid = priceRegex.test(value);
+
+    const isPositive = parseFloat(value) > 0;
+
+    const isValid = isFormatValid && isPositive;
+
+    const result = {
+        isValid,
+        message: isValid ? "Value is valid" : "Value must be greater than zero"
+    };
+
+    return result;
+}
+
+export const categoryValidator: ValidatorFunctionType = ( value: string) => {
+    const isValid = value.length > 0;
+    const result = {
+        isValid,
+        message: isValid ? "Value is valid" : "you must select a category"
+    };
+    return result;
+}
+
+export const imageValidator: ValidatorFunctionType = ( value: string) => {
+    const isValid = value.length > 0;
+    const result = {
+        isValid,
+        message: isValid ? "Value is valid" : "you must upload at least one image"
+    };
+    return result;
+}
+
+export const shopValidator: ValidatorFunctionType = ( value: string) => {
+    const isValid = value.length > 0;
+    const result = {
+        isValid,
+        message: isValid ? "Value is valid" : "you must select a shop"
+    };
+    return result;
+}
+
+

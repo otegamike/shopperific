@@ -24,6 +24,8 @@ input {
 
 .message {
    font-size: small;
+   margin-top: -0.4rem;
+   margin-bottom: 0.3rem;
 }
 
 .error {
@@ -35,7 +37,7 @@ input {
 }
 
 .success {
-    background-color: #d9ffcc;
+    border-color: #d6ffc9;
 }
 
 .success__message {
@@ -74,7 +76,7 @@ textarea {
 }
 
 .textarea__text {
-    --text-height: 3lh;
+    --text-height: 5lh;
     
     padding: 1rem;
     border-radius: 5px;
@@ -87,7 +89,7 @@ textarea {
 .borderless__input {
     border: none;
     outline: 1px solid hsl(228 64% 68% / 0.2);
-    border-radius: 4rem;
+    border-radius: 1rem;
     padding-left: 1.5rem;
 }
 
@@ -96,7 +98,7 @@ textarea {
 }
 
 .borderless__input::placeholder {
-    color: var(--panel-color-dark-transparent);
+    color: transparent;
 }
 
 .borderless__input:disabled {

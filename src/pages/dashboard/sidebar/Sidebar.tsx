@@ -66,7 +66,8 @@ const sidebarStyle: React.CSSProperties = {
   backgroundColor: "transparent",
   borderRadius: "1rem",
   marginTop: "1rem",
-  marginLeft: "0.5rem"
+  marginLeft: "0.5rem",
+  zIndex: 8
 }
 
 const ulStyles: React.CSSProperties = {

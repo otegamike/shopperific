@@ -13,25 +13,14 @@ import type { ImageFileType, ImageUploaderHandlers } from '../../../types/filesI
 interface ImageUploaderProps {
     images: ImageFileType[];
     updateImage: ImageUploaderHandlers;
+    imageIsValid?: boolean;
+    showImageError?: boolean;
     maxImages?: number;
     name?: string;
 }
 
-function ImageUploader({ images, updateImage, maxImages = 4, name = "images" }: ImageUploaderProps) {
 
-  
-    const ImageUpload: React.FC<{ onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }> = ({ onChange }) => {
-        return (
-            <div className='image'>
-                <label htmlFor='imageUpload' className="add__image">
-                    <PlusSvg size={60} fill='var(--grey-color-light)' />
-                    upload image or drag and drop
-                </label>
-
-                <input className='hide' id='imageUpload' type="file" name={name} multiple={maxImages > 1} onChange={onChange} />
-            </div>
-        );
-    };
+function ImageUploader({ images, updateImage, maxImages = 4, name = "images", imageIsValid = true, showImageError = true }: ImageUploaderProps) {
 
     const [isDragging, setIsDragging] = useState(false);
 
@@ -138,10 +127,26 @@ function ImageUploader({ images, updateImage, maxImages = 4, name = "images" }: 
                     </div>
                 ))}
 
-                {images.length < maxImages && <ImageUpload onChange={handleImageChange} />}
+                {images.length < maxImages && <ImageUpload onChange={handleImageChange} name={name} maxImages={maxImages} />}
             </div>
+            {showImageError && !imageIsValid && <p className='message error__message'>
+                Please upload at least one image
+            </p>}
         </div>
     )
 }
 
 export default ImageUploader
+
+const ImageUpload: React.FC<{ onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, name: string, maxImages: number }> = ({ onChange, name, maxImages }) => {
+        return (
+            <div className='image'>
+                <label htmlFor='imageUpload' className="add__image">
+                    <PlusSvg size={60} fill='var(--grey-color-light)' />
+                    upload image or drag and drop
+                </label>
+
+                <input className='hide' id='imageUpload' type="file" name={name} multiple={maxImages > 1} onChange={onChange} />
+            </div>
+        );
+    };

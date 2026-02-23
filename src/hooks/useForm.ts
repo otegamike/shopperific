@@ -7,6 +7,7 @@ export function useForm<T>(initialValues: T, customValidatorArray?: { key: strin
     const [formData, setFormData] = useState<T>(initialValues);
     const [loading, setLoading] = useState<boolean>(false);
     const [disableButton, setDisableButton] = useState<boolean>(false);
+    const [validateCount, setValidateCount] = useState<number>(0);
 
     // Initialize validity state: assume all fields start as false (invalid) 
     const [validity, setValidity] = useState<Partial<validityObjType<T>>>(() => {
@@ -53,6 +54,7 @@ export function useForm<T>(initialValues: T, customValidatorArray?: { key: strin
 
     // Handle Validation Updates
     const handleValidation: handleValidationType<T> = useCallback(async (key, value, required = true) => {
+        console.log("runnning validation for: ", key);
         // Set type of result to validityType
         let result: validityResult = { isValid: false, message: "" };
 
@@ -70,6 +72,8 @@ export function useForm<T>(initialValues: T, customValidatorArray?: { key: strin
             result = validateForms(key as string, value, required);
         }
 
+        console.log("validation result: ", result);
+
         setValidity(prev => ({
             ...prev,
             [key]: { ...prev[key], ...result }
@@ -84,6 +88,8 @@ export function useForm<T>(initialValues: T, customValidatorArray?: { key: strin
             const result = await handleValidation(key, (formData as any)[key], true);
             if (result.isValid === false) setShowError(key, true);
         }
+
+        setValidateCount(prev => prev + 1);
     }, [formData]);
 
     // Derived State: Is the whole form valid?
@@ -92,7 +98,7 @@ export function useForm<T>(initialValues: T, customValidatorArray?: { key: strin
             .filter((status): status is validityType => !!status) // Type Guard
             .every(status => status.isValid === true);
         return valid
-    }, [validity]);
+    }, [validity, validateCount]);
 
     const buttonState = useMemo(() => {
         return disableButton ? "disabled" : "default";
