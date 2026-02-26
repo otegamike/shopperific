@@ -21,3 +21,18 @@ export async function getShops(sellerId?: string): Promise< {errorMsg: string} |
         return {errorMsg}
     }
 }
+
+export async function getShopByShopId(shopId: string): Promise< {errorMsg: string} | {shop: ShopDataType} > {
+    try {
+        const response = await api.get(`/shops/shop/${shopId}`);
+        const shop = response.data;
+        console.log("shop", shop);
+
+        return  {shop};
+    } catch (error: any) {
+        console.log(error);
+        const errorMsg =  "error fetching shop" ;
+        alertObj(errorMsg, "error");
+        return {errorMsg}
+    }
+}

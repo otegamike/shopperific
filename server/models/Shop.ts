@@ -2,26 +2,27 @@ import { db , Types } from "../lib/mongoose.js";
 const { Schema, model, models } = db;
 
 export interface ShopReqBody {
-    shopName: String;
-    shopId: String;
-    description: String;
+    shopName: string;
+    shopId: string;
+    description: string;
 }
 
 export interface ShopDataType {
-    shopName: String;
-    shopId: String;
+    _id: Types.ObjectId;
+    shopName: string;
+    shopId: string;
     displayImageUrl: string;
-    description: String;
-    productsCount: Number;
-    salesCount: Number;
-    sellerIndex: Number;
-    sellerId: String;
+    description: string;
+    productsCount: number;
+    salesCount: number;
+    sellerIndex: number;
+    sellerId: string;
     userRef: Types.ObjectId;
 }
 
 export type ShopSchema = ShopDataType;
 
-const ShopSchema = new Schema<ShopSchema> (
+const ShopSchema = new Schema<Omit<ShopSchema, "_id">> (
   {
     shopName: {
         type: String,

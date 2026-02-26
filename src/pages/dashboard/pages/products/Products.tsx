@@ -22,7 +22,10 @@ import LoadingComponent from "../../../../components/loader/Loading";
 import ProductDetails from "../../../../components/product/ProductDetails";
 
 // services
-import { fetchDashboardProductsData } from "../../../../services/DashboardDataServices";
+import { fetchDashboardProductsData, deleteProduct } from "../../../../services/DashboardDataServices";
+
+// utils
+import { alertObj } from "../../../../utils/alerts/alert";
 
 // types
 import type { DashboardProductsDataStats, DashboardProductsData } from "../../../../types/dashboardDataType";
@@ -33,7 +36,7 @@ import { emptyProductsDataStats, defaultTableColumns, mobileTableColumns } from 
 
 
 export interface ProductActions {
-  delete: (productid: string) => boolean;
+  delete: (productid: string) => Promise<boolean>;
   expand: (e: React.MouseEvent<HTMLButtonElement>, productid: string) => void;
   isExpanded: (productid: string) => boolean;
   isInEditMode: (productid: string) => boolean;
@@ -119,17 +122,19 @@ function Products() {
     return productsData.filter((product) => product._id === id)[0];
   }
 
-  const handleDeleteProduct = (productid: string): boolean => {
-    setProductsData(prevProductsData => prevProductsData.filter((product) => product._id !== productid));
+  const handleDeleteProduct = async (productid: string): Promise<boolean> => {
+    const product = productsData.filter((product) => product._id === productid)[0];
+    const { shopRef: shop_id, _id:id } = product;
 
-    setProductsDataStats((prevStats) => ({
-      ...prevStats,
-      totalProducts: prevStats.totalProducts - 1,
-      inStock: prevStats.inStock - 1,
-      totalInventory: prevStats.totalInventory - productsData.filter((product) => product._id === productid)[0].stock
-    }));
-
-    return true
+    const deleteProductResponse = await deleteProduct([ {shop_id, productIds: [id]} ]);
+    if (deleteProductResponse.deleted) {
+        alertObj(deleteProductResponse.message, "success");
+        await backgroundReload();
+        return true;
+    } else {
+        alertObj(deleteProductResponse.errorMsg, "error");
+        return false;
+    }
   }
 
   const toggleEditMode = (state?: "on" | "off") => {

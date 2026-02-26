@@ -11,7 +11,7 @@ import { setRefreshTokensArray } from "../utils/RefreshDBTokens.js";
 import { createToken } from "../utils/createToken.js";
 
 //services
-import { findAndUpdate } from "../services/updateDocument.js";
+import { findAndUpdate } from "../services/database/updateDocument.js";
 
 //utils
 import { toObjectId } from "../lib/mongoose.js";

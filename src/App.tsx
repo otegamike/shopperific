@@ -22,6 +22,7 @@ import DashboardRoutes from './pages/dashboard/Routes'
 import BecomeSeller from './pages/sellers/BecomeSeller'
 import Categories from './pages/products/Categories'
 import Category from './pages/products/Category'
+import ShopDetails from './pages/shops/ShopDetails'
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
           <Route path="/products/categories" element={<Categories />} />
           <Route path="/products/category/:category" element={<Category />} />
           <Route path="/product/:id" element={<Product />} />
+          <Route path="/shops/shop/:shopId" element={<ShopDetails />} />
 
           <Route path="/shops" element={<Shops />} />
 

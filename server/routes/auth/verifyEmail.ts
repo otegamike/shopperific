@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { hashToken } from "../../services/EmailVerificationToken.js";
-import { findAndUpdate } from "../../services/updateDocument.js";
-import { genToken } from "../../services/EmailVerificationToken.js";
-import { sendVerifyEmail } from "../../services/sendMail.js";
+import { hashToken } from "../../services/database/EmailVerificationToken.js";
+import { findAndUpdate } from "../../services/database/updateDocument.js";
+import { genToken } from "../../services/database/EmailVerificationToken.js";
+import { sendVerifyEmail } from "../../services/database/sendMail.js";
 
 // Types 
 import { VerifyEmailType } from "../../models/User.js";

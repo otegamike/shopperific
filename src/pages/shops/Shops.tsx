@@ -36,8 +36,8 @@ function Shops() {
 
   useEffect(() => {
     loadShops()
-    console.log(shopData)
-  }, [shopData.length])
+    console.log("shopData: " ,shopData)
+  }, [])
 
   return (
     <>

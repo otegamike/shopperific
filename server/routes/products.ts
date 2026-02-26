@@ -4,11 +4,12 @@ import { upload } from "../middleware/upload.js";
 import { uploadBuffer } from "../utils/CloudinaryHelpers.js";
 import { toObjectId } from "../lib/mongoose.js";
 import Product from "../models/Product.js";
-import { getProduct } from "../services/fetchFromDb.js";
-import { findOneFromDB, getManyFromDB } from "../services/fetchFromDb.js";
-import { queryDatabase, type ProjectionParameters } from "../services/DbAggregationPipeline.js";
-import { findAndUpdate } from "../services/updateDocument.js";
-import { countDocuments } from "../services/countDocuments.js";
+import { getProduct } from "../services/database/fetchFromDb.js";
+import { findOneFromDB, getManyFromDB } from "../services/database/fetchFromDb.js";
+import { queryDatabase, type ProjectionParameters } from "../services/database/DbAggregationPipeline.js";
+import { addToShopProductCount } from "../services/updateShopProductCount.js";
+import { findAndUpdate } from "../services/database/updateDocument.js";
+import { countDocuments } from "../services/database/countDocuments.js";
 
 const router = Router();
 
@@ -102,6 +103,29 @@ router.post('/product/:id', async (req, res) => {
   return res.status(200).json(product);
 });
 
+router.post('/shop/:shopId', async (req, res) => {
+  const shopId = req.params.shopId;
+
+  const findBy = { shopId };
+
+  const pagination = {
+    limit: Number(req.query.limit),
+    page: Number(req.query.page)
+  }
+
+  const options = {
+    sort: { createdAt: -1 },
+    lean: true
+  }
+
+  const fetchProduct = await getManyFromDB("product", { options, pagination, findBy });
+
+  if (!fetchProduct.found) { return res.status(500).json({ message: "error fetching products" }) }
+
+  const products = fetchProduct.payload;
+  return res.status(200).json(products);
+});
+
 // Save new product
 router.post("/new", upload.array("images", 4), requireSeller, async (req, res) => {
 
@@ -137,8 +161,9 @@ router.post("/new", upload.array("images", 4), requireSeller, async (req, res) =
     });
 
     const savedProduct = await newProduct.save();
-    // const totalProducts = await findAndUpdate("shop", )
-    console.log("Product saved successfully", savedProduct);
+    await addToShopProductCount(req.user.shopRef);
+
+    console.log("Product saved successfully");
 
     res.status(201).json({
       message: "Product created successfully",

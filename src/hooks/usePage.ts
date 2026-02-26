@@ -2,12 +2,12 @@ import { useState } from "react"
 
 export interface ErrorObject {
     errorState: boolean;
-    errorMsg?: string;
+    errorMsg: string;
 }
 
-export const usePage = () => {
+export const usePage = (initialLoading: boolean = true) => {
 
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(initialLoading);
     const [errorObj, setErrorObj] = useState<ErrorObject>({ errorState: false, errorMsg: "" });
 
     const handleError = (errorObj: ErrorObject) => {
@@ -18,10 +18,16 @@ export const usePage = () => {
         setIsLoading(isLoading);
     }
 
+    const handleRetry = () => {
+        handleError({ errorState: false, errorMsg: "" });
+        window.location.reload();
+    }
+
     return {
         isLoading,
         errorObj,
         handleError,
-        setLoading
+        setLoading,
+        handleRetry
     }
 }

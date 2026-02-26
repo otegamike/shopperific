@@ -1,15 +1,15 @@
 import { Router } from "express";
-import Shop from "../models/Shop.js";
+import Shop, { type ShopSchema } from "../models/Shop.js";
 import { requireSeller } from "../middleware/requireSeller.js";
 import { Response } from "express";
 
 import { ShopReqBody } from "../models/Shop.js";
 import { TypedRequest } from "../utils/types/utilTypes.js";
 import { toObjectId } from "../lib/mongoose.js";
-import { ShopSchema } from "../models/Shop.js";
-import { getShop, getManyFromDB } from "../services/fetchFromDb.js";
+import { getShop, getManyFromDB, findOneFromDB } from "../services/database/fetchFromDb.js";
 import { upload } from "../middleware/upload.js";
 import { uploadBuffer } from "../utils/CloudinaryHelpers.js";
+import { getShopProductCount } from "../services/getShopProductCount.js";
 
 
 const router = Router();
@@ -30,24 +30,36 @@ router.post("/", async (req, res) => {
         lean: true
     }
 
-    const fetchShop = await getManyFromDB("shop", { findBy, options, pagination });
-
+    const fetchShop = await getManyFromDB<ShopSchema>("shop", { findBy, options, pagination });
 
     if (!fetchShop.found) { return res.status(500).json({ message: "error fetching shops" }) }
 
     const shops = fetchShop.payload;
-    return res.status(200).json(shops);
+
+    const shopProductCount = await getShopProductCount(shops);
+    shops.forEach(shop => {
+        if (shopProductCount.found) {
+            shop.productsCount = shopProductCount.docCount[shop.shopName];
+        }
+    });
+
+    return res.status(200).json( shops );
 });
 
 ///////////////// GET SHOP BY SHOP ID ///////////////
-router.get("/:shopId", async (req, res) => {
+router.get("/shop/:shopId", async (req, res) => {
     const shopId = req.params.shopId;
-
-    const fetchShop = await getShop({ shopId }, Number(req.query.limit), Number(req.query.page));
+    console.log("shopId:", shopId);
+    
+    const fetchShop = await findOneFromDB<ShopSchema>("shop", { shopId });
 
     if (!fetchShop.found) { return res.status(404).json({ message: "Shop not found" }) }
+    
+    const shop = fetchShop.payload;
 
-    return res.status(200).json(fetchShop.shops);
+    console.log("shop:", shop);
+    
+    return res.status(200).json(shop);
 });
 
 ///////////////// CHECK IF SHOP ID IS AVAILABLE //////////////

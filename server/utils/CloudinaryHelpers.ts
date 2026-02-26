@@ -22,12 +22,10 @@ export const uploadBuffer = (
 };
 
 export const getPublicIdFromUrl = (url: string): string => {
-  // Split by '/' and get the parts after 'upload/'
+  
   const parts = url.split('/');
   const uploadIndex = parts.indexOf('upload');
   
-  // Join the parts after the version number (e.g., 'v1234567')
-  // and remove the file extension at the end
   const publicIdWithExtension = parts.slice(uploadIndex + 2).join('/');
   return publicIdWithExtension.split('.')[0]; 
 };
@@ -45,4 +43,41 @@ export const deleteImageByUrl = async (url: string) => {
   } catch (error) {
     console.error('Cloudinary Delete Error:', error);
   }
+};
+
+
+
+/**
+ * Deletes multiple resources from Cloudinary by their Public IDs.
+ * @param publicIds - Array of strings (the public_id of the images)
+ * @returns Object indicating success or partial failure
+ */
+export const deleteMultipleImages = async (urls: string[]) => {
+
+  const publicIds = urls.map((url: string) => getPublicIdFromUrl(url));
+
+    if (!publicIds || publicIds.length === 0) {
+        return { success: true, message: "No IDs provided" };
+    }
+
+    try {
+        const result = await cloudinary.api.delete_resources(publicIds, {
+            resource_type: 'image', 
+            type: 'upload',         
+            invalidate: true        
+        });
+        console.log("Cloudinary Bulk Delete Result:", result.deleted);
+        
+        return { 
+            success: true, 
+            deletedCount: Object.keys(result.deleted).length 
+        };
+
+    } catch (error: any) {
+        console.error("Cloudinary Bulk Delete Error:", error.message);
+        return { 
+            success: false, 
+            errorMsg: error.message || "Failed to delete images from Cloudinary" 
+        };
+    }
 };

@@ -5,6 +5,7 @@ import { cacheData, getCachedData } from "../utils/cacheData";
 import api from "../api/client";
 // types
 import type { ProductDataType, ProductCategoriesDataType } from "../types/productInterface/productInterface";
+import type { getProductFunction } from "../components/product/ProductList";
 
 export const fetchProducts = async (page: number = 1, limit: number = 12): Promise<ProductDataType | { errorMsg: string }> => {
     try {
@@ -44,16 +45,16 @@ export const fetchProduct = async (id: string): Promise<ProductDataType | { erro
     }
 }
 
-export const fetchProductsByCategory = async (category: string, page: number = 1, limit: number = 12): Promise<ProductDataType | { errorMsg: string }> => {
+export const fetchProductsByCategory = async (category: string, page: number = 1, limit: number = 12): Promise<{products: ProductDataType[]} | { errorMsg: string }> => {
     try {
         const response = await api.post(`products/category/${category}?page=${page}&limit=${limit}`);
         const { data } = response;
         console.log("data", data);
 
-        const product = data;
-        cacheData(`product-${category}-${page}-${limit}`, product);
-        console.log("product", product);
-        return product;
+        const products = data;
+        cacheData(`product-${category}-${page}-${limit}`, products);
+        console.log("product", products);
+        return { products };
 
     } catch (error: any) {
         const cachedProduct = getCachedData(`product-${category}-${page}-${limit}`);
@@ -88,5 +89,31 @@ export const fetchProductCategories = async (page: number = 1, limit: number = 1
 
         alertObj("Failed to fetch products categories", "error");
         return { errorMsg: "Failed to fetch products categories" };
+    }
+}
+
+export type GetByShopId = {shopId: string};
+
+export const fetchProductsByShopId: getProductFunction<GetByShopId> = async (getBy: GetByShopId, page: number = 1, limit: number = 12): Promise<{products: ProductDataType[] } | { errorMsg: string }> => {
+    try {
+        const response = await api.post(`products/shop/${getBy.shopId}?page=${page}&limit=${limit}`);
+        const { data } = response;
+        console.log("data", data);
+
+        const products: ProductDataType[] = data;
+        cacheData(`product-${getBy.shopId}-${page}-${limit}`, products);
+        console.log("product", products);
+        return { products };
+
+    } catch (error: any) {
+        const cachedProduct = getCachedData(`product-${getBy.shopId}-${page}-${limit}`);
+        if (cachedProduct) {
+            alertObj("couldn't connect to our servers. loading cached data" , "warning")
+            console.log("cachedProduct", cachedProduct);
+            return cachedProduct;
+        }
+
+        alertObj("Failed to fetch products", "error");
+        return { errorMsg: "Failed to fetch products" };
     }
 }

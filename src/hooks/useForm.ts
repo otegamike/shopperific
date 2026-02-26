@@ -7,7 +7,6 @@ export function useForm<T>(initialValues: T, customValidatorArray?: { key: strin
     const [formData, setFormData] = useState<T>(initialValues);
     const [loading, setLoading] = useState<boolean>(false);
     const [disableButton, setDisableButton] = useState<boolean>(false);
-    const [validateCount, setValidateCount] = useState<number>(0);
 
     // Initialize validity state: assume all fields start as false (invalid) 
     const [validity, setValidity] = useState<Partial<validityObjType<T>>>(() => {
@@ -89,8 +88,22 @@ export function useForm<T>(initialValues: T, customValidatorArray?: { key: strin
             if (result.isValid === false) setShowError(key, true);
         }
 
-        setValidateCount(prev => prev + 1);
     }, [formData]);
+
+    const validateOne = useCallback(async (key: keyof T) => {
+        const result = await handleValidation(key, (formData as any)[key], true);
+        if (result.isValid === false) setShowError(key, true);
+    }, [formData]);
+
+    const checkAllValidity = useCallback(async (exclude: string[]) => {
+        await validateAll();
+        for (const key in validity) {
+            if (exclude.includes(key)) continue;
+            if (validity[key]?.isValid === false) return {isValid: false, message: validity[key]?.message};
+        }
+        return {isValid: true, message: ""};
+    }, [validity]);
+
 
     // Derived State: Is the whole form valid?
     const isFormValid = useMemo(() => {
@@ -98,7 +111,7 @@ export function useForm<T>(initialValues: T, customValidatorArray?: { key: strin
             .filter((status): status is validityType => !!status) // Type Guard
             .every(status => status.isValid === true);
         return valid
-    }, [validity, validateCount]);
+    }, [validity, formData]);
 
     const buttonState = useMemo(() => {
         return disableButton ? "disabled" : "default";
@@ -147,6 +160,8 @@ export function useForm<T>(initialValues: T, customValidatorArray?: { key: strin
         validateAll,
         setShowError,
         validate,
-        loadHandler
+        loadHandler,
+        checkAllValidity,
+        validateOne
     };
 }

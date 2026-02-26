@@ -1,13 +1,10 @@
 import { Router, Request } from "express";
 import { requireSeller } from "../../middleware/requireSeller.js";
-import Product from "../../models/Product.js";
+import Product, { type ProductType } from "../../models/Product.js";
 // services
-import { queryDatabase, type AggregateCountObj, ProjectionParameters } from "../../services/DbAggregationPipeline.js";
-import { findAndUpdate } from "../../services/updateDocument.js";
-import { deleteByIds } from "../../services/updateDocument.js";
-import { countDocuments } from "../../services/countDocuments.js";
-import { findOneFromDB } from "../../services/fetchFromDb.js";
-import { updateOne } from "../../services/updateDocument.js";
+import { queryDatabase, type AggregateCountObj, ProjectionParameters } from "../../services/database/DbAggregationPipeline.js";
+import { findAndUpdate } from "../../services/database/updateDocument.js";
+import { deleteProductsFromShop, type DeleteProductObject } from "../../services/deleteProductsFromShop.js";
 
 // types
 import type { TypedResponse } from "../../utils/types/utilTypes.js";
@@ -16,7 +13,7 @@ import type { tResponseError } from "../../types/routesInterface.js";
 // utils
 import { toObjectId } from "../../lib/mongoose.js";
 import { upload } from "../../middleware/upload.js";
-import { uploadBuffer, deleteImageByUrl } from "../../utils/CloudinaryHelpers.js";
+import { uploadBuffer, deleteImageByUrl, deleteMultipleImages } from "../../utils/CloudinaryHelpers.js";
 
 
 const router = Router();
@@ -79,8 +76,11 @@ router.put("/products/edit/:id", upload.array("images", 4), requireSeller, async
     const { currentShop, imageToDelete, ...productData } = req.body;
     const sellerId = req.user?.userId;
     const productId = req.params.id;
+    const shopRef = req.user?.shopRef;
+    const shopId = req.user?.shopId;
+    const shopName = req.user?.shopName;
 
-    if (!sellerId || !productId) {
+    if (!sellerId || !productId || !shopRef || !shopId || !shopName) {
         console.log("invalid seller id or product id.")
         return res.status(400).json({ errorMsg: "Seller or product id not found" });
     }
@@ -107,29 +107,12 @@ router.put("/products/edit/:id", upload.array("images", 4), requireSeller, async
 
     product.images = product.images.filter((img: string) => !imagesToDelete?.includes(img));
     product.images.push(...imageUrls);
+    product.shopRef = toObjectId(shopRef);
+    product.shopId = shopId;
+    product.shopName = shopName;
+
 
     const updatedProduct = await product.save();
-
-    
-
-    // const pull = imagesToDelete.length > 0
-    //     ? { images: { $in: imagesToDelete } }
-    //     : null;
-
-    // const push = imageUrls.length > 0
-    //     ? { images: { $each: imageUrls } }
-    //     : null;
-
-    // const set = {
-    //     ...productData,
-    //     shopRef: toObjectId(currentShop)
-    // }
-
-    // const updateQuery: Record<string, any> = { $set: set };
-    // if (pull) updateQuery.$pull = pull;
-    // if (push) updateQuery.$push = push;
-
-    // const EditProduct = await updateOne("product", { _id: toObjectId(productId), sellerId }, updateQuery);
 
     if (!updatedProduct) {
         return res.status(400).json({ errorMsg: "Encounted an error editing product: " });
@@ -142,37 +125,58 @@ router.put("/products/edit/:id", upload.array("images", 4), requireSeller, async
     return res.status(200).json({ message: "Product edited successfully" })
 })
 
+
 // Delete Product by id.
-router.post("/products/delete/", requireSeller, async (req: Request, res: TypedResponse<tResponseError | { message: string }>) => {
-    const { ids } = req.body;
+router.post("/products/delete/", requireSeller, async (req: Request, res: TypedResponse<tResponseError | { message: string, deletedCount: number }>) => {
+    const { deleteObject } = req.body as { deleteObject: DeleteProductObject[] };
     const sellerId = req.user?.userId;
+    const shopRef = req.user?.shopRef;
+    const shopList = req.user?.shopList;
 
-    if (!ids) {
-        console.log("invalid ids.")
-        return res.status(400).json({ errorMsg: "Ids not found" });
+    console.log("deleteObject", deleteObject);
+    console.log("sellerId", sellerId);
+    console.log("shopRef", shopRef);
+    console.log("shopList", shopList);
+
+    // Validation
+    if (!deleteObject || !Array.isArray(deleteObject)) {
+        return res.status(400).json({ errorMsg: "Invalid deleteObject format." });
     }
 
-    if (!sellerId) {
-        console.log("invalid seller id.")
-        return res.status(400).json({ errorMsg: "Seller not found" });
+    if (!sellerId || !shopList ) {
+        return res.status(401).json({ errorMsg: "Seller authentication missing." });
     }
 
-    const deletedProducts = await deleteByIds("product", ids, { sellerId });
+    //Execute deletions
+    const results = await Promise.all(
+        deleteObject.map(async (deleteObject) => {
 
-    if (!deletedProducts.deleted) {
-        return res.status(400).json({ errorMsg: "Encounted an error deleting products: " });
+            //  Ensure the user only deletes from their own shop
+            if (!shopList?.some((shop: any) => shop._id === deleteObject.shop_id)) {
+                return { deleted: false, errorMsg: "Unauthorized shop access" };
+            }
+
+            return await deleteProductsFromShop(sellerId, deleteObject);
+        })
+    );
+
+    // Check for partial failures
+    if (results.some(r => r.deleted === false)) {
+        console.log(results);
+        return res.status(400).json({ errorMsg: "Encountered an error deleting some products." });
     }
 
-    const deletedImages: string[] = deletedProducts.deletedData.images;
-    deletedImages.forEach(async (image) => await deleteImageByUrl(image));
+    let deletedCount = 0;
 
-    const totalProducts = await countDocuments("product", { sellerId });
-    console.log(totalProducts);
-    await findAndUpdate("shop", { sellerId }, { productsCount: totalProducts });
-
-    return res.status(200).json({ message: `${deletedProducts.deletedCount} Product${deletedProducts.deletedCount === 1 ? "" : "s"} deleted successfully` })
-})
-
+    // Check for complete success
+    if (results.every(r => r.deleted === true)) {
+        const imagesToDelete = results.flatMap((result) => ("errorMsg" in result)? [] :result.imagesToDelete)
+        deletedCount = results.reduce((total, result) => total + ("deletedCount" in result ? result.deletedCount : 0), 0);
+        await deleteMultipleImages(imagesToDelete);
+    }
+    
+    return res.status(200).json({ message: "Products deleted successfully", deletedCount });
+});
 
 export default router;
 

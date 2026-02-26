@@ -126,4 +126,27 @@ export const shopValidator: ValidatorFunctionType = ( value: string) => {
     return result;
 }
 
+export const productNameValidator: ValidatorFunctionType = ( value: string) => {
+    const nameRegex = /^[a-zA-Z0-9]([a-zA-Z0-9\s\-\.\(\)\[\]]{0,98}[a-zA-Z0-9\)\!])?$/;
+    const isTooShort = value.length < 3;
+    const isTooLong = value.length > 100;
+    const isFormatValid = nameRegex.test(value);
+
+    if (isTooShort) {
+        return {isValid: false, message: "Product name must be at least 3 characters long"};
+    }
+    if (isTooLong) {
+        return {isValid: false, message: "Product name must be at most 100 characters long"};
+    }
+    if (!isFormatValid) {
+        return {isValid: false, message: "Product name contains invalid characters"};
+    }
+    const isValid = isFormatValid && !isTooShort && !isTooLong;
+    const result = {
+        isValid,
+        message: isValid ? "Value is valid" : "you must enter a product name"
+    };
+    return result;
+}
+
 

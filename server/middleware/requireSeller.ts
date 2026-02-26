@@ -13,13 +13,24 @@ export const requireSeller = async (req: Request, res: Response, next: NextFunct
 
     const currentShopRef = currentShop?{ _id: toObjectId(currentShop) }:{ };
 
-    const shop = await Shop.findOne({ sellerId: req.user.userId, ...currentShopRef });
-    
+   const [shop, shopList] = await Promise.all([
+        Shop.findOne({ sellerId: req.user.userId, ...currentShopRef }),
+        Shop.find({ sellerId: req.user.userId }, { _id: 1, shopName: 1 }, {lean: true})
+    ]);
+
     if (shop) {
        req.user.sellerId = shop.sellerId;
        req.user.shopRef = shop._id.toString();
        req.user.shopName = shop.shopName;
        req.user.shopId = shop.shopId;
+    }
+
+    if (shopList) {
+        const newShopList = shopList.map((shop: any) => ({
+            _id: shop._id.toString(),
+            shopName: shop.shopName
+        }));
+        req.user.shopList = newShopList;
     }
 
     next();

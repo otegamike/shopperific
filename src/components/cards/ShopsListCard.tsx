@@ -12,7 +12,7 @@ export function ShopsListCard({loading = true, shopData }: CategoryCardProps) {
     const navigate = useNavigate();
 
     const handleNavigate = () => {
-        navigate(`/products/category/${shopData.shopName}`);
+        navigate(`/shops/shop/${shopData.shopId}`);
     }
 
   return (

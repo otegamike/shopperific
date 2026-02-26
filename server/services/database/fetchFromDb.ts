@@ -1,6 +1,6 @@
-import Product from "../models/Product.js"
-import Shop from "../models/Shop.js";
-import User from "../models/User.js";
+import Product from "../../models/Product.js"
+import Shop from "../../models/Shop.js";
+import User from "../../models/User.js";
 
 import { getModels } from "./models.js";
 
@@ -127,13 +127,13 @@ export const getFromDb = async (
     }
 }
 
-export const findOneFromDB = async (
+export const findOneFromDB = async <T>(
     model: models,
     findBy: object,
-    selectFields: string  = "",
+    selectFields: string = "",
     options: object = { lean: true }):
     Promise<
-        | { found: true, payload: object }
+        | { found: true, payload: T }
         | { found: false }
     > => {
 
@@ -141,7 +141,7 @@ export const findOneFromDB = async (
 
     try {
         const payload = await Model.findOne(findBy, selectFields, options);
-        if (!payload) { 
+        if (!payload) {
             throw new Error(`couldn't find ${selectFields} with ${findBy} in ${model}`);
         };
         return { found: true, payload };
@@ -160,11 +160,11 @@ export interface DBQueryParameters {
     pagination?: { limit: number, page: number }
 }
 
-export const getManyFromDB = async (
+export const getManyFromDB = async <ModelSchema>(
     model: models,
     queryParameters: DBQueryParameters = {}):
     Promise<
-        | { found: true, payload: object }
+        | { found: true, payload: ModelSchema[] }
         | { found: false }
     > => {
 
@@ -184,7 +184,7 @@ export const getManyFromDB = async (
 
     try {
         const payload = await Model.find(findBy, selectFields, { skip, limit, ...options });
-        if (!payload) { 
+        if (!payload) {
             throw new Error(`couldn't find ${selectFields} with ${findBy} in ${model}`);
         };
         return { found: true, payload };

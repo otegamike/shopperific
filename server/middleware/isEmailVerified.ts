@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import { findOneFromDB } from "../services/fetchFromDb.js";
+import { findOneFromDB } from "../services/database/fetchFromDb.js";
 
 export const isEmailVerified = async (req: Request, res: Response, next: NextFunction) => {
 

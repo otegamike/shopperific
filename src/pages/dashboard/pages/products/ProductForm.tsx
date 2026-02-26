@@ -8,7 +8,7 @@ import { useFormContext } from '../../../../hooks/useFormContext';
 
 //utils
 // import { alertObj } from '../../../../utils/alerts/alert';
-import { numberValidator, categoryValidator, shopValidator } from '../../../../utils/validateForms';
+import { numberValidator, categoryValidator, shopValidator, productNameValidator } from '../../../../utils/validateForms';
 //motion
 import { motion } from "framer-motion"
 
@@ -39,7 +39,7 @@ interface ProductFormProps {
 }
 function ProductForm({ reloadProductsData, shopList, editMode, productData }: ProductFormProps) {
 
-    const { formData, handleChange, updateSpecificField, resetForm, isFormValid, validity, validate, validateAll } = useForm<NewProductDataType>({
+    const { formData, handleChange, updateSpecificField, resetForm, validateOne, validity, validate, checkAllValidity } = useForm<NewProductDataType>({
         currentShop: productData?.shopRef || "",
         name: productData?.name ||  "",
         description: productData?.description || "",
@@ -48,6 +48,7 @@ function ProductForm({ reloadProductsData, shopList, editMode, productData }: Pr
         subCategory: productData?.subCategory || "",
         stock: productData?.stock || 0
     }, [
+        {key: "name", customvalidator: {asyncFunction: false, validatorFunction: productNameValidator} },
         {key: "price", customvalidator: {asyncFunction: false, validatorFunction: numberValidator} },
         {key: "stock", customvalidator: {asyncFunction: false, validatorFunction: numberValidator} },
         {key: "category", customvalidator: {asyncFunction: false, validatorFunction: categoryValidator} },
@@ -82,11 +83,12 @@ function ProductForm({ reloadProductsData, shopList, editMode, productData }: Pr
         focusButton();
 
         // validate form
-        await validateAll();
-        if (!isFormValid || !imageIsValid) {
+        await validateOne("currentShop");
+        const validityResult = await checkAllValidity(["currentShop"]);
+        if (!validityResult.isValid || !imageIsValid || validityResult.message !== "") {
             setShowImageError(true);
             setLoading(false);
-            alertObj("Some forms are invalid or empty", "error");
+            alertObj(validityResult.message || "Some forms are invalid or empty", "error");
             return;
         }
         

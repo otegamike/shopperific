@@ -2,30 +2,30 @@ import { Router } from "express";
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import { createToken } from "../utils/createToken.js";
-import {addDevice} from "../utils/addDevice.js";
+import { addDevice } from "../utils/addDevice.js";
 import type { TypedRequest, TypedResponse, loginRequestBody, registerRequestBody, NewUSerOBj } from "../utils/types/utilTypes.js";
 
 //utils
 import { setRefreshTokensArray } from "../utils/RefreshDBTokens.js";
 
 // types
-import type { userObj , Role } from "../types/validationInterface.js";
+import type { userObj, Role } from "../types/validationInterface.js";
 
 // for Email Verification 
-import { genToken, verifyurl, hashToken } from "../services/EmailVerificationToken.js";
-import { sendVerifyEmail } from "../services/sendMail.js";
-import { getFromDb } from "../services/fetchFromDb.js";
+import { genToken, verifyurl, hashToken } from "../services/database/EmailVerificationToken.js";
+import { sendVerifyEmail } from "../services/database/sendMail.js";
+import { getFromDb } from "../services/database/fetchFromDb.js";
 import { RegisterUserType } from "../models/User.js";
 
 //types 
-import type { ClientUser , LoginResponse } from "../types/authenticationInterface.js";
+import type { ClientUser, LoginResponse } from "../types/authenticationInterface.js";
 
 const router = Router();
 
 // Register Route
 router.post("/register", async (req: TypedRequest<registerRequestBody>, res: TypedResponse<{ message: string, clientUser?: ClientUser }>) => {
 
-    const { firstName, lastName , email, password, role } = req.body;
+    const { firstName, lastName, email, password, role } = req.body;
     const deviceId = req.headers["x-device-id"] as string;
 
     if (!deviceId || !email || !password || !firstName || !lastName || !role) {
@@ -42,7 +42,7 @@ router.post("/register", async (req: TypedRequest<registerRequestBody>, res: Typ
         const salt = await bcrypt.genSalt();
         const hashedpassword = await bcrypt.hash(password, salt);
 
-        const userData : RegisterUserType = {
+        const userData: RegisterUserType = {
             firstName,
             lastName,
             email,
@@ -56,13 +56,13 @@ router.post("/register", async (req: TypedRequest<registerRequestBody>, res: Typ
 
         // Create RefreshToken with user info
         const newUserid = newUser._id.toString();
-        const newUserObj: userObj = { 
-            userId: newUserid, email: 
-            newUser.email, role: 
-            newUser.role 
+        const newUserObj: userObj = {
+            userId: newUserid, email:
+                newUser.email, role:
+                newUser.role
         };
 
-        const {newRefreshTokenArr, refreshToken} = setRefreshTokensArray( newUserObj, deviceId, );
+        const { newRefreshTokenArr, refreshToken } = setRefreshTokensArray(newUserObj, deviceId,);
         newUser.refreshTokens = newRefreshTokenArr;
         await newUser.save();
 
@@ -74,21 +74,21 @@ router.post("/register", async (req: TypedRequest<registerRequestBody>, res: Typ
             maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         });
 
-        const clientUser = {firstName: newUser.firstName, email: newUser.email, role: newUser.role };
+        const clientUser = { firstName: newUser.firstName, email: newUser.email, role: newUser.role };
 
         console.log("New user registered");
-        return res.status(201).json({ message: "User registered successfully." , clientUser});
+        return res.status(201).json({ message: "User registered successfully.", clientUser });
 
     } catch (error) {
 
         console.error("Error during registration:", error);
-        res.status(500).json({ message: "Server error during registration."});
+        res.status(500).json({ message: "Server error during registration." });
     }
 
-}); 
+});
 
 // Login Route
-router.post("/login", async (req: TypedRequest<loginRequestBody>, res: TypedResponse<LoginResponse>) => { 
+router.post("/login", async (req: TypedRequest<loginRequestBody>, res: TypedResponse<LoginResponse>) => {
     const { email, password } = req.body;
     const deviceId = req.headers["x-device-id"] as string;
     let clientUser: ClientUser;
@@ -98,16 +98,16 @@ router.post("/login", async (req: TypedRequest<loginRequestBody>, res: TypedResp
         return;
     }
 
-    if (email==="admin@admin.com"&&password==="Admin&&67") {
-        clientUser = {  firstName: "Admin", email: email, role: "Admin" };
-        return res.status(200).json({message: "Admin Login Successful.", user: clientUser});
+    if (email === "admin@admin.com" && password === "Admin&&67") {
+        clientUser = { firstName: "Admin", email: email, role: "Admin" };
+        return res.status(200).json({ message: "Admin Login Successful.", user: clientUser });
     }
 
     try {
         const user = await User.findOne({ email });
 
         if (!user) {
-            res.status(400).json({ errorMsg: "incorrect username."});
+            res.status(400).json({ errorMsg: "incorrect username." });
             return;
         }
         const isMatch = await bcrypt.compare(password, user.password);
@@ -120,13 +120,13 @@ router.post("/login", async (req: TypedRequest<loginRequestBody>, res: TypedResp
 
         // Create RefreshToken with user info
         const userId = user._id.toString();
-        const userObj: userObj = { 
-            userId, 
-            email: user.email, 
-            role: user.role 
+        const userObj: userObj = {
+            userId,
+            email: user.email,
+            role: user.role
         };
 
-        const {newRefreshTokenArr, refreshToken} = setRefreshTokensArray( userObj, deviceId, user.refreshTokens );
+        const { newRefreshTokenArr, refreshToken } = setRefreshTokensArray(userObj, deviceId, user.refreshTokens);
         user.refreshTokens = newRefreshTokenArr;
         await user.save();
 
@@ -139,14 +139,14 @@ router.post("/login", async (req: TypedRequest<loginRequestBody>, res: TypedResp
 
         res.setHeader("Authorization", `Bearer ${createToken(userObj, "access")}`);
 
-        clientUser = { 
-            firstName: user.firstName, 
-            email: user.email, 
-            role: user.role 
+        clientUser = {
+            firstName: user.firstName,
+            email: user.email,
+            role: user.role
         };
 
         console.log("User logged in:", user);
-        return res.status(200).json({user: clientUser , message: "Login successful." });
+        return res.status(200).json({ user: clientUser, message: "Login successful." });
 
     } catch (err) {
         console.error("Error during login:", err);
@@ -159,29 +159,29 @@ router.get('/verify-email', async (req, res) => {
     const token = req.query.token || req.body.code;
 
     if (!token) {
-        return res.status(403).json({ error : "Missing verification Code or token." });
+        return res.status(403).json({ error: "Missing verification Code or token." });
     }
 
     console.log("verifying Email...");
 
     const hash = hashToken(token);
-    if (!hash.hashed) { 
-        return res.status(500).json({ error : "internal server error. Please try again." });
+    if (!hash.hashed) {
+        return res.status(500).json({ error: "internal server error. Please try again." });
     }
 
     const hashedToken = hash.hashedToken as string;
 
     const user = await User.findOne({
         $or: [
-            { emailVerificationToken: hashedToken},
-            { emailVerificationCode: hashedToken}
+            { emailVerificationToken: hashedToken },
+            { emailVerificationCode: hashedToken }
         ],
         emailVerificationExpires: { $gt: Date.now() },
     });
 
     if (!user) {
         return res.status(400).json({
-        message: "Invalid or expired verification code",
+            message: "Invalid or expired verification code",
         });
     }
 
@@ -191,20 +191,20 @@ router.get('/verify-email', async (req, res) => {
     user.emailVerificationExpires = undefined;
 
     await user.save();
-   
+
     return res.status(200).json({ message: "your account has successfully been verified" });
 
 })
 
 router.get('/test', async (req, res) => {
 
-    const getUser = await getFromDb("user", {email: "yellowr@test.com"}, "role" , 1);
+    const getUser = await getFromDb("user", { email: "yellowr@test.com" }, "role", 1);
     if (getUser?.found && getUser.data) {
-        return res.status(200).json( getUser.data );
+        return res.status(200).json(getUser.data);
     } else {
-        return res.status(500).json({ error : "internal server error. Please try again." });
+        return res.status(500).json({ error: "internal server error. Please try again." });
     }
-    
+
 });
 
 export default router;

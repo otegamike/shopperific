@@ -4,6 +4,7 @@ import "./product-details.css"
 // react
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 // types
 import type { ProductType } from '../../types/productInterface/productInterface'
@@ -29,7 +30,7 @@ function ProductDetails({ product }: ProductDetailsProps) {
             <ProductImageCarousel images={product.images || []} />
             <div className="product__info">
                 <div className="product__name__container">
-                    <p className="product__shopName">{product.shopName}</p>
+                    <Link to={`/shops/shop/${product.shopId}`} className="product__shopName">{product.shopName}</Link>
                     <h1 className="product__name">{product.name}</h1>
                 </div>
                 <p className="product__price">${product.price}</p>

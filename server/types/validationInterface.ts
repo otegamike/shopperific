@@ -6,11 +6,17 @@ export interface userObj {
     role: Role;
 }
 
+export interface shopList {
+    _id: string;
+    shopName: string;
+}
+
 export interface reqVariables {
     shopRef?: string;
     sellerId?: string;
     shopId?: string;
     shopName?: string;
+    shopList?: shopList[];
     productId?: string;
     orderId?: string;
 }

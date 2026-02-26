@@ -53,20 +53,26 @@ export const editProduct = async (productId: string, formData: FormData):
     }
 }
 
+interface DeleteProductObject {
+    shop_id: string;
+    productIds: string[];
+}
+
 // delete product
-export const deleteProduct = async (ids: string[] ): 
+export const deleteProduct = async ( deleteObject : DeleteProductObject[] ): 
     Promise<
         | {deleted: true, message: string}
         | {deleted: false, errorMsg: string}
     > => {
     try {
-        const response = await api.post(`/dashboard/products/delete`, {ids});
+        const response = await api.post(`/dashboard/products/delete`, {deleteObject});
         const { message } = response.data;
         return { deleted: true, message };
 
     } catch (error: any) {
-        console.error("Error deleting product:", error.message);
-        return { deleted: false, errorMsg: "Error deleting product" }
+        const errorMsg = error.response?.data?.errorMsg || error.message;
+        console.error("Error deleting product:", errorMsg);
+        return { deleted: false, errorMsg: errorMsg || "Error deleting product" }
     }
 }
 

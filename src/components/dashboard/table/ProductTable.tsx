@@ -15,13 +15,6 @@ import DeleteSvg from "../../../assets/svg/DeleteSvg";
 import LoaderSvg from "../../../assets/svg/loader";
 import CollapseSvg from "../../../assets/svg/Collapse";
 
-
-// services
-import { deleteProduct } from "../../../services/DashboardDataServices";
-
-// utils
-import { alertObj } from "../../../utils/alerts/alert";
-
 // types
 import type { ProductActions } from "../../../pages/dashboard/pages/products/Products";
 
@@ -122,13 +115,9 @@ export const TableActions = ({ productId, handleActions, panelStyles, buttonStyl
             handleActions.collapse();
         }
         setIsDeleting(true);
-        const deleteProductResponse = await deleteProduct([productId]);
-        if (deleteProductResponse.deleted) {
-            alertObj(deleteProductResponse.message, "success");
-            handleActions.delete(productId);
-        } else {
-            alertObj(deleteProductResponse.errorMsg, "error");
-        }
+        
+        await handleActions.delete(productId);
+        
         setIsDeleting(false);
     }
 
