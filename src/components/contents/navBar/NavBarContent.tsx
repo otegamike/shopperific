@@ -20,7 +20,7 @@ import type { ClientUser } from "../../../types/clientUser"
 
 function NavBarContent() {
   const { user } = useAuth();
-  const userName = user?.firstName;
+  const isGuest =  user?.role === "guest";
 
   const ButtonPage = {
     signIn: "/auth/login",
@@ -35,7 +35,7 @@ function NavBarContent() {
       </div>
 
 
-      <li className="panel__button"><Link to={userName ? ButtonPage.dashboard : ButtonPage.signIn} ><Button type="main" className="full__btn" id="panel-button" content={userName ? "Dashboard" : "Sign in"} /></Link></li>
+      <li className="panel__button"><Link to={isGuest ? ButtonPage.signIn : ButtonPage.dashboard} ><Button type="main" className="full__btn" id="panel-button" content={isGuest ? "Sign in" : "Dashboard"} /></Link></li>
       <li><Link className="panel-item" to="/shops"><ShopSvg size={20} />Shops</Link></li>
       <li><Link className="panel-item" to="/products"><CartSvg size={20} />Products</Link></li>
       <li><Link className="panel-item" to="/products/categories"><CategoriesSvg size={20} />Categories</Link></li>
@@ -50,8 +50,10 @@ export default NavBarContent
 
 const usernameComponet = (user: ClientUser | null): React.ReactNode => {
     const userName = user?.firstName;
+    const isGuest =  user?.role === "guest";
+
     let component;
-    if (!userName) {
+    if (isGuest || !userName) {
         component = (
           <>
             <UserSvg size={70} fill="var(--secondary-color)" />

@@ -1,10 +1,13 @@
 import type { ClientUser } from "./clientUser";
+import type { CartItem } from "./CartInterface";
 
 export interface AuthContextType {
   user: ClientUser | null;
+  cart: CartItem[] | null;
   updateUser: (newUser: ClientUser) => void ;
   login: (credentials: LoginCredentials) => Promise<void>;
   logout: () => void;
+
   isLoading: boolean;
 }
 

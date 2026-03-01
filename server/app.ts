@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 // Middleware 
 import { connectToDb } from './middleware/connectToDb.js';
 import { validateUser } from './middleware/validateUser.js';
+import { requireValidation } from './middleware/requireValidation.js';
 import { isEmailVerified } from './middleware/isEmailVerified.js';
 import cookieParser from 'cookie-parser';
 
@@ -12,8 +13,10 @@ import authRoutes from './routes/auth.js';
 import productsRoutes from './routes/products.js';
 import shopRoutes from './routes/shops.js'
 import verifyEmailRoute from  './routes/auth/verifyEmail.js'
+import validateRoute from './routes/auth/validate.js'
 import sellerRoutes from './routes/seller.js'
 import dashboardRoutes from './routes/dashboard/products.js'
+import cartRoutes from './routes/cart.js'
 
 // Load environment variables from .env file
 dotenv.config();
@@ -35,11 +38,22 @@ app.use ((req, res, next) => {
 // connect to database
 app.use( connectToDb );
 
-// Log in and register routes
-app.use('/api/auth', authRoutes);
 
 // Validate user for all routes below
 app.use( validateUser );
+
+// Log in and register routes
+app.use('/api/auth', authRoutes);
+
+app.use('/api/auth', validateRoute);
+
+app.use('/api/cart', cartRoutes);
+
+app.use('/api/products', productsRoutes);
+
+app.use('/api/shops', shopRoutes);
+
+app.use( requireValidation );
 
 app.use('/api/verify-email', verifyEmailRoute);
 
@@ -47,11 +61,9 @@ app.use('/api/verify-email', verifyEmailRoute);
 
 app.use('/api/dashboard', dashboardRoutes);
 
-app.use('/api/products', productsRoutes);
 
 app.use('/api/sellers', sellerRoutes);
 
-app.use('/api/shops', shopRoutes);
 
 
 app.get("/api/health", (req, res) => {

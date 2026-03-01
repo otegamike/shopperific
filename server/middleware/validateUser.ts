@@ -5,6 +5,10 @@ import { decodeToken } from "../utils/decodeToken.js";
 import dotenv from "dotenv";
 import { checkTokenDb } from "../utils/checkTokenDb.js";
 
+// services
+import { getGuest, createGuest } from "../services/guest.js";
+import { getUserById } from "../services/user.js";
+
 // types 
 import type { userObj } from "../types/validationInterface.js";
 import type { TypedResponse } from "../utils/types/utilTypes.js";
@@ -14,9 +18,11 @@ dotenv.config();
 
 export const validateUser = async (
   req: Request,
-  res: TypedResponse<{errorMsg: string , validated: boolean}>,
+  res: TypedResponse<{errorMsg: string }>,
   next: NextFunction
 ) => {
+
+    console.log("Validating user...");
 
   //checks
   let userObj: userObj | null = null;
@@ -27,6 +33,7 @@ export const validateUser = async (
   const deviceId = req.headers["x-device-id"] as string;
   const authHeader = req.headers.authorization;
   const refreshToken = req.cookies?.refreshToken;
+  let cartId = null;
 
     if (authHeader?.startsWith("Bearer ")) {
         console.log("Access token found in Authorization header. Verifying...");
@@ -53,6 +60,14 @@ export const validateUser = async (
             const payload = verifyToken.payload as { userId: string; email: string; role: "buyer" | "seller" };
             
             // Check if token exists in DB for that user and device
+            const user = await getUserById(payload.userId);
+            if (!user) {
+                console.log("User not found");
+                return res.status(401).json({ errorMsg: "Unauthorized" });
+            }
+
+            cartId = user.cartId;
+
             const tokenValidInDb = await checkTokenDb(refreshToken, deviceId, payload.userId);
             if (tokenValidInDb) {
                 userObj = { userId: payload.userId, email: payload.email, role: payload.role };
@@ -66,14 +81,31 @@ export const validateUser = async (
     }
 
     if (!isVerified || !userObj) {
-        console.log("Unauthorized", "Couldn't verify user");
-        return res.status(401).json({ errorMsg: "Unauthorized" , validated: false});
+        console.log("Unauthorized Couldn't verify user");
+        let guest = await getGuest(deviceId);
+        
+
+        if (!guest) {
+            const newGuest = await createGuest(deviceId);
+
+            if (!newGuest) {
+                console.log("Error creating guest");
+                return res.status(500).json({ errorMsg: "Internal Server Error" });
+            }
+            guest = newGuest;
+        }
+
+        userObj = { userId: guest._id, email: "", role: "guest" };
+        cartId = guest.cartId;
     }
     
     if (newAccessToken) {
        res.setHeader("Authorization", `Bearer ${newAccessToken}`);
     }
 
-        req.user = userObj;  
-        next(); 
-};
+    req.user = userObj;  
+    if (isVerified) req.user.validated = true;
+    if (deviceId) req.user.deviceId = deviceId;
+    if (cartId) req.user.cartId = cartId;
+    next(); 
+}

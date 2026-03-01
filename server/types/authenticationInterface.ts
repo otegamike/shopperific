@@ -1,3 +1,4 @@
+import { Role } from "./validationInterface.js";
 export interface LoginCredentials {
     email: string;
     password: string;
@@ -6,7 +7,7 @@ export interface LoginCredentials {
 export interface ClientUser {
     firstName: string;
     email: string;
-    role: "buyer" | "seller" | "Admin";
+    role: Role;
 }
 
 export interface reqVariables {

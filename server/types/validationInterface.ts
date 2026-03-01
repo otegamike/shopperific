@@ -1,4 +1,4 @@
-export type Role = "buyer" | "seller" | "admin";
+export type Role = "buyer" | "seller" | "guest" | "admin";
 
 export interface userObj {
     userId: string;
@@ -12,6 +12,9 @@ export interface shopList {
 }
 
 export interface reqVariables {
+    validated?: boolean;
+    deviceId?: string;
+    cartId?: string;
     shopRef?: string;
     sellerId?: string;
     shopId?: string;

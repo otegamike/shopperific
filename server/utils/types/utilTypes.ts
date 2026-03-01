@@ -22,7 +22,7 @@ export interface registerRequestBody {
 export interface NewUSerOBj {
     userId: string;
     email: string;
-    role: "buyer" | "seller";
+    role: "buyer" | "seller" | "guest" | "Admin";
 }
 
 type baseReqUser = NewUSerOBj;
@@ -46,7 +46,7 @@ export interface AuthUser {
 export interface ClientUser {
     firstName: string;
     email: string;
-    role: "buyer" | "seller" | "Admin";
+    role: "buyer" | "seller" | "guest" | "Admin";
 }
 
 export type ReqUser = baseReqUser & reqVariables;

@@ -30,12 +30,17 @@ export interface RefreshTokens {
   refreshTokens: RefreshTokenEntry[];
 }
 
-export type User = 
+type CartId = {
+  cartId: string;
+}
+
+export type UserDocument = 
   VerifyEmailType & 
   RefreshTokens & 
-  RegisterUserType;
+  RegisterUserType &
+  CartId;
 
-const UserSchema = new Schema<User>(
+const UserSchema = new Schema<UserDocument>(
   {
    
     firstName: {
@@ -73,6 +78,14 @@ const UserSchema = new Schema<User>(
     refreshTokens: {
       type: [RefreshTokenEntrySchema],
       default: [],
+    },
+
+    // Cart
+    cartId: {
+      type: String,
+      required: false,
+      unique: true,
+      default: null,
     },
 
 

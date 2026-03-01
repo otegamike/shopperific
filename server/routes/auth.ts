@@ -99,7 +99,7 @@ router.post("/login", async (req: TypedRequest<loginRequestBody>, res: TypedResp
     }
 
     if (email === "admin@admin.com" && password === "Admin&&67") {
-        clientUser = { firstName: "Admin", email: email, role: "Admin" };
+        clientUser = { firstName: "Admin", email: email, role: "admin" };
         return res.status(200).json({ message: "Admin Login Successful.", user: clientUser });
     }
 
