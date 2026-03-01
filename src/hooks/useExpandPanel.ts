@@ -14,14 +14,14 @@ export interface ExpandProps {
 }
 
 
-export const useExpandPanel = (expandFrom: string, expandTo: string) => {
+export const useExpandPanel = (expandFromId: string, expandToId: string) => {
     const [expandProps, setExpandProps] = useState<ExpandProps | null>(null);
 
-    const mountId = expandTo;
+    const mountId = expandToId;
 
     const handleExpandPanel = (e: React.MouseEvent<HTMLButtonElement>, productid: string) => {
-        const container = document.getElementById(expandTo);
-        const nearestActionPanel = e.currentTarget.closest<HTMLElement>(`.${expandFrom}`);
+        const container = document.getElementById(expandToId);
+        const nearestActionPanel = e.currentTarget.closest<HTMLElement>(`.${expandFromId}`);
 
         const initialPosition = getRelativePosition(container, nearestActionPanel)
 
@@ -37,7 +37,7 @@ export const useExpandPanel = (expandFrom: string, expandTo: string) => {
     }
 
     const handleCollapsePanel = () => {
-        const container = document.getElementById(expandTo);
+        const container = document.getElementById(expandToId);
 
         if (container) {
             container.style.overflow = "auto";

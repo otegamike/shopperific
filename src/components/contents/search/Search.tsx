@@ -44,8 +44,10 @@ function Search({ searchBounds, dynamic = false }:searchProp) {
 
     return (
         <div className="search-bounds" style={ searchBounds ?  searchBounds : {} } >
-            <input type="text" style={dynamic ? { "--search-width": searchWidth } as React.CSSProperties : {}} id="search" name="search" placeholder="Search" />
-            <SearchSvg size={25} fill="var(--panel-color-dark)" style={{ opacity: 0.5 }} className="search-icon" />
+            <div className="search__container">
+                <input type="text" style={dynamic ? { "--search-width": searchWidth } as React.CSSProperties : {}} id="search" name="search" placeholder="Search" />
+                <SearchSvg size={23} fill="var(--panel-color-dark)" style={{ opacity: 0.5 }} className="search-icon" />
+            </div>
         </div>
     )
 }

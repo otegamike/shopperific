@@ -1,7 +1,7 @@
 import type { SvgProps } from "./svgInterface"
 
 
-const CartCheck =({size = 30, fill = "#f1f2f5", className, props}: SvgProps) => (
+const BackButton =({size = 30, fill = "#f1f2f5", className, props}: SvgProps) => (
     <svg
         viewBox="0 0 42 42"
         xmlns="http://www.w3.org/2000/svg"
@@ -21,4 +21,4 @@ const CartCheck =({size = 30, fill = "#f1f2f5", className, props}: SvgProps) => 
         />
     </svg>  
 );
-export default CartCheck;
+export default BackButton;

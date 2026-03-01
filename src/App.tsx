@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 
 // Context
 import { AuthContextProvider } from './context/AuthContext'
+import { CartContextProvider } from './context/CartContext'
 
 // Components
 import ProtectedRoute from './components/protectedRoutes/protectedRoutes'
@@ -28,28 +29,30 @@ function App() {
   return (
     <>
       <AuthContextProvider>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/auth/login" element={<SignIn form="login" />} />
-          <Route path="/auth/register" element={<SignIn form="register" />} />
-          <Route path="/auth/verify-email" element={<SignIn form="verifyEmail"/>} />
-          <Route path="/products" element={<Products />} />
-          <Route path="/products/categories" element={<Categories />} />
-          <Route path="/products/category/:category" element={<Category />} />
-          <Route path="/product/:id" element={<Product />} />
-          <Route path="/shops/shop/:shopId" element={<ShopDetails />} />
+        <CartContextProvider>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/auth/login" element={<SignIn form="login" />} />
+            <Route path="/auth/register" element={<SignIn form="register" />} />
+            <Route path="/auth/verify-email" element={<SignIn form="verifyEmail"/>} />
+            <Route path="/products" element={<Products />} />
+            <Route path="/products/categories" element={<Categories />} />
+            <Route path="/products/category/:category" element={<Category />} />
+            <Route path="/product/:id" element={<Product />} />
+            <Route path="/shops/shop/:shopId" element={<ShopDetails />} />
 
-          <Route path="/shops" element={<Shops />} />
+            <Route path="/shops" element={<Shops />} />
 
-          <Route element={<ProtectedRoute />}>
-            <Route element={<RequireSeller />}>
-              <Route path="/new-shop" element={<NewShop />} />
+            <Route element={<ProtectedRoute />}>
+              <Route element={<RequireSeller />}>
+                <Route path="/new-shop" element={<NewShop />} />
+              </Route>
+              <Route path="/become-seller" element={<BecomeSeller />} />
+              {DashboardRoutes()}
             </Route>
-            <Route path="/become-seller" element={<BecomeSeller />} />
-            {DashboardRoutes()}
-          </Route>
-        </Routes>
+          </Routes>
+        </CartContextProvider>
       </AuthContextProvider>
     </>
   )

@@ -5,7 +5,7 @@ import Header from '../../components/header/Header'
 import { fetchProducts } from '../../services/fetchProducts'
 
 // types
-import type { ProductType } from '../../types/productInterface/productInterface'
+import type { ProductDataType } from '../../types/productInterface/productInterface'
 import type { ErrorObject } from '../../types/errorComponentInterface'
 
 // react
@@ -15,7 +15,7 @@ import { useState, useEffect } from 'react'
 import InfiniteScrollGrid from '../../components/common/InfiniteScrollGrid'
 
 const Products = () => {
-    const [products, setProducts] = useState<ProductType[]>([]);
+    const [products, setProducts] = useState<ProductDataType[]>([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
@@ -27,7 +27,7 @@ const Products = () => {
         try {
             const res = await fetchProducts(pageToLoad);
 
-            let newProducts: ProductType[] = [];
+            let newProducts: ProductDataType[] = [];
 
             if (Array.isArray(res)) {
                 newProducts = res;

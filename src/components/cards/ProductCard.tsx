@@ -2,16 +2,22 @@
 import { useNavigate } from "react-router-dom";
 
 import "./card.css"
-import type { ProductType } from "../../types/productInterface/productInterface";
+import type { ProductDataType } from "../../types/productInterface/productInterface";
 
 // svg
 import CartCheck from "../../assets/svg/CartCheck";
+
+// hooks
+import { useCartContext } from "../../hooks/useCartContext";
+
+// components
+import { CartAddRemoveButtons } from "../cart/cart-items/cartItemList";
 
 interface ProductCardProps {
     orientation?: string;
     className?: string;
     loading?: boolean;
-    product?: ProductType;
+    product?: ProductDataType;
 }
 
 function ProductCard({ orientation = "row", className, loading = true, product }: ProductCardProps) {
@@ -20,6 +26,9 @@ function ProductCard({ orientation = "row", className, loading = true, product }
     const goToProduct = () => {
         navigate(`/product/${product?._id}`);
     }
+
+    const { addToCart, cartItems, increaseQuantity, decreaseQuantity, removeFromCart } = useCartContext();
+    const cartItem = cartItems.find((item) => item.productId === product?._id);
 
     return (
         <div onClick={goToProduct} className={`product__card  ${loading ? "loading" : ""} ${orientation} ${className}`} >
@@ -36,16 +45,28 @@ function ProductCard({ orientation = "row", className, loading = true, product }
                     {!loading && `$${product?.price}`}
                 </span>
 
-                <button className={`product__button ${loading ? "skeleton__loader" : ""}`}>
+                {!loading && cartItem ? 
+                    <CartAddRemoveButtons 
+                        cartItem={cartItem} 
+                        cartActions={{increaseQuantity, decreaseQuantity, removeFromCart, addToCart}} 
+                        itemQuantity={cartItem.productQuantity} 
+                    /> 
+                    : 
+                    <button className={`product__button ${loading ? "skeleton__loader" : ""}`} onClick={(e) => {
+                            e.stopPropagation();
+                            addToCart(product!);
+                        }}
+                    >
                     {!loading && <CartCheck size={20} />}
-                </button>
+                    </button>
+                }
             </span>
         </div>
     )
 }
 
 export const ProductCardComponent: React.FC<{
-    product?: ProductType,
+    product?: ProductDataType,
     last?: boolean,
     orientation?: "row" | "grid",
     loading?: boolean
