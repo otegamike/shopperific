@@ -14,3 +14,9 @@ export interface CartInterface {
     items: CartItem[];
     totalAmount: number;
 }
+
+export interface ClientCart {
+    cartItems: CartItem[];
+    totalItems?: number;
+    totalPrice: number;
+}

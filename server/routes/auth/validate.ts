@@ -2,25 +2,25 @@ import { Router } from "express";
 
 // services
 import { getUserById } from "../../services/user.js";
-import { getCart } from "../../services/cart.js";
+import { getCart, convertCartToClientCart } from "../../services/cart.js";
 
 // types
 import type { Request } from "express";
 import type { TypedResponse } from "../../utils/types/utilTypes.js";
 import type { tResponseError } from "../../types/routesInterface.js";
 import type { ClientUser } from "../../types/authenticationInterface.js";
-import type { CartItem } from "../../types/cartInterface.js";
+import type { ClientCart } from "../../types/cartInterface.js";
 
 const router = Router();
 
 type tValidateErrorResponse = tResponseError & {validated: false};
-type tValidateSuccessResponse = {message: string, user: ClientUser, cart: CartItem[] | null};
+type tValidateSuccessResponse = {message: string, user: ClientUser, cart: ClientCart | null};
 
 router.post("/validate", async (req: Request, res: TypedResponse<tValidateSuccessResponse | tValidateErrorResponse>) => {
     const user = req.user;
 
     if (!user) {
-        console.log("Unauthorized Couldn't verify user new");
+        console.log("Unauthorized Couldn't verify user");
         res.status(401).json({ errorMsg: "Unauthorized", validated: false });
         return;
     }
@@ -36,13 +36,14 @@ router.post("/validate", async (req: Request, res: TypedResponse<tValidateSucces
     }
 
     const cartId = user.cartId;
-    let cart: CartItem[] | null = null;
+    let cart: ClientCart | null = null;
     if ( cartId ) {
         const userCart = await getCart(cartId);
         if (userCart) {
-            cart = userCart.items;
+            cart = convertCartToClientCart(userCart);
         }
     }
+
     
     res.json({ message: "User is valid", user: { firstName, email, role }, cart });
 });

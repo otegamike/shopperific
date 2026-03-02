@@ -7,3 +7,9 @@ export interface CartItem {
     productQuantity: number;
     productTotalPrice: number;
 }
+
+export interface ClientCart {
+    cartItems: CartItem[];
+    totalItems?: number;
+    totalPrice: number;
+}

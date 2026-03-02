@@ -6,7 +6,7 @@ import { useLocation } from "react-router-dom";
 import type { ClientUser } from "../types/clientUser";
 import type { AuthContextType } from "../types/authContextInterface";
 import type { LoginCredentials } from "../types/authContextInterface";
-import type { CartItem } from "../types/CartInterface";
+import type { ClientCart } from "../types/CartInterface";
 
 // services
 import { loginService } from "../services/authentication/loginService";
@@ -17,7 +17,7 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<ClientUser | null>(null);
-    const [cart, setCart] = useState<CartItem[] | null>(null);
+    const [cart, setCart] = useState<ClientCart | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     const location = useLocation();
@@ -32,6 +32,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
             return;
         }
         const { user, cart } = validateResponse;
+
         updateUser(user) ;
         updateCart(cart) ;
     };
@@ -57,7 +58,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
         localStorage.setItem("user", JSON.stringify(newUser));
     }
 
-    const updateCart = (newCart : CartItem[]) => {
+    const updateCart = (newCart : ClientCart) => {
         setCart(newCart);
         localStorage.setItem("cart", JSON.stringify(newCart));
     }

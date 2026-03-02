@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
 
 // types 
 import type { CartItem } from "../types/CartInterface";
@@ -19,13 +19,24 @@ export interface CartContextType {
   removeFromCart: (id: string) => void;
   increaseQuantity: (id: string) => void;
   decreaseQuantity: (id: string) => void;
+  totalPrice: number;
 }
 
 export const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartContextProvider = ({ children }: { children: React.ReactNode }) => {
     const { cart } = useAuth();
-    const [cartItems, setCartItems] = useState<CartItem[]>(cart || []);
+    console.log(cart);
+
+    useEffect(() => {
+        if (cart) {
+            setCartItems(cart.cartItems);
+            setTotalPrice(cart.totalPrice);
+        }
+    }, [cart]);
+
+    const [cartItems, setCartItems] = useState<CartItem[]>(cart?.cartItems || []);
+    const [totalPrice, setTotalPrice] = useState<number>(cart?.totalPrice || 0);
 
     const addToCart = async (item: ProductDataType) => {
         const newCartItem = productToCartItem(item);
@@ -45,6 +56,8 @@ export const CartContextProvider = ({ children }: { children: React.ReactNode })
             return;
         }
 
+        setTotalPrice(response.totalPrice);
+
     };
 
     const removeFromCart = async (productId: string) => {
@@ -62,6 +75,8 @@ export const CartContextProvider = ({ children }: { children: React.ReactNode })
             alertObj("Error removing item from cart", "error");
             return;
         }
+
+        setTotalPrice(response.totalPrice);
     };
 
     const increaseQuantity = async (productId: string) => {
@@ -79,9 +94,17 @@ export const CartContextProvider = ({ children }: { children: React.ReactNode })
             alertObj("Error increasing item quantity", "error");
             return;
         }
+
+        setTotalPrice(response.totalPrice);
     };
 
     const decreaseQuantity = async (productId: string) => {
+        if (cartItems.find((item) => item.productId === productId)?.productQuantity === 1) {
+            console.log("Item quantity cannot be less than 1. click x to remove item");
+            alertObj("Item quantity cannot be less than 1. click x to remove item", "warning");
+            return;
+        }
+
         let previousItems: CartItem[] = [];
 
         setCartItems((prevItems) => {
@@ -97,11 +120,11 @@ export const CartContextProvider = ({ children }: { children: React.ReactNode })
             return;
         }
 
-        setCartItems((prevItems) => prevItems.map((item) => item.productId === productId ? { ...item, productQuantity: item.productQuantity - 1, productTotalPrice: item.productPrice * (item.productQuantity - 1) } : item));
+        setTotalPrice(response.totalPrice);
     };
 
     return (
-    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, increaseQuantity, decreaseQuantity }}>
+    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, increaseQuantity, decreaseQuantity, totalPrice }}>
       {children}
     </CartContext.Provider>
     );

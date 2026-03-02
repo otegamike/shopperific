@@ -6,11 +6,11 @@ import { alertObj } from "../../utils/alerts/alert";
 
 // Types 
 import type { ClientUser } from "../../types/clientUser";
-import type { CartItem } from "../../types/CartInterface";
+import type { ClientCart } from "../../types/CartInterface";
 
 export const validateUser = async (): Promise<{
     user: ClientUser;
-    cart: CartItem[];
+    cart: ClientCart;
     message: string;
 } | { errorMsg: string }> => {
     try {
@@ -18,6 +18,7 @@ export const validateUser = async (): Promise<{
         const { user, cart, message } = response.data;
         
         return { user, cart, message };
+        
 
        
     } catch (error : any) {

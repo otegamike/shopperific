@@ -92,6 +92,7 @@ export const validateUser = async (
                 console.log("Error creating guest");
                 return res.status(500).json({ errorMsg: "Internal Server Error" });
             }
+            console.log("Guest created successfully");
             guest = newGuest;
         }
 

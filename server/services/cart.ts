@@ -1,6 +1,9 @@
 import Cart from "../models/Cart.js";
 import { CartItem, CartInterface } from "../types/cartInterface.js";
 import { toObjectId } from "../lib/mongoose.js";
+import { ClientCart } from "../types/cartInterface.js";
+import { getUserById } from "./user.js";
+import { getGuest } from "./guest.js";
 
 const createCart = async (userId: string, deviceId: string): Promise<CartInterface | null> => {
     try { 
@@ -111,4 +114,34 @@ const updateItemQuantity = async (
     }
 }
 
-export { createCart, getCart, addItemToCart, removeItemFromCart, updateItemQuantity };
+const convertCartToClientCart = (cart: CartInterface): ClientCart => {
+    return {
+        cartItems: cart.items,
+        totalPrice: cart.totalAmount,
+        totalItems: cart.items.length
+    }
+}
+
+const getCartId = async (userId: string, deviceId: string): Promise<string | null | undefined> => {
+    try {
+    
+    const fetchUserDetail = Promise.all([
+        getUserById(userId),
+        getGuest(deviceId)
+    ])
+
+    const [user, guest] = await fetchUserDetail;
+        if (!user && !guest) {
+            return null;
+        }
+
+        const cartId = user?.cartId || guest?.cartId;
+        return cartId;
+        
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+export { createCart, getCart, addItemToCart, removeItemFromCart, updateItemQuantity, convertCartToClientCart, getCartId };

@@ -135,7 +135,7 @@
                     }
                 }
 
-                & :hover {
+                .cart__item:hover {
                     background-color: var(--primary-color-100);
                 }
             }

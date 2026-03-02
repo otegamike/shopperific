@@ -27,7 +27,7 @@ function ProductCard({ orientation = "row", className, loading = true, product }
         navigate(`/product/${product?._id}`);
     }
 
-    const { addToCart, cartItems, increaseQuantity, decreaseQuantity, removeFromCart } = useCartContext();
+    const { addToCart, cartItems } = useCartContext();
     const cartItem = cartItems.find((item) => item.productId === product?._id);
 
     return (
@@ -47,9 +47,8 @@ function ProductCard({ orientation = "row", className, loading = true, product }
 
                 {!loading && cartItem ? 
                     <CartAddRemoveButtons 
-                        cartItem={cartItem} 
-                        cartActions={{increaseQuantity, decreaseQuantity, removeFromCart, addToCart}} 
                         itemQuantity={cartItem.productQuantity} 
+                        productId={cartItem.productId}
                     /> 
                     : 
                     <button className={`product__button ${loading ? "skeleton__loader" : ""}`} onClick={(e) => {
