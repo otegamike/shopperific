@@ -34,7 +34,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
         const { user, cart } = validateResponse;
 
         updateUser(user) ;
-        updateCart(cart) ;
+        updateCart(cart)  ;
     };
 
     useEffect(() => {
