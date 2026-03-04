@@ -12,7 +12,8 @@ export interface CartButtonProps {
 
 function CartButton({ cartButtonProps }: { cartButtonProps: CartButtonProps }) {
     const { toggleCart, cartIsOpen } = cartButtonProps;
-    const { cartItems } = useCartContext();
+    const { cart } = useCartContext();
+    const cartItems = cart?.cartItems || [];
     const [count, setCount] = useState(cartItems.length || 0)
 
     useEffect(() => {

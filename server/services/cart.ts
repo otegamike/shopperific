@@ -5,6 +5,10 @@ import { ClientCart } from "../types/cartInterface.js";
 import { getUserById } from "./user.js";
 import { getGuest } from "./guest.js";
 
+const calculateTotalAmount = (items: CartItem[]): number => {
+    return items.reduce((total, item) => total + item.productTotalPrice, 0);
+}
+
 const createCart = async (userId: string, deviceId: string): Promise<CartInterface | null> => {
     try { 
         const cart = new Cart({
@@ -20,10 +24,41 @@ const createCart = async (userId: string, deviceId: string): Promise<CartInterfa
     }
 }
 
+
+
 const getCart = async (CartId: string): Promise<CartInterface | null> => {
     
     try { 
-        const cart = await Cart.findOne({ _id: toObjectId(CartId) }).lean();
+        let cart = await Cart.findOne({ _id: toObjectId(CartId) }).lean();
+        if (!cart) {
+            console.log("Cart not found or does not exist");
+            return null;
+        }
+        const cartTotalAmount = calculateTotalAmount(cart.items);
+        if (cartTotalAmount !== cart.totalAmount) {
+            const updatedCart = await updateCart(CartId, { totalAmount: cartTotalAmount });
+            if (!updatedCart) {
+                console.log("Cart not found or does not exist");
+                return null;
+            }
+            cart = updatedCart;
+        }
+        return cart;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+
+
+const updateCart = async (CartId: string, updates: Partial<CartInterface>): Promise<CartInterface | null> => {
+    try { 
+        const cart = await Cart.findOneAndUpdate(
+            { _id: toObjectId(CartId) },
+            { $set: updates },
+            { new: true }
+        );
         if (!cart) {
             console.log("Cart not found or does not exist");
             return null;
@@ -35,12 +70,28 @@ const getCart = async (CartId: string): Promise<CartInterface | null> => {
     }
 }
 
+
+
 const addItemToCart = async (CartId: string, item: CartItem): Promise<CartInterface | null> => {
     try { 
+        const previousCart: CartInterface | null = await getCart(CartId);
+        if (!previousCart) {
+            console.log("Cart not found or does not exist");
+            return null;
+        }
+
+        const itemExists = previousCart.items.find(previousCartItem => previousCartItem.productId === item.productId);
+        if (itemExists) {
+            console.log("Item already exists in cart");
+            return null;
+        }
+
+        const totalAmount = calculateTotalAmount(previousCart.items);
+        const newTotalAmount = totalAmount + item.productTotalPrice;
         const cart = await Cart.findOneAndUpdate(
             { _id: toObjectId(CartId) },
             { $push: { items: item } , 
-              $inc: { totalAmount: +item.productTotalPrice } 
+              $set: { totalAmount: newTotalAmount } 
             },
             { new: true }
         );
@@ -55,21 +106,30 @@ const addItemToCart = async (CartId: string, item: CartItem): Promise<CartInterf
     }
 }
 
+
+
 const removeItemFromCart = async (CartId: string, productId: string): Promise<CartInterface | null> => {
-    try { 
-        const cartBefore: CartInterface | null = await Cart.findOne({ _id: toObjectId(CartId), "items.productId": productId }).lean();
-        if (!cartBefore) {
+    try {
+        const previousCart: CartInterface | null = await getCart(CartId);
+        if (!previousCart) {
             console.log("Cart not found or does not exist");
             return null;
         }
-        const itemToRemove = cartBefore.items.find(item => item.productId === productId);
-        const priceReduction = itemToRemove ? itemToRemove.productTotalPrice : 0;
+
+        const itemToRemove = previousCart.items.find(previousCartItem => previousCartItem.productId === productId);
+        if (!itemToRemove) {
+            console.log("Item not found in cart");
+            return null;
+        }
+
+        const totalAmount = calculateTotalAmount(previousCart.items);
+        const newTotalAmount = totalAmount - itemToRemove.productTotalPrice;
 
         const cart = await Cart.findOneAndUpdate(
             { _id: toObjectId(CartId) },
             { 
                 $pull: { items: { productId } }, 
-                $inc: { totalAmount: -priceReduction } 
+                $set: { totalAmount: newTotalAmount } 
             },
             { new: true }
         );
@@ -79,6 +139,8 @@ const removeItemFromCart = async (CartId: string, productId: string): Promise<Ca
         return null;
     }
 }
+
+
 
 const updateItemQuantity = async (
     CartId: string, 
@@ -87,6 +149,7 @@ const updateItemQuantity = async (
     price: number
 ): Promise<CartInterface | null> => {
     try { 
+        
         const cart = await Cart.findOneAndUpdate(
             { 
                 _id: toObjectId(CartId), 
@@ -95,8 +158,8 @@ const updateItemQuantity = async (
             { 
                 $inc: { 
                     "items.$.productQuantity": adjustment, 
-                    "items.$.productTotalPrice": adjustment * price ,
-                    "totalAmount": adjustment * price
+                    "items.$.productTotalPrice": (adjustment * price).toFixed(2) ,
+                    "totalAmount": (adjustment * price).toFixed(2)
                 } 
             },
             { new: true }
@@ -114,6 +177,8 @@ const updateItemQuantity = async (
     }
 }
 
+
+
 const convertCartToClientCart = (cart: CartInterface): ClientCart => {
     return {
         cartItems: cart.items,
@@ -121,6 +186,8 @@ const convertCartToClientCart = (cart: CartInterface): ClientCart => {
         totalItems: cart.items.length
     }
 }
+
+
 
 const getCartId = async (userId: string, deviceId: string): Promise<string | null | undefined> => {
     try {
@@ -144,4 +211,6 @@ const getCartId = async (userId: string, deviceId: string): Promise<string | nul
     }
 }
 
-export { createCart, getCart, addItemToCart, removeItemFromCart, updateItemQuantity, convertCartToClientCart, getCartId };
+
+
+export { createCart, getCart, addItemToCart, removeItemFromCart, updateItemQuantity, convertCartToClientCart, getCartId, updateCart };

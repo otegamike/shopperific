@@ -76,8 +76,6 @@ const ulStyles: React.CSSProperties = {
   height: "40px",
   padding: "0rem",
   overflow: "hidden",
-  paddingLeft: "0",
-  paddingTop: "0rem",
   borderRadius: "1rem",
 
 }
@@ -104,6 +102,7 @@ const sidebarUlVariants: Variants = {
     transition: {
       duration: 0.4,
       ease: "easeInOut",
+      
       "--active-background-color": { duration: 0 },
       "--active-color": { duration: 0 },
     },

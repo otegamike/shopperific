@@ -2,7 +2,9 @@ import { Router } from "express";
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import { createToken } from "../utils/createToken.js";
-import { addDevice } from "../utils/addDevice.js";
+import { getCart, convertCartToClientCart } from "../services/cart.js";
+import type { ClientCart } from "../types/cartInterface.js";
+
 import type { TypedRequest, TypedResponse, loginRequestBody, registerRequestBody, NewUSerOBj } from "../utils/types/utilTypes.js";
 
 //utils
@@ -98,11 +100,6 @@ router.post("/login", async (req: TypedRequest<loginRequestBody>, res: TypedResp
         return;
     }
 
-    if (email === "admin@admin.com" && password === "Admin&&67") {
-        clientUser = { firstName: "Admin", email: email, role: "admin" };
-        return res.status(200).json({ message: "Admin Login Successful.", user: clientUser });
-    }
-
     try {
         const user = await User.findOne({ email });
 
@@ -145,8 +142,18 @@ router.post("/login", async (req: TypedRequest<loginRequestBody>, res: TypedResp
             role: user.role
         };
 
+        const cartId = req.user?.cartId || user.cartId;
+        let clientCart: ClientCart | null = null;
+
+        if (cartId) {
+            const cart = await getCart(cartId);
+            if (cart) {
+                clientCart = convertCartToClientCart(cart);
+            }
+        }
+
         console.log("User logged in:", user);
-        return res.status(200).json({ user: clientUser, message: "Login successful." });
+        return res.status(200).json({ user: clientUser, cart: clientCart, message: "Login successful." });
 
     } catch (err) {
         console.error("Error during login:", err);

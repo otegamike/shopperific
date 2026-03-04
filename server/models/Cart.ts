@@ -21,7 +21,6 @@ const CartSchema = new Schema<CartShema>(
         deviceId: {
             type: String,
             required: true,
-            unique: true,
         },
         userId: {
             type: String,

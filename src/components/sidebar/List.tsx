@@ -43,6 +43,7 @@ const liVariants: Variants = {
         opacity: 0,
         height: 0.001,
         display: "none",
+        transform: "scaleY(0.1)",
         transition: {
             duration: 0.4,
             ease: "easeInOut",
@@ -54,6 +55,7 @@ const liVariants: Variants = {
         opacity: 1,
         height: "auto",
         display: "flex",
+        transform: "scaleY(1)",
         transition: {
             duration: 0.4,
             ease: "easeInOut",
@@ -66,6 +68,7 @@ const liVariants: Variants = {
         opacity: 1,
         height: "auto",
         display: "flex",
+        transform: "scaleY(1)",
         transition: {
             duration: 0.4,
             ease: "easeInOut",

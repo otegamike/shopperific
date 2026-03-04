@@ -12,7 +12,7 @@ function CartPanel({ animationProps, toggleCart }: { animationProps: animationPr
     <motion.div className="cart__container" id="cart-container" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4}}>
         <ExpandPanelComponent animationProps={animationProps} layoutId="cart" style={PanelStyle}>
           <div className="cart__header" >
-            <div style={{position: "absolute"}} onClick={ () => toggleCart(false)}><BackButton fill="black" size={25} strokeWidth={2} /></div>
+            <div className="back-btn" style={{position: "absolute"}} onClick={ () => toggleCart(false)}><BackButton fill="black" size={25} strokeWidth={2} /></div>
             <div className="cart__header__title"> <h3>Cart</h3></div>
           </div>
           <div className='cart__block no-scrollbar'>

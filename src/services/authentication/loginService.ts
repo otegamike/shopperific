@@ -7,19 +7,19 @@ import { alertObj } from "../../utils/alerts/alert";
 // Types 
 import type { LoginCredentials } from "../../types/authContextInterface";
 import type { ClientUser } from "../../types/clientUser";
-
+import type { ClientCart } from "../../types/CartInterface";
 
 
 export const loginService = async (credentials: LoginCredentials)
 : Promise<
-    |{ user : ClientUser, message: string }
+    |{ user : ClientUser, cart: ClientCart | null, message: string }
     |{ errorMsg: string}> => {
         try {
             const response = await api.post("/auth/login", credentials);
-            const { user , message } = response.data;
+            const { user , cart, message } = response.data;
             
             alertObj(message, "success");
-            return { user, message };
+            return { user, cart, message };
 
            
         } catch (error : any) {

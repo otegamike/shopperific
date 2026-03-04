@@ -1,7 +1,7 @@
 import { createContext, useState, useEffect } from "react";
 
 // types 
-import type { CartItem } from "../types/CartInterface";
+import type { CartItem, ClientCart } from "../types/CartInterface";
 import type { ProductDataType } from "../types/productInterface/productInterface";
 
 // hooks
@@ -14,29 +14,27 @@ import { alertObj } from "../utils/alerts/alert";
 import { AddNewItemToCart, RemoveItemFromCart, UpdateItemQuantity } from "../services/cartServices";
 
 export interface CartContextType {
-  cartItems: CartItem[];
+  cart: ClientCart | null;
   addToCart: (item: ProductDataType) => void;
   removeFromCart: (id: string) => void;
   increaseQuantity: (id: string) => void;
   decreaseQuantity: (id: string) => void;
-  totalPrice: number;
 }
 
 export const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartContextProvider = ({ children }: { children: React.ReactNode }) => {
-    const { cart } = useAuth();
-    console.log(cart);
+    const { cart : clientCart } = useAuth();
+    console.log(clientCart);
 
     useEffect(() => {
-        if (cart) {
-            setCartItems(cart.cartItems);
-            setTotalPrice(cart.totalPrice);
+        if (clientCart) {
+            setCart(clientCart);
         }
-    }, [cart]);
+    }, [clientCart]);
 
-    const [cartItems, setCartItems] = useState<CartItem[]>(cart?.cartItems || []);
-    const [totalPrice, setTotalPrice] = useState<number>(cart?.totalPrice || 0);
+    const [cart, setCart] = useState<ClientCart | null>(clientCart);
+    const [cartItems, setCartItems] = useState<CartItem[]>(clientCart?.cartItems || []);
 
     const addToCart = async (item: ProductDataType) => {
         const newCartItem = productToCartItem(item);
@@ -48,15 +46,29 @@ export const CartContextProvider = ({ children }: { children: React.ReactNode })
             return [...prevItems, newCartItem];
         });
 
+        let previousCart: ClientCart | null = null;
+
+        setCart((prevCart) => {
+            previousCart = prevCart;
+            const previousCartItems = prevCart?.cartItems || [];
+            const previousTotalPrice = prevCart?.totalPrice || 0;
+            
+            return {
+                ...prevCart,
+                cartItems: [...previousCartItems, newCartItem],
+                totalPrice: previousTotalPrice + newCartItem.productTotalPrice,
+            };
+        });
+
         const response = await AddNewItemToCart(newCartItem);
         if (!response) {
             console.log("Error adding item to cart");
-            setCartItems(previousItems);
+            setCart(previousCart);
             alertObj("Error adding item to cart", "error");
             return;
         }
 
-        setTotalPrice(response.totalPrice);
+        setCart(response);
 
     };
 
@@ -68,15 +80,32 @@ export const CartContextProvider = ({ children }: { children: React.ReactNode })
             return prevItems.filter((item) => item.productId !== productId);
         });
 
+        let previousCart: ClientCart | null = null;
+
+        setCart((prevCart) => {
+            if (!prevCart) return null;
+            previousCart = prevCart;
+            const cartItem = prevCart.cartItems.find((item) => item.productId === productId);
+            if (!cartItem) return prevCart;
+            const newTotalPrice = prevCart.totalPrice - cartItem.productTotalPrice;
+
+            return {
+                ...prevCart,
+                cartItems: prevCart.cartItems.filter((item) => item.productId !== productId),
+                totalPrice: newTotalPrice,
+            };
+        });
+
         const response = await RemoveItemFromCart(productId);
         if (!response) {
             console.log("Error removing item from cart");
-            setCartItems(previousItems);
+            setCart(previousCart);
             alertObj("Error removing item from cart", "error");
             return;
         }
+        console.log(response);
 
-        setTotalPrice(response.totalPrice);
+        setCart(response);
     };
 
     const increaseQuantity = async (productId: string) => {
@@ -95,7 +124,7 @@ export const CartContextProvider = ({ children }: { children: React.ReactNode })
             return;
         }
 
-        setTotalPrice(response.totalPrice);
+        setCart(response);
     };
 
     const decreaseQuantity = async (productId: string) => {
@@ -120,11 +149,11 @@ export const CartContextProvider = ({ children }: { children: React.ReactNode })
             return;
         }
 
-        setTotalPrice(response.totalPrice);
+        setCart(response);
     };
 
     return (
-    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, increaseQuantity, decreaseQuantity, totalPrice }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, increaseQuantity, decreaseQuantity}}>
       {children}
     </CartContext.Provider>
     );

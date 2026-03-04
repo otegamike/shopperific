@@ -37,7 +37,8 @@ export function CartItem({cartItem}: {cartItem: CartItem}) {
 
 
 export function CartItemList({cartItemsProps}: {cartItemsProps: CartContextType}) {
-    const { cartItems } = cartItemsProps;
+    const { cart } = cartItemsProps;
+    const cartItems = cart?.cartItems || [];
 
     return (
         <div className="cart__list__container">
@@ -65,7 +66,8 @@ export function CartAddRemoveButtons({itemQuantity, productId}: {itemQuantity: n
 
 export function ProceedToCheckout() {
 
-    const { totalPrice } = useCartContext();
+    const { cart } = useCartContext();
+    const totalPrice = cart?.totalPrice || 0;
 
     return (
         <div className="checkout__section">

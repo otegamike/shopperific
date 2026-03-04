@@ -22,6 +22,10 @@
         align-items: center;
         padding: 0.5rem 0;
 
+        & .back-btn {
+            cursor: pointer;
+        }
+
         & .cart__header__title {
             width: 100%;
             display: flex;
@@ -52,7 +56,7 @@
                 grid-template-rows: auto 1fr;
                 padding: 1rem 0;
                 gap: 1rem;
-                margin-bottom: 7rem;
+                margin-bottom: 9rem;
                 
 
                 & .cart__item {
@@ -96,6 +100,7 @@
                             aspect-ratio: 5/6;
                             object-fit: cover;
                             border-radius: 0.5rem;
+                            transition: transform 0.2s ease-in-out;
                         }
                     }
 
@@ -137,6 +142,10 @@
 
                 .cart__item:hover {
                     background-color: var(--primary-color-100);
+                }
+
+                .cart__item:hover img {
+                    transform: scale(1.02);
                 }
             }
 

@@ -27,7 +27,8 @@ function ProductCard({ orientation = "row", className, loading = true, product }
         navigate(`/product/${product?._id}`);
     }
 
-    const { addToCart, cartItems } = useCartContext();
+    const { addToCart, cart } = useCartContext();
+    const cartItems = cart?.cartItems || [];
     const cartItem = cartItems.find((item) => item.productId === product?._id);
 
     return (

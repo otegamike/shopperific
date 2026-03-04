@@ -69,8 +69,9 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
             console.error("Login failed:", loginResponse.errorMsg);
             return;
         }
-        const { user } = loginResponse;
+        const { user, cart } = loginResponse;
         updateUser(user) ;
+        if (cart) updateCart(cart) ;
     };
 
     const logout = () => {
