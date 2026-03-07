@@ -1,8 +1,8 @@
 import { Router } from "express";
 
 // services
-import { getUserById } from "../../services/user.js";
-import { getCart, convertCartToClientCart } from "../../services/cart.js";
+import { getUserById } from "../../services/userServices.js";
+import { getCart, convertCartToClientCart } from "../../services/cartServices.js";
 
 // types
 import type { Request } from "express";
@@ -13,8 +13,8 @@ import type { ClientCart } from "../../types/cartInterface.js";
 
 const router = Router();
 
-type tValidateErrorResponse = tResponseError & {validated: false};
-type tValidateSuccessResponse = {message: string, user: ClientUser, cart: ClientCart | null};
+type tValidateErrorResponse = tResponseError & { validated: false };
+type tValidateSuccessResponse = { message: string, user: ClientUser, cart: ClientCart | null };
 
 router.post("/validate", async (req: Request, res: TypedResponse<tValidateSuccessResponse | tValidateErrorResponse>) => {
     const user = req.user;
@@ -37,14 +37,14 @@ router.post("/validate", async (req: Request, res: TypedResponse<tValidateSucces
 
     const cartId = user.cartId;
     let cart: ClientCart | null = null;
-    if ( cartId ) {
+    if (cartId) {
         const userCart = await getCart(cartId);
         if (userCart) {
             cart = convertCartToClientCart(userCart);
         }
     }
 
-    
+
     res.json({ message: "User is valid", user: { firstName, email, role }, cart });
 });
 

@@ -1,17 +1,20 @@
 import { Types } from "../lib/mongoose.js";
 
 export interface OrderItemType {
-    product: Types.ObjectId;
+    productId: Types.ObjectId;
     quantity: number;
     priceAtPurchase: number;
 }
 
-export interface OrderType {
-  seller: Types.ObjectId;
-  shop: Types.ObjectId;
-  products: OrderItemType[];
-  totalAmount: number;
-  status: "pending" | "shipped" | "delivered" | "cancelled";
-  createdAt: Date;
-  updatedAt: Date;
+export type OrderStatus = "pending" | "shipped" | "delivered" | "cancelled";
+
+export interface ShopOrderInterface {
+    shopRef: Types.ObjectId;
+    orderitems: OrderItemType[];
+    totalAmount: number;
+    status: OrderStatus;
+}
+
+export interface FullShopOrderInterface extends ShopOrderInterface {
+    _id: Types.ObjectId;
 }

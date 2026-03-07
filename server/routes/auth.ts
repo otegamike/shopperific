@@ -2,7 +2,7 @@ import { Router } from "express";
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import { createToken } from "../utils/createToken.js";
-import { getCart, convertCartToClientCart } from "../services/cart.js";
+import { getCart, convertCartToClientCart } from "../services/cartServices.js";
 import type { ClientCart } from "../types/cartInterface.js";
 
 import type { TypedRequest, TypedResponse, loginRequestBody, registerRequestBody, NewUSerOBj } from "../utils/types/utilTypes.js";

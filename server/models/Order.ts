@@ -1,9 +1,9 @@
-import { db } from "../lib/mongoose.js";
+import { db, Types } from "../lib/mongoose.js";
 const { Schema, model, models } = db;
-import { OrderType } from "../types/orders.js";
+import  type { ShopOrderInterface , OrderItemType} from "../types/orders.js";
 
-const OrderItemSchema = new Schema({
-  product: {
+const OrderItemSchema = new Schema<OrderItemType>({
+  productId: {
     type: Schema.Types.ObjectId,
     ref: "Product",
     required: true,
@@ -19,21 +19,16 @@ const OrderItemSchema = new Schema({
   },
 });
 
-const OrderSchema = new Schema<OrderType>(
+
+const OrderSchema = new Schema<ShopOrderInterface>(
   {
-    seller: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-      index: true,   
-    },
-    shop: {
+    shopRef: {
       type: Schema.Types.ObjectId,
       ref: "Shop",
       required: true,
       index: true,
     },
-    products: {
+    orderitems: {
       type: [OrderItemSchema],
       required: true,
       validate: (arr: any[]) => arr.length > 0,
@@ -56,4 +51,4 @@ const OrderSchema = new Schema<OrderType>(
   }
 );
 
-export default models.Order || model<OrderType>("Order", OrderSchema);
+export default models.Order || model<ShopOrderInterface>("Order", OrderSchema);

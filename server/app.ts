@@ -17,6 +17,9 @@ import validateRoute from './routes/auth/validate.js'
 import sellerRoutes from './routes/seller.js'
 import dashboardRoutes from './routes/dashboard/products.js'
 import cartRoutes from './routes/cart.js'
+import orderRoutes from './routes/orders.js'
+
+import { globalErrorHandler } from './middleware/errorHandler.js';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -55,6 +58,8 @@ app.use('/api/shops', shopRoutes);
 
 app.use( requireValidation );
 
+app.use('/api/orders', orderRoutes);
+
 app.use('/api/verify-email', verifyEmailRoute);
 
 // app.use( isEmailVerified );
@@ -69,5 +74,8 @@ app.use('/api/sellers', sellerRoutes);
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });
 });
+
+// Global Error Handler
+app.use(globalErrorHandler);
 
 export default app;

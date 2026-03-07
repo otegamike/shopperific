@@ -1,20 +1,30 @@
 import './cart-item.css'
 
+// react
+import { useState } from 'react';
+
+// motion
+import { motion, AnimatePresence } from 'framer-motion';
+
 // types
 import { type CartItem } from '../../../types/CartInterface'
 import { type CartContextType } from '../../../context/CartContext'
 
 // components
 import Button from '../../buttons/button';
+import NextArrow from '../../../assets/svg/NextArrow';
 
 // hooks
 import { useCartContext } from '../../../hooks/useCartContext';
+
+// services
+import { checkOut } from '../../../services/checkoutServices';
 
 export function CartItem({cartItem}: {cartItem: CartItem}) {
 
     const { removeFromCart } = useCartContext();
   return (
-    <li className="cart__item">
+    <motion.li className="cart__item" exit={{opacity: 0, height: "0.1px", x: '-110%'}} transition={{ duration: 0.4}}>
         <div className="cart__item__image">
             <button className="remove-item-button" onClick={() => removeFromCart(cartItem.productId)}>x</button>
             <img src={cartItem.productImage} alt={cartItem.productName} />
@@ -31,7 +41,7 @@ export function CartItem({cartItem}: {cartItem: CartItem}) {
                 <CartAddRemoveButtons productId={cartItem.productId} itemQuantity={cartItem.productQuantity} />
             </div>
         </div>
-    </li>
+    </motion.li>
   )
 }
 
@@ -43,9 +53,11 @@ export function CartItemList({cartItemsProps}: {cartItemsProps: CartContextType}
     return (
         <div className="cart__list__container">
             <ul className="cart__items">
-                {cartItems.map((cartItem) => (
-                    <CartItem key={cartItem.productId} cartItem={cartItem}/>
-                ))}
+                <AnimatePresence>
+                    {cartItems.map((cartItem) => (
+                        <CartItem key={cartItem.productId} cartItem={cartItem}/>
+                    ))}
+                </AnimatePresence>
             </ul>
         </div>
     )
@@ -68,6 +80,18 @@ export function ProceedToCheckout() {
 
     const { cart } = useCartContext();
     const totalPrice = cart?.totalPrice || 0;
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleCheckout = async () => {
+        try { 
+            setIsLoading(true);
+            await checkOut();
+            setIsLoading(false);
+        } catch (error) {
+            setIsLoading(false);
+            console.log(error);
+        }
+    }
 
     return (
         <div className="checkout__section">
@@ -77,7 +101,11 @@ export function ProceedToCheckout() {
                     <span className="checkout__info__total__value">${totalPrice}</span>
                 </div>
             </div>
-            <Button className='checkout__button tall' type='main' content="Proceed to Checkout" />
+            <Button className='checkout__button tall center__content' type='main' isLoading={isLoading} onClick={handleCheckout}>
+                <span style={{display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                     Proceed to Checkout <NextArrow fill="white" size={25} strokeWidth={1.8} />
+                </span>
+            </Button>
         </div>
     )
 }

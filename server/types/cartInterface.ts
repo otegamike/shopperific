@@ -5,6 +5,7 @@ export interface CartItem {
     productPrice: number;
     productQuantity: number;
     productTotalPrice: number;
+    productShopRef: string;
 }
 
 export interface CartInterface {

@@ -4,7 +4,8 @@ import { upload } from "../middleware/upload.js";
 import { uploadBuffer } from "../utils/CloudinaryHelpers.js";
 import { toObjectId } from "../lib/mongoose.js";
 import Product from "../models/Product.js";
-import { getProduct } from "../services/database/fetchFromDb.js";
+import { UpdateProductStats } from "../services/productServices.js";
+
 import { findOneFromDB, getManyFromDB } from "../services/database/fetchFromDb.js";
 import { queryDatabase, type ProjectionParameters } from "../services/database/DbAggregationPipeline.js";
 import { addToShopProductCount } from "../services/updateShopProductCount.js";
@@ -94,13 +95,22 @@ router.post('/category/:category', async (req, res) => {
 
 ////////////////// Get product by id //////////////////
 router.post('/product/:id', async (req, res) => {
+  
   const id = req.params.id;
+  
+  if (!id) { return res.status(403).json({ message: "invalid product Id" }) }
 
-  const fetchProduct = await findOneFromDB("product", { _id: id });
 
-  if (!fetchProduct.found) { return res.status(500).json({ message: "error fetching products" }) }
-  const product = fetchProduct.payload;
-  return res.status(200).json(product);
+  const fetchProduct = Promise.all([
+    findOneFromDB("product", { _id: id }),
+    UpdateProductStats(id, "views")
+  ]);
+
+  const [product, stats] = await fetchProduct;
+  if (!product.found || !stats) { return res.status(500).json({ message: "error fetching products" }) }
+
+  const productData = product.payload;
+  return res.status(200).json(productData);
 });
 
 router.post('/shop/:shopId', async (req, res) => {

@@ -24,7 +24,13 @@
 
         & .back-btn {
             cursor: pointer;
+            padding: 0.5rem 0;
+
+            &:hover {
+                background-color: var(--primary-color-100);
+            }
         }
+
 
         & .cart__header__title {
             width: 100%;
@@ -197,7 +203,21 @@
 
         & .checkout__button {
             width: 100%;
+
+            & span {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 0.5rem;
+                font-weight: 700;
+            }
         }
+
+        & .checkout__button:hover {
+            background-color: var(--primary-color-600);
+        }
+
+
     }
 }
 

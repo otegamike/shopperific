@@ -7,7 +7,7 @@ import { checkTokenDb } from "../utils/checkTokenDb.js";
 
 // services
 import { getGuest, createGuest } from "../services/guest.js";
-import { getUserById } from "../services/user.js";
+import { getUserById } from "../services/userServices.js";
 
 // types 
 import type { userObj } from "../types/validationInterface.js";
@@ -17,23 +17,23 @@ dotenv.config();
 
 
 export const validateUser = async (
-  req: Request,
-  res: TypedResponse<{errorMsg: string }>,
-  next: NextFunction
+    req: Request,
+    res: TypedResponse<{ errorMsg: string }>,
+    next: NextFunction
 ) => {
 
     console.log("Validating user...");
 
-  //checks
-  let userObj: userObj | null = null;
-  let isVerified = false;
-  let newAccessToken = null;
+    //checks
+    let userObj: userObj | null = null;
+    let isVerified = false;
+    let newAccessToken = null;
 
-  //Authorization Credentials 
-  const deviceId = req.headers["x-device-id"] as string;
-  const authHeader = req.headers.authorization;
-  const refreshToken = req.cookies?.refreshToken;
-  let cartId = null;
+    //Authorization Credentials 
+    const deviceId = req.headers["x-device-id"] as string;
+    const authHeader = req.headers.authorization;
+    const refreshToken = req.cookies?.refreshToken;
+    let cartId = null;
 
     if (authHeader?.startsWith("Bearer ")) {
         console.log("Access token found in Authorization header. Verifying...");
@@ -50,15 +50,15 @@ export const validateUser = async (
     }
 
     if (!isVerified && !userObj && refreshToken) {
-        
+
         // if access token invalid or non-existant, try refresh token.
         console.log("Error verifying access token. Verifying refresh token from cookies...");
         const verifyToken = decodeToken(refreshToken, "refresh");
-        
+
         if (verifyToken.decoded) {
             console.log("Refresh token verified. Checking token in DB...");
             const payload = verifyToken.payload as { userId: string; email: string; role: "buyer" | "seller" };
-            
+
             // Check if token exists in DB for that user and device
             const user = await getUserById(payload.userId);
             if (!user) {
@@ -77,13 +77,13 @@ export const validateUser = async (
                 console.log("Refresh token valid in DB. New access token issued.");
             }
         }
-       
+
     }
 
     if (!isVerified || !userObj) {
         console.log("Unauthorized Couldn't verify user");
         let guest = await getGuest(deviceId);
-        
+
 
         if (!guest) {
             const newGuest = await createGuest(deviceId);
@@ -99,14 +99,14 @@ export const validateUser = async (
         userObj = { userId: guest._id, email: "", role: "guest" };
         cartId = guest.cartId;
     }
-    
+
     if (newAccessToken) {
-       res.setHeader("Authorization", `Bearer ${newAccessToken}`);
+        res.setHeader("Authorization", `Bearer ${newAccessToken}`);
     }
 
-    req.user = userObj;  
+    req.user = userObj;
     if (isVerified) req.user.validated = true;
     if (deviceId) req.user.deviceId = deviceId;
     if (cartId) req.user.cartId = cartId;
-    next(); 
+    next();
 }

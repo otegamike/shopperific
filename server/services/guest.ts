@@ -4,6 +4,9 @@ import { type GuestInterface } from "../types/guestInterface.js";
 // models
 import Guest from "../models/Guest.js";
 
+// utils
+import { AppError } from "../utils/appError.js";
+
 type ServiceResponse<T> = T | null;
 
 const createGuest = async (deviceId: string): Promise<ServiceResponse<GuestInterface>> => {
@@ -35,7 +38,7 @@ const getGuest = async (deviceId: string): Promise<ServiceResponse<GuestInterfac
     }
 }
 
-const createGuestCart = async (deviceId: string, cartId: string): Promise<ServiceResponse<GuestInterface>> => {
+const createGuestCart = async (deviceId: string, cartId: string): Promise<GuestInterface> => {
     try {
         const guest = await Guest.findOneAndUpdate(
             { deviceId },
@@ -43,11 +46,12 @@ const createGuestCart = async (deviceId: string, cartId: string): Promise<Servic
             { new: true }
         );
 
-        if (!guest) return null;
+        if (!guest) throw new AppError("Guest not found", 404);
         return guest;
     } catch (error) {
+        if (error instanceof AppError) throw error;
         console.error("Error creating guest cart:", error);
-        return null;
+        throw new AppError("Internal Server Error", 500);
     }
 }
 

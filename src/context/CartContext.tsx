@@ -34,17 +34,9 @@ export const CartContextProvider = ({ children }: { children: React.ReactNode })
     }, [clientCart]);
 
     const [cart, setCart] = useState<ClientCart | null>(clientCart);
-    const [cartItems, setCartItems] = useState<CartItem[]>(clientCart?.cartItems || []);
 
     const addToCart = async (item: ProductDataType) => {
         const newCartItem = productToCartItem(item);
-        
-        let previousItems: CartItem[] = [] ;
-
-        setCartItems((prevItems) => {
-            previousItems = prevItems;
-            return [...prevItems, newCartItem];
-        });
 
         let previousCart: ClientCart | null = null;
 
@@ -73,12 +65,6 @@ export const CartContextProvider = ({ children }: { children: React.ReactNode })
     };
 
     const removeFromCart = async (productId: string) => {
-        let previousItems: CartItem[] = [];
-
-        setCartItems((prevItems) => {
-            previousItems = prevItems;
-            return prevItems.filter((item) => item.productId !== productId);
-        });
 
         let previousCart: ClientCart | null = null;
 
@@ -109,17 +95,36 @@ export const CartContextProvider = ({ children }: { children: React.ReactNode })
     };
 
     const increaseQuantity = async (productId: string) => {
-        let previousItems: CartItem[] = [];
+        let previousCart: ClientCart | null = cart? { ...cart }: null ;
 
-        setCartItems((prevItems) => {
-            previousItems = prevItems;
-            return prevItems.map((item) => item.productId === productId ? { ...item, productQuantity: item.productQuantity + 1, productTotalPrice: item.productPrice * (item.productQuantity + 1) } : item);
+        setCart((prevCart) => {
+            if (!prevCart) return null;
+
+            const cartItem = prevCart.cartItems.find((item) => item.productId === productId);
+            if (!cartItem) return prevCart;
+
+            const newQuantity = cartItem.productQuantity + 1;
+            const newTotalPrice = prevCart.totalPrice + cartItem.productPrice;
+            
+            const updatedItem = { 
+                ...cartItem, 
+                productQuantity: newQuantity, 
+                productTotalPrice: cartItem.productPrice * newQuantity 
+            };
+
+            return {
+                ...prevCart,
+                cartItems: prevCart.cartItems.map((item) => 
+                    item.productId === productId ? updatedItem : item
+                ),
+                totalPrice: newTotalPrice,
+            };
         });
 
         const response = await UpdateItemQuantity(productId, +1 );
         if (!response) {
             console.log("Error increasing item quantity");
-            setCartItems(previousItems);
+            setCart(previousCart);
             alertObj("Error increasing item quantity", "error");
             return;
         }
@@ -128,23 +133,37 @@ export const CartContextProvider = ({ children }: { children: React.ReactNode })
     };
 
     const decreaseQuantity = async (productId: string) => {
-        if (cartItems.find((item) => item.productId === productId)?.productQuantity === 1) {
-            console.log("Item quantity cannot be less than 1. click x to remove item");
-            alertObj("Item quantity cannot be less than 1. click x to remove item", "warning");
-            return;
-        }
+        
+        let previousCart: ClientCart | null = cart? { ...cart }: null ;
 
-        let previousItems: CartItem[] = [];
+        setCart((prevCart) => {
+            if (!prevCart) return null;
 
-        setCartItems((prevItems) => {
-            previousItems = prevItems;
-            return prevItems.map((item) => item.productId === productId ? { ...item, productQuantity: item.productQuantity - 1, productTotalPrice: item.productPrice * (item.productQuantity - 1) } : item);
+            const cartItem = prevCart.cartItems.find((item) => item.productId === productId);
+            if (!cartItem) return prevCart;
+
+            const newQuantity = cartItem.productQuantity - 1;
+            const newTotalPrice = prevCart.totalPrice - cartItem.productPrice;
+            
+            const updatedItem = { 
+                ...cartItem, 
+                productQuantity: newQuantity, 
+                productTotalPrice: cartItem.productPrice * newQuantity 
+            };
+
+            return {
+                ...prevCart,
+                cartItems: prevCart.cartItems.map((item) => 
+                    item.productId === productId ? updatedItem : item
+                ),
+                totalPrice: newTotalPrice,
+            };
         });
 
         const response = await UpdateItemQuantity(productId, -1);
         if (!response) {
             console.log("Error decreasing item quantity");
-            setCartItems(previousItems);
+            setCart(previousCart);
             alertObj("Error decreasing item quantity", "error");
             return;
         }

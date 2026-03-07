@@ -34,11 +34,16 @@ type CartId = {
   cartId: string;
 }
 
+type Orders = {
+  orders: string[];
+}
+
 export type UserDocument = 
   VerifyEmailType & 
   RefreshTokens & 
   RegisterUserType &
-  CartId;
+  CartId &
+  Orders;
 
 const UserSchema = new Schema<UserDocument>(
   {
@@ -114,18 +119,3 @@ const UserSchema = new Schema<UserDocument>(
 export default models.User || model("User", UserSchema);
 
 
-
-
-
-
-
-
-
-
-    // provider: {
-    //   type: String, // "google", "github", etc
-    // },
-
-    // providerId: {
-    //   type: String,
-    // },
