@@ -11,7 +11,7 @@ import { useAuth } from "../hooks/useAuth";
 import { alertObj } from "../utils/alerts/alert";
 
 // services
-import { AddNewItemToCart, RemoveItemFromCart, UpdateItemQuantity } from "../services/cartServices";
+import { AddNewItemToCart, RemoveItemFromCart, UpdateItemQuantity, clearCart as clearCartService } from "../services/cartServices";
 
 export interface CartContextType {
   cart: ClientCart | null;
@@ -19,12 +19,13 @@ export interface CartContextType {
   removeFromCart: (id: string) => void;
   increaseQuantity: (id: string) => void;
   decreaseQuantity: (id: string) => void;
+  clearCart: () => Promise<void>;
 }
 
 export const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartContextProvider = ({ children }: { children: React.ReactNode }) => {
-    const { cart : clientCart } = useAuth();
+    const { cart : clientCart, updateCart } = useAuth();
     console.log(clientCart);
 
     useEffect(() => {
@@ -171,8 +172,25 @@ export const CartContextProvider = ({ children }: { children: React.ReactNode })
         setCart(response);
     };
 
+    const clearCart = async () => {
+        const previousCart = cart? { ...cart }: null ;
+        try {
+            const emptyCart: ClientCart = {
+                cartItems: [],
+                totalPrice: 0,
+            };
+            await clearCartService();
+            setCart(emptyCart);
+            updateCart(emptyCart);
+        } catch (err: any) {
+            if (previousCart) setCart(previousCart);
+            console.log(err);
+            alertObj("Error clearing cart", "error");
+        }
+    }
+
     return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, increaseQuantity, decreaseQuantity}}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, increaseQuantity, decreaseQuantity, clearCart}}>
       {children}
     </CartContext.Provider>
     );

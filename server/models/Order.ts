@@ -28,6 +28,12 @@ const OrderSchema = new Schema<ShopOrderInterface>(
       required: true,
       index: true,
     },
+    orderUniqueId: {
+      type: String,
+      index: true,
+      required: true,
+      trim: true,
+    },
     orderitems: {
       type: [OrderItemSchema],
       required: true,

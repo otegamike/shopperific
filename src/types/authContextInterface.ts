@@ -5,6 +5,7 @@ export interface AuthContextType {
   user: ClientUser | null;
   cart: ClientCart | null;
   updateUser: (newUser: ClientUser) => void ;
+  updateCart: (newCart: ClientCart) => void;
   login: (credentials: LoginCredentials) => Promise<void>;
   logout: () => void;
 

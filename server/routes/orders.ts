@@ -4,7 +4,7 @@ import { getCart, getCartId } from "../services/cartServices.js";
 import { catchAsync } from "../middleware/errorHandler.js";
 import { AppError } from "../utils/appError.js";
 import { type Request, type Response } from "express";
-import { updateOrders } from "../services/userServices.js";
+import { updateUserOrders } from "../services/userServices.js";
 
 const router = Router();
 
@@ -20,10 +20,10 @@ router.post("/create", catchAsync(async (req: Request, res: Response) => {
     const cartId = await getCartId(userId, deviceId);
     const cart = await getCart(cartId);
 
-    const orders = await createOrder(cart);
+    const order = await createOrder(cart);
 
-    await updateOrders(userId, orders);
-    return res.status(201).json({ message: "Order created successfully", orders });
+    await updateUserOrders(userId, order);
+    return res.status(201).json({ message: `Order ${order} created successfully`});
 
 }));
 

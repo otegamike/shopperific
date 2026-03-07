@@ -210,6 +210,21 @@ function productToCartItem(product: FullProductInterface ): CartItem {
     };
 }
 
+async function clearCart(cartId: string): Promise<void> {
+    try {
+        const cart = await Cart.findOneAndUpdate(
+            { _id: toObjectId(cartId) },
+            { $set: { items: [], totalAmount: 0 } },
+            { new: true }
+        );
+        if (!cart) throw new AppError("Cart not found or does not exist", 404);
+    } catch (error) {
+        if (error instanceof AppError) throw error;
+        console.log(error);
+        throw new AppError("Error clearing cart", 500);
+    }
+}
+
 
 
 export { 
@@ -221,5 +236,6 @@ export {
     convertCartToClientCart, 
     getCartId, 
     updateCart, 
-    productToCartItem 
+    productToCartItem,
+    clearCart 
 };

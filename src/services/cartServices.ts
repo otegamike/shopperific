@@ -34,3 +34,15 @@ export const UpdateItemQuantity = async (productId: string, quantity: number): P
         return null;
     }
 }
+
+export const clearCart = async (): Promise<ClientCart> => {
+    try {
+        const response = await api.post("/cart/clear-cart");
+        const { clientCart } = response.data;
+        return clientCart;
+    } catch (error: any) {
+        const { errorMsg } = error.response.data;
+        console.log(errorMsg || "Error clearing cart");
+        throw new Error(errorMsg || "Error clearing cart");
+    }
+}

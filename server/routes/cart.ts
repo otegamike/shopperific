@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createCart, getCartId, convertCartToClientCart, addItemToCart, removeItemFromCart, updateItemQuantity, productToCartItem } from "../services/cartServices.js";
+import { createCart, getCartId, convertCartToClientCart, addItemToCart, removeItemFromCart, updateItemQuantity, productToCartItem, clearCart } from "../services/cartServices.js";
 import { getUserById, updateUser } from "../services/userServices.js";
 import { getGuest, createGuestCart } from "../services/guest.js";
 import { GetProductById } from "../services/productServices.js";
@@ -88,6 +88,19 @@ router.post('/update-item-quantity', catchAsync(async (req: Request, res: Respon
 
 }))
 
+router.post('/clear-cart', catchAsync(async (req: Request, res: Response): Promise<TypedResponse<ClientCart>> => {
+    
+    const userObj = req.user;
+
+    if (!userObj || !userObj.deviceId || !userObj.userId) throw new AppError("Unauthorized", 401, {validated: false});
+    
+    const { deviceId, userId } = userObj;
+    let cartId = await getCartId(userId, deviceId);
+    await clearCart(cartId);
+
+    return res.status(200).json({ success: true });
+
+}))
 
 
 

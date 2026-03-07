@@ -10,10 +10,13 @@ export type OrderStatus = "pending" | "shipped" | "delivered" | "cancelled";
 
 export interface ShopOrderInterface {
     shopRef: Types.ObjectId;
+    orderUniqueId: string;
     orderitems: OrderItemType[];
     totalAmount: number;
     status: OrderStatus;
 }
+
+export type Orders = string;
 
 export interface FullShopOrderInterface extends ShopOrderInterface {
     _id: Types.ObjectId;

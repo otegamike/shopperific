@@ -78,7 +78,7 @@ export function CartAddRemoveButtons({itemQuantity, productId}: {itemQuantity: n
 
 export function ProceedToCheckout() {
 
-    const { cart } = useCartContext();
+    const { cart , clearCart } = useCartContext();
     const totalPrice = cart?.totalPrice || 0;
     const [isLoading, setIsLoading] = useState(false);
 
@@ -86,6 +86,7 @@ export function ProceedToCheckout() {
         try { 
             setIsLoading(true);
             await checkOut();
+            await clearCart();
             setIsLoading(false);
         } catch (error) {
             setIsLoading(false);

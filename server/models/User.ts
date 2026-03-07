@@ -3,12 +3,14 @@ import { db } from "../lib/mongoose.js";
 import { RefreshTokenEntry } from "../utils/addDevice.js";
 const { Schema, model, models } = db;
 
+import { type Orders } from "../types/orders.js";
+
 export type UserRole = "buyer" | "seller";
 
 const RefreshTokenEntrySchema = new Schema({
   deviceId: { type: String, required: true },
   refreshToken: { type: String, required: true },
-  createdAt: { type: Date, required: true, default: Date.now},
+  createdAt: { type: Date, required: true, default: Date.now },
 });
 
 export interface VerifyEmailType {
@@ -34,33 +36,31 @@ type CartId = {
   cartId: string;
 }
 
-type Orders = {
-  orders: string[];
-}
+type Order = { orders: Orders[] }
 
-export type UserDocument = 
-  VerifyEmailType & 
-  RefreshTokens & 
+export type UserDocument =
+  VerifyEmailType &
+  RefreshTokens &
   RegisterUserType &
   CartId &
-  Orders;
+  Order;
 
 const UserSchema = new Schema<UserDocument>(
   {
-   
+
     firstName: {
       type: String,
       required: true,
       trim: true,
     },
-    
+
     lastName: {
       type: String,
       required: true,
       trim: true,
     },
 
-     email: {
+    email: {
       type: String,
       required: true,
       unique: true,
@@ -79,7 +79,7 @@ const UserSchema = new Schema<UserDocument>(
       default: "buyer",
       required: true,
     },
-    
+
     refreshTokens: {
       type: [RefreshTokenEntrySchema],
       default: [],
@@ -93,6 +93,12 @@ const UserSchema = new Schema<UserDocument>(
       default: null,
     },
 
+    // orders 
+    orders: {
+      type: [{ type: String, trim: true }],
+      default: [],
+      required: false,
+    },
 
     // For Email verification
     isEmailVerified: {

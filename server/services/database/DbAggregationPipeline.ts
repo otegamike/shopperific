@@ -5,6 +5,7 @@ export interface AggregateCountObj {
     fieldName: string;
     match: object;
     sumField?: string;
+    sumExpression?: any; // for custom sum like $sum: { $multiply: ["$price", "$quantity"] }
 }
 
 export interface ProjectionParameters {
@@ -49,12 +50,14 @@ export const queryDatabase = async (
 
         // 2. Handle Dynamic Counts/Sums with "COUNT" suffix
         if (aggregateCountObjArr) {
-            aggregateCountObjArr.forEach(({ fieldName, match, sumField }) => {
+            aggregateCountObjArr.forEach(({ fieldName, match, sumField, sumExpression }) => {
                 const countKey = `${fieldName}COUNT`;
-                if (sumField) {
+                if (sumField || sumExpression) {
                     facet[countKey] = [
                         { $match: match },
-                        { $group: { _id: null, total: { $sum: `$${sumField}` } } }
+                        { $group: {
+                            _id: null, 
+                            total: { $sum: sumExpression || `$${sumField}` } } }
                     ];
                 } else {
                     facet[countKey] = [

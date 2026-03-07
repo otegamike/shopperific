@@ -10,6 +10,7 @@ const cartItemSchema = new Schema<CartItem>({
     productPrice: { type: Number, required: true },
     productQuantity: { type: Number, required: true },
     productTotalPrice: { type: Number, required: true },
+    productShopRef: { type: String, required: true },
 });
 
 type CartShema = Omit<CartInterface, "_id"> & {

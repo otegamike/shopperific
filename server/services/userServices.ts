@@ -1,6 +1,8 @@
 import User, { type UserDocument } from "../models/User.js";
 import { AppError } from "../utils/appError.js";
 
+
+import { Orders } from "../types/orders.js";
 interface FullUserDocument extends UserDocument {
     _id: string;
 }
@@ -31,11 +33,12 @@ export const updateUser = async ( userId: string, update: Partial<UserDocument> 
     }
 };
 
-export const updateOrders = async (userId: string, orders: string[]): Promise<void> => {
+export const updateUserOrders = async (userId: string, order: Orders): Promise<void> => {
     try {
-        const user = await User.findByIdAndUpdate(userId, { $push: { orders } }, { new: true }).lean();
+        console.log(order)
+        const user: FullUserDocument = await User.findByIdAndUpdate(userId, { $push: { orders: order } }, { new: true }).lean();
         if (!user) throw new AppError("User not found or does not exist", 404);
-
+        console.log(`user ${user.email} orders updated successfully: orderId ${user.orders}`)
     } catch (error) {
         if (error instanceof AppError) throw error;
         console.error("Error updating user:", error);
