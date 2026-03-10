@@ -65,9 +65,11 @@ const sidebarStyle: React.CSSProperties = {
   height: "auto",
   backgroundColor: "transparent",
   borderRadius: "1rem",
-  marginTop: "1rem",
+  marginTop: "0",
   marginLeft: "0.5rem",
-  zIndex: 8
+  zIndex: 8,
+  top: "1rem",
+  left: "0.5rem"
 }
 
 const ulStyles: React.CSSProperties = {
@@ -85,7 +87,8 @@ const sidebarContainerVariants: Variants = {
     position: "relative"
   },
   mobile: {
-    position: "absolute"
+    position: "absolute",
+
   }
 }
 

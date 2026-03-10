@@ -5,12 +5,17 @@ export interface AggregateCountObj {
     fieldName: string;
     match: object;
     sumField?: string;
-    sumExpression?: any; // for custom sum like $sum: { $multiply: ["$price", "$quantity"] }
+    sumExpression?: any; 
+}
+
+export interface CustomPipeline {
+    fieldName: string;
+    pipeline: PipelineStage.FacetPipelineStage[];
 }
 
 export interface ProjectionParameters {
     match?: object;
-    group?: { _id: any;[prop: string]: any };
+    group?: { _id: any; [prop: string]: any };
     project?: object;
     addFields?: object;
     sort?: Record<string, 1 | -1>;
@@ -18,17 +23,23 @@ export interface ProjectionParameters {
     limit?: number;
 }
 
+export type ProjectionObject = Record<string, ProjectionParameters>;
+
 export interface Facet {
     [key: string]: PipelineStage.FacetPipelineStage[];
 }
 
+// Fixed the return type to be more flexible for the spread docData
 export const queryDatabase = async (
     model: Models,
     aggregateCountObjArr?: AggregateCountObj[],
-    projectionParameters?: Record<string, ProjectionParameters>
+    projectionParameters?: ProjectionObject,
+    customPipelines?: CustomPipeline[] 
 ): Promise<{ found: true; [key: string]: any; docCount: Record<string, number> } | { found: false; errorMsg: string }> => {
     try {
         const facet: Facet = {};
+        
+        // Order matters in MongoDB, but this sequence is standard for most queries
         const pipelineKeys: (keyof ProjectionParameters)[] = [
             "match", "group", "addFields", "project", "sort", "skip", "limit"
         ];
@@ -37,7 +48,6 @@ export const queryDatabase = async (
         if (projectionParameters) {
             Object.entries(projectionParameters).forEach(([name, paramObj]) => {
                 const pipeline: PipelineStage.FacetPipelineStage[] = [];
-
                 pipelineKeys.forEach((key) => {
                     const value = paramObj[key];
                     if (value !== undefined && value !== null) {
@@ -48,7 +58,14 @@ export const queryDatabase = async (
             });
         }
 
-        // 2. Handle Dynamic Counts/Sums with "COUNT" suffix
+        // 2. Handle Custom Pipelines (now supports multiple)
+        if (customPipelines) {
+            customPipelines.forEach(({ fieldName, pipeline }) => {
+                facet[fieldName] = pipeline;
+            });
+        }
+
+        // 3. Handle Dynamic Counts/Sums
         if (aggregateCountObjArr) {
             aggregateCountObjArr.forEach(({ fieldName, match, sumField, sumExpression }) => {
                 const countKey = `${fieldName}COUNT`;
@@ -57,7 +74,8 @@ export const queryDatabase = async (
                         { $match: match },
                         { $group: {
                             _id: null, 
-                            total: { $sum: sumExpression || `$${sumField}` } } }
+                            total: { $sum: sumExpression || `$${sumField}` } } 
+                        }
                     ];
                 } else {
                     facet[countKey] = [
@@ -68,40 +86,32 @@ export const queryDatabase = async (
             });
         }
 
-
         const Model = getModels(model);
-        const rawResult = await Model.aggregate([{ $facet: facet }]);
+        const [rawResult] = await Model.aggregate([{ $facet: facet }]);
+        console.log(rawResult);
+
 
         const docCount: Record<string, number> = {};
         const docData: Record<string, any> = {};
 
-        if (rawResult[0]) {
-            for (const key in rawResult[0]) {
+        if (rawResult) {
+            for (const key in rawResult) {
                 if (key.endsWith("COUNT")) {
-                    // Slice off "COUNT" (5 chars) to get the original fieldName
                     const cleanKey = key.slice(0, -5);
-                    const dataArray = rawResult[0][key];
+                    const dataArray = rawResult[key];
                     const entry = dataArray[0];
-
-                    docCount[cleanKey] = entry ? (entry.count || entry.total || 0) : 0;
+                    // Handles the result from both $count (entry.count) and $group (entry.total)
+                    docCount[cleanKey] = entry ? (entry.count ?? entry.total ?? 0) : 0;
                 } else {
-                    // Standard data results (like your productsByCategory)
-                    docData[key] = rawResult[0][key];
+                    docData[key] = rawResult[key];
                 }
             }
         }
 
-        console.log("Aggregation Success:", {
-            dataSets: Object.keys(docData),
-            counts: docCount
-        });
-
-        // Spread docData so named results are top-level properties
         return { ...docData, docCount, found: true };
 
     } catch (err: any) {
         console.error("Aggregation Error:", err.message);
-        console.error("Aggregation Error:", err);
         return { found: false, errorMsg: err.message };
     }
 };

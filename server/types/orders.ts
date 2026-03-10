@@ -9,6 +9,7 @@ export interface OrderItemType {
 export type OrderStatus = "pending" | "shipped" | "delivered" | "cancelled";
 
 export interface ShopOrderInterface {
+    sellerRef: Types.ObjectId;
     shopRef: Types.ObjectId;
     orderUniqueId: string;
     orderitems: OrderItemType[];

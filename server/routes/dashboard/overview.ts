@@ -3,6 +3,7 @@ import { AppError } from "../../utils/appError.js";
 import { catchAsync } from "../../middleware/errorHandler.js";
 import { getShopStats, getUserShopsData } from "../../services/shopServices.js";
 import { requireSeller } from "../../middleware/requireSeller.js";
+import Order from "../../models/Order.js";
 
 const router = Router();
 
@@ -45,7 +46,7 @@ router.post('/overview', requireSeller, catchAsync(async (req: Request, res: Res
     const shopOverviewData: ShopOverview[] = await Promise.all(
         userShops.map(async (shop) => {
             const stats = await getShopStats(shop._id.toString());
-            
+
             return {
                 shopId: shop._id.toString(),
                 shopName: shop.shopName,
@@ -76,12 +77,35 @@ router.post('/overview', requireSeller, catchAsync(async (req: Request, res: Res
     // Clean up floating point precision for the grand total
     globalStats.totalRevenue = Math.round(globalStats.totalRevenue * 100) / 100;
 
-    // 4. Final Production Response
+    // 4. Fetch recent orders
+    const shopIds = userShops.map((shop: any) => shop._id);
+    const recentOrdersDb = await Order.find({ shopRef: { $in: shopIds } })
+        .sort({ createdAt: -1 })
+        .limit(4)
+        .populate({
+            path: 'orderitems.productId',
+            select: 'name images price'
+        })
+        .lean();
+
+    const recentOrders = recentOrdersDb.map((order: any) => {
+        // use the first item in the order for display
+        const firstItem = order.orderitems?.[0]?.productId;
+        return {
+            orderNumber: order.orderUniqueId,
+            price: `$${order.totalAmount.toFixed(2)}`,
+            name: firstItem?.name || 'Unknown Product',
+            img: firstItem?.images?.[0] || '',
+        };
+    });
+
+    // 5. Final Production Response
     res.status(200).json({
         status: "success",
         data: {
             globalStats,         // Hero section data
-            shops: shopOverviewData // Table/List section data
+            shops: shopOverviewData, // Table/List section data
+            recentOrders
         }
     });
 }));

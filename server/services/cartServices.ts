@@ -1,5 +1,5 @@
 import Cart from "../models/Cart.js";
-import { CartItem, CartInterface } from "../types/cartInterface.js";
+import { CartItem, CartInterface, ClientCartItem } from "../types/cartInterface.js";
 import { toObjectId } from "../lib/mongoose.js";
 import { ClientCart } from "../types/cartInterface.js";
 import { getUserById } from "./userServices.js";
@@ -166,8 +166,18 @@ const updateItemQuantity = async (
 
 
 const convertCartToClientCart = (cart: CartInterface): ClientCart => {
+    const clientCartItems: ClientCartItem[] = cart.items.map((item) => {
+        return {
+            productId: item.productId,
+            productImage: item.productImage,
+            productName: item.productName,
+            productPrice: item.productPrice,
+            productQuantity: item.productQuantity,
+            productTotalPrice: item.productTotalPrice
+        }
+    })
     return {
-        cartItems: cart.items,
+        cartItems: clientCartItems,
         totalPrice: cart.totalAmount,
         totalItems: cart.items.length
     }
@@ -206,7 +216,8 @@ function productToCartItem(product: FullProductInterface ): CartItem {
         productPrice: product.price,
         productQuantity: 1,
         productTotalPrice: product.price,
-        productShopRef: product.shopRef._id.toString()
+        productShopRef: product.shopRef._id.toString(),
+        productSellerRef: product.sellerId
     };
 }
 

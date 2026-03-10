@@ -6,7 +6,10 @@ export interface CartItem {
     productQuantity: number;
     productTotalPrice: number;
     productShopRef: string;
+    productSellerRef: string;
 }
+
+export type ClientCartItem = Omit<CartItem, "productSellerRef" | "productShopRef">;
 
 export interface CartInterface {
     _id: string;
@@ -17,7 +20,7 @@ export interface CartInterface {
 }
 
 export interface ClientCart {
-    cartItems: CartItem[];
+    cartItems: ClientCartItem[];
     totalItems?: number;
     totalPrice: number;
 }

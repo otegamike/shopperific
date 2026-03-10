@@ -28,6 +28,12 @@ const OrderSchema = new Schema<ShopOrderInterface>(
       required: true,
       index: true,
     },
+    sellerRef: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      index: true,
+    },
     orderUniqueId: {
       type: String,
       index: true,

@@ -13,7 +13,7 @@ interface searchProp {
     dynamic?: boolean;
 }
 
-function Search({ searchBounds, dynamic = false }:searchProp) {
+function Search({ searchBounds, dynamic = false }: searchProp) {
     const [searchWidth, setSearchWidth] = useState<string>("60vw");
     const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
 
@@ -43,7 +43,7 @@ function Search({ searchBounds, dynamic = false }:searchProp) {
     }, [windowWidth]);
 
     return (
-        <div className="search-bounds" style={ searchBounds ?  searchBounds : {} } >
+        <div className="search-bounds" style={searchBounds ? searchBounds : {}} >
             <div className="search__container">
                 <input type="text" style={dynamic ? { "--search-width": searchWidth } as React.CSSProperties : {}} id="search" name="search" placeholder="Search" />
                 <SearchSvg size={23} fill="var(--panel-color-dark)" style={{ opacity: 0.5 }} className="search-icon" />

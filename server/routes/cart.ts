@@ -40,6 +40,7 @@ router.post('/add-new-item', catchAsync(async (req: Request, res: Response): Pro
 
     const product = await GetProductById(item.productId);
     const cartItem = productToCartItem(product);
+    console.log(cartItem);
 
     const cart = await addItemToCart(cartId, cartItem);
 

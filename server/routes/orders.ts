@@ -19,6 +19,7 @@ router.post("/create", catchAsync(async (req: Request, res: Response) => {
 
     const cartId = await getCartId(userId, deviceId);
     const cart = await getCart(cartId);
+    
 
     const order = await createOrder(cart);
 

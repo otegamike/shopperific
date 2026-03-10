@@ -5,6 +5,8 @@
 }
 
 .filters {
+    
+
     position: relative;
     display: grid;
     grid-template-columns: 1fr auto;
@@ -25,6 +27,7 @@
 
 @container filter (width < 600px) {
     .filters {
-        grid-template-columns: 1fr;
+        --mobile-template: 1fr;
+        grid-template-columns: var(--mobile-template);
     }
 }
