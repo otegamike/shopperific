@@ -17,9 +17,11 @@ import validateRoute from './routes/auth/validate.js'
 import sellerRoutes from './routes/seller.js'
 import dashboardProductRoutes from './routes/dashboard/products.js'
 import dashboardOverviewRoutes from './routes/dashboard/overview.js'
+import dashboardShopsRoutes from './routes/dashboard/shops.js'
 import dashboardOrdersRoutes from './routes/dashboard/orders.js'
 import cartRoutes from './routes/cart.js'
 import orderRoutes from './routes/orders.js'
+
 
 import { globalErrorHandler } from './middleware/errorHandler.js';
 
@@ -69,6 +71,7 @@ app.use('/api/verify-email', verifyEmailRoute);
 app.use('/api/dashboard', dashboardProductRoutes);
 app.use('/api/dashboard', dashboardOverviewRoutes);
 app.use('/api/dashboard', dashboardOrdersRoutes);
+app.use('/api/dashboard', dashboardShopsRoutes);
 
 app.use('/api/sellers', sellerRoutes);
 

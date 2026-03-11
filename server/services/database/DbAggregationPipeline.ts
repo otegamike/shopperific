@@ -5,7 +5,7 @@ export interface AggregateCountObj {
     fieldName: string;
     match: object;
     sumField?: string;
-    sumExpression?: any; 
+    sumExpression?: any;
 }
 
 export interface CustomPipeline {
@@ -15,12 +15,19 @@ export interface CustomPipeline {
 
 export interface ProjectionParameters {
     match?: object;
-    group?: { _id: any; [prop: string]: any };
+    group?: { _id: any;[prop: string]: any };
     project?: object;
     addFields?: object;
     sort?: Record<string, 1 | -1>;
     skip?: number;
     limit?: number;
+}
+
+export interface ComplexDatabaseQueryParameters {
+    model: Models;
+    countQuery?: AggregateCountObj[];
+    projectionQuery?: ProjectionObject;
+    customQuery?: CustomPipeline[];
 }
 
 export type ProjectionObject = Record<string, ProjectionParameters>;
@@ -30,15 +37,14 @@ export interface Facet {
 }
 
 // Fixed the return type to be more flexible for the spread docData
-export const queryDatabase = async (
-    model: Models,
-    aggregateCountObjArr?: AggregateCountObj[],
-    projectionParameters?: ProjectionObject,
-    customPipelines?: CustomPipeline[] 
-): Promise<{ found: true; [key: string]: any; docCount: Record<string, number> } | { found: false; errorMsg: string }> => {
+export const complexDatabaseQuery = async (
+    queries: ComplexDatabaseQueryParameters
+): Promise<{ found: true;[key: string]: any; docCount: Record<string, number> } | { found: false; errorMsg: string }> => {
+
+    const { model, countQuery: aggregateCountObjArr, projectionQuery: projectionParameters, customQuery: customPipelines } = queries;
     try {
         const facet: Facet = {};
-        
+
         // Order matters in MongoDB, but this sequence is standard for most queries
         const pipelineKeys: (keyof ProjectionParameters)[] = [
             "match", "group", "addFields", "project", "sort", "skip", "limit"
@@ -72,9 +78,11 @@ export const queryDatabase = async (
                 if (sumField || sumExpression) {
                     facet[countKey] = [
                         { $match: match },
-                        { $group: {
-                            _id: null, 
-                            total: { $sum: sumExpression || `$${sumField}` } } 
+                        {
+                            $group: {
+                                _id: null,
+                                total: { $sum: sumExpression || `$${sumField}` }
+                            }
                         }
                     ];
                 } else {

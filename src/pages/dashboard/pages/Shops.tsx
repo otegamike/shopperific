@@ -7,29 +7,24 @@ import { Link } from "react-router-dom";
 import OrderFilters from "../../../components/dashboard/filters/OrderFilters";
 
 // services
-import { getShops } from "../../../services/shops";
+import { getShopsData } from "../../../services/dashboardServices";
 
 // components
 import DashboardShopCard from "../../../components/cards/dashboardShopCard/DashboardShopCard";
 
 // types
-import type { ShopDataType } from "../../../types/shopsInterface";
+import type { DashboardShopData } from "../../../types/shopsInterface";
 
 function Shops() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [errorObj, setErrorObj] = useState<{ errorState: boolean, errorMsg: string }>({ errorState: false, errorMsg: "" });
-  const [shopsData, setShopsData] = useState<ShopDataType[]>([]);
+  const [shopsData, setShopsData] = useState<DashboardShopData[]>([]);
 
   const loadShops = async () => {
     try {
       setIsLoading(true);
-      const fetchShops: any = await getShops();
-      if (fetchShops.errorMsg) {
-        setErrorObj({ errorState: true, errorMsg: fetchShops.errorMsg });
-      } else {
-        setShopsData(fetchShops.shops || []);
-        setErrorObj({ errorState: false, errorMsg: "" });
-      }
+      const fetchShops: any = await getShopsData();
+      setShopsData(fetchShops);
     } catch (error: any) {
       setErrorObj({ errorState: true, errorMsg: error.message || "Failed to load shops" });
     } finally {

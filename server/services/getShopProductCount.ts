@@ -1,14 +1,14 @@
 import { toObjectId } from "../lib/mongoose.js";
-import { queryDatabase, type AggregateCountObj } from "./database/DbAggregationPipeline.js";
+import { complexDatabaseQuery, type AggregateCountObj } from "./database/DbAggregationPipeline.js";
 import { ShopSchema } from "../models/Shop.js";
 
 
-export const getShopProductCount = async ( shops: ShopSchema[], match: object = {}  ) => {
-    
+export const getShopProductCount = async (shops: ShopSchema[], match: object = {}) => {
+
     const shopList = shops.map((shop) => {
         return { shop_Id: shop._id.toString(), shopName: shop.shopName };
     });
-    
+
     const countParameters: AggregateCountObj[] = shopList.map((shop) => {
         return {
             fieldName: shop.shopName,
@@ -16,7 +16,7 @@ export const getShopProductCount = async ( shops: ShopSchema[], match: object = 
         }
     })
 
-    const result = await queryDatabase("product", countParameters);
+    const result = await complexDatabaseQuery({model:"product", countQuery: countParameters});
     return result;
 
 }

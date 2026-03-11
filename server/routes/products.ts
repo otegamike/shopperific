@@ -7,7 +7,7 @@ import Product from "../models/Product.js";
 import { UpdateProductStats } from "../services/productServices.js";
 
 import { findOneFromDB, getManyFromDB } from "../services/database/fetchFromDb.js";
-import { queryDatabase, type ProjectionParameters } from "../services/database/DbAggregationPipeline.js";
+import { complexDatabaseQuery, type ProjectionParameters } from "../services/database/DbAggregationPipeline.js";
 import { addToShopProductCount } from "../services/updateShopProductCount.js";
 import { findAndUpdate } from "../services/database/updateDocument.js";
 import { countDocuments } from "../services/database/countDocuments.js";
@@ -49,7 +49,7 @@ router.post('/categories', async (req, res) => {
     skip: (Number(req.query.page) - 1) * Number(req.query.limit)
   }
 
-  const fetchCategories = await queryDatabase("product", [], { categories });
+  const fetchCategories = await complexDatabaseQuery({model: "product", projectionQuery: {categories}});
 
   if (!fetchCategories.found) { return res.status(500).json({ errorMsg: "error fetching products categories" }) }
 
@@ -95,9 +95,9 @@ router.post('/category/:category', async (req, res) => {
 
 ////////////////// Get product by id //////////////////
 router.post('/product/:id', async (req, res) => {
-  
+
   const id = req.params.id;
-  
+
   if (!id) { return res.status(403).json({ message: "invalid product Id" }) }
 
 

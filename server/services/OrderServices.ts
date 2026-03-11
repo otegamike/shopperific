@@ -6,7 +6,7 @@ import { UpdateProductStats } from "./productServices.js";
 import { AppError } from "../utils/appError.js";
 import { generateUniqueId } from "../utils/generateAphaNumId.js";
 import { type Pagination } from "../utils/paginationHelper.js";
-import { type ProjectionParameters, type CustomPipeline, type AggregateCountObj, queryDatabase } from "../services/database/DbAggregationPipeline.js";
+import { type ProjectionParameters, type CustomPipeline, type AggregateCountObj, complexDatabaseQuery } from "../services/database/DbAggregationPipeline.js";
 
 interface OrderInterface extends ShopOrderInterface {
     _id: string;
@@ -100,15 +100,15 @@ export const getOrderById = async (orderId: string): Promise<FullShopOrderInterf
     }
 }
 
-export const getOrderByParameter = async (parameter: Partial<OrderInterface>, select: string| Record<string, 0|1> | {} = {}): Promise<OrderInterface[]> => {
+export const getOrderByParameter = async (parameter: Partial<OrderInterface>, select: string | Record<string, 0 | 1> | {} = {}): Promise<OrderInterface[]> => {
     try {
-        const order = await Order.find(parameter, select, {new: true}).lean();
-        if (!order) throw new AppError("order not found", 404 );
+        const order = await Order.find(parameter, select, { new: true }).lean();
+        if (!order) throw new AppError("order not found", 404);
         return order;
     } catch (error) {
         if (error instanceof AppError) throw error
         console.error("Error fetching order:", error, parameter);
-        throw new AppError("Error fetching order by parameter", 500 )
+        throw new AppError("Error fetching order by parameter", 500)
     }
 }
 
@@ -122,13 +122,13 @@ interface OrdersAndStatsParameters {
 export const getOrdersAndStats = async (parameters: OrdersAndStatsParameters) => {
     const { userId, shopId, pagination, status } = parameters;
     console.log(parameters);
-    
+
     // Fallback values for pagination
     const skip = pagination?.skip || 0;
     const limit = pagination?.limit || 12;
 
     const $match = {
-       sellerRef: toObjectId(userId),
+        sellerRef: toObjectId(userId),
         ...(shopId && shopId !== "" && { shopRef: toObjectId(shopId) }),
         ...(status && status !== "" && { status })
     };
@@ -144,17 +144,19 @@ export const getOrdersAndStats = async (parameters: OrdersAndStatsParameters) =>
                     { $unwind: "$orderitems" },
                     { $lookup: { from: "products", localField: "orderitems.productId", foreignField: "_id", as: "product" } },
                     { $unwind: "$product" },
-                    { $project: { 
-                        _id: 1,
-                        status: 1,
-                        orderId: "$orderUniqueId",
-                        quantity: "$orderitems.quantity",
-                        price: "$orderitems.priceAtPurchase",
-                        date: "$createdAt",
-                        productName: "$product.name",
-                        image: "$product.images",
-                        productId: "$product._id",
-                    } },
+                    {
+                        $project: {
+                            _id: 1,
+                            status: 1,
+                            orderId: "$orderUniqueId",
+                            quantity: "$orderitems.quantity",
+                            price: "$orderitems.priceAtPurchase",
+                            date: "$createdAt",
+                            productName: "$product.name",
+                            image: "$product.images",
+                            productId: "$product._id",
+                        }
+                    },
                     //Sort before paginating to ensure consistent results
                     { $sort: { date: -1 } },
                     // Apply pagination
@@ -170,18 +172,18 @@ export const getOrdersAndStats = async (parameters: OrdersAndStatsParameters) =>
             { fieldName: "delivered", match: { ...$match, status: "delivered" } },
             { fieldName: "cancelled", match: { ...$match, status: "cancelled" } },
             //Count total items (unwound) so the frontend knows total pages
-            { fieldName: "totalItems", match: $match } 
+            { fieldName: "totalItems", match: $match }
         ];
 
-        const orderData = await queryDatabase("order", countParameters, undefined, customPipelines);
-        
+        const orderData = await complexDatabaseQuery({model:"order", countQuery: countParameters, customQuery: customPipelines});
+
         console.log(orderData);
         if ("errorMsg" in orderData) throw new AppError(orderData.errorMsg, 500);
-        
+
         const { orderProducts, docCount: stats } = orderData;
-        
-        return { 
-            orderProducts, 
+
+        return {
+            orderProducts,
             stats,
             clientPagination: {
                 totalItems: stats.totalItems,

@@ -2,7 +2,7 @@ import { Router, Request } from "express";
 import { requireSeller } from "../../middleware/requireSeller.js";
 import Product, { type ProductType } from "../../models/Product.js";
 // services
-import { queryDatabase, type AggregateCountObj, ProjectionParameters } from "../../services/database/DbAggregationPipeline.js";
+import { complexDatabaseQuery, type AggregateCountObj, ProjectionParameters } from "../../services/database/DbAggregationPipeline.js";
 import { findAndUpdate } from "../../services/database/updateDocument.js";
 import { deleteProductsFromShop, type DeleteProductObject } from "../../services/deleteProductsFromShop.js";
 
@@ -60,7 +60,7 @@ router.post("/products", requireSeller, async (req: Request, res) => {
         }
     }
 
-    const dashboardProductsData = await queryDatabase("product", countParameters, { productsData, productsByCategory });
+    const dashboardProductsData = await complexDatabaseQuery({model:"product",countQuery: countParameters, projectionQuery: { productsData, productsByCategory }});
 
     if (dashboardProductsData.found) {
         const totalProducts = dashboardProductsData.docCount.totalProducts;
@@ -143,7 +143,7 @@ router.post("/products/delete/", requireSeller, async (req: Request, res: TypedR
         return res.status(400).json({ errorMsg: "Invalid deleteObject format." });
     }
 
-    if (!sellerId || !shopList ) {
+    if (!sellerId || !shopList) {
         return res.status(401).json({ errorMsg: "Seller authentication missing." });
     }
 
@@ -170,11 +170,11 @@ router.post("/products/delete/", requireSeller, async (req: Request, res: TypedR
 
     // Check for complete success
     if (results.every(r => r.deleted === true)) {
-        const imagesToDelete = results.flatMap((result) => ("errorMsg" in result)? [] :result.imagesToDelete)
+        const imagesToDelete = results.flatMap((result) => ("errorMsg" in result) ? [] : result.imagesToDelete)
         deletedCount = results.reduce((total, result) => total + ("deletedCount" in result ? result.deletedCount : 0), 0);
         await deleteMultipleImages(imagesToDelete);
     }
-    
+
     return res.status(200).json({ message: "Products deleted successfully", deletedCount });
 });
 

@@ -1,11 +1,11 @@
 import EditSvg from "../../../assets/svg/editSvg";
 import ProductsSvg from "../../../assets/svg/products";
 import SettingsSvg from "../../../assets/svg/settings";
-import type { ShopDataType } from "../../../types/shopsInterface";
+import type { DashboardShopData } from "../../../types/shopsInterface";
 import "./dashboardShopCard.css";
 
-export default function DashboardShopCard({ shop }: { shop: ShopDataType }) {
-    const totalSales = "$45,200.00";
+export default function DashboardShopCard({ shop }: { shop: DashboardShopData }) {
+    const totalSales = "45,200.00";
     const monthlyVisitors = "12.4k";
     const status = "Active";
 
@@ -34,19 +34,19 @@ export default function DashboardShopCard({ shop }: { shop: ShopDataType }) {
 
                 <div className="card__status">
                     <div className="status__dot"></div>
-                    {status}
+                    {shop.status || status}
                 </div>
             </div>
 
             {/* Stats Block */}
             <div className="card__stats">
                 <div className="stat__block">
-                    <div className="stat__label">Total Sales</div>
-                    <div className="stat__value--primary">{totalSales}</div>
+                    <div className="stat__label">Sales this month</div>
+                    <div className="stat__value--primary">${shop.monthlySales || totalSales}</div>
                 </div>
                 <div className="stat__block stat__block--right">
                     <div className="stat__label">Monthly Visitors</div>
-                    <div className="stat__value--secondary">{monthlyVisitors}</div>
+                    <div className="stat__value--secondary">{shop.visitors || monthlyVisitors}</div>
                 </div>
             </div>
 

@@ -1,5 +1,6 @@
 import api from "../api/client";
 import type { OrdersData } from "../types/OrderInterface";
+import type { DashboardShopData } from "../types/shopsInterface";
 
 export const getOverviewData = async () => {
     try {
@@ -18,5 +19,16 @@ export const getDashboardOrders = async (currentShop: string = "", status: strin
        return ordersData;
     } catch (error: any) {
         throw new Error(error.response?.data?.message || "Failed to load dashboard orders data");
+    }
+};
+
+export const getShopsData = async (): Promise<DashboardShopData[]> => {
+    try {
+        const response = await api.get("/dashboard/shops");
+        const { dashboardShopData } = response.data;
+        console.log(dashboardShopData)
+        return dashboardShopData;
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message || "Failed to load shop list");
     }
 };
