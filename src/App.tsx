@@ -25,6 +25,7 @@ import Categories from './pages/products/Categories'
 import Category from './pages/products/Category'
 import ShopDetails from './pages/shops/ShopDetails'
 
+
 function App() {
   return (
     <>

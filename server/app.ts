@@ -21,6 +21,7 @@ import dashboardShopsRoutes from './routes/dashboard/shops.js'
 import dashboardOrdersRoutes from './routes/dashboard/orders.js'
 import cartRoutes from './routes/cart.js'
 import orderRoutes from './routes/orders.js'
+import homeRoutes from  './routes/home.js'
 
 
 import { globalErrorHandler } from './middleware/errorHandler.js';
@@ -59,6 +60,8 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/products', productsRoutes);
 
 app.use('/api/shops', shopRoutes);
+
+app.use('/api/home', homeRoutes);
 
 app.use(requireValidation);
 

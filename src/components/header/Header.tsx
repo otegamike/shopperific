@@ -12,6 +12,11 @@ interface HeaderProps {
   navbar?: boolean;
 }
 
+export interface MenuPanelProps {
+  isMenuOpen: boolean;
+  toggleMenu: (menuState?: boolean) => void;
+}
+
 
 
 function Header({ navbar }: HeaderProps) {
@@ -19,8 +24,17 @@ function Header({ navbar }: HeaderProps) {
   const [ cartIsOpen, setCartIsOpen ] = useState<boolean>(false);
   const [CartIsMounted, setCartIsMounted] = useState(false);
   
+  const [ isMenuOpen, setIsMenuOpen ] = useState<boolean>(false);
+
   const toggleCart = (cartState?: boolean) => {
-    setCartIsOpen(prevState => cartState !== undefined ? cartState : !prevState);
+    const body = document.body;
+    body.style.overflow = cartIsOpen ? "auto" : "hidden";
+
+    setCartIsOpen(prevState => cartState !== undefined ? cartState : !prevState); 
+  }
+
+  const toggleMenu = (menuState?: boolean) => {
+    setIsMenuOpen(prevState => menuState !== undefined ? menuState : !prevState); 
   }
 
   const cartButtonProps: CartButtonProps = {
@@ -39,6 +53,11 @@ function Header({ navbar }: HeaderProps) {
     duration: 0.4
   }
 
+  const menuPanelProps = {
+    isMenuOpen,
+    toggleMenu
+  }
+
 
 
   return (
@@ -47,11 +66,11 @@ function Header({ navbar }: HeaderProps) {
         <div className='main-header'>
           <div className='header'> 
             <HeaderLogo />
-            {navbar && <HeaderNav cartButtonProps={cartButtonProps} buttonid="nav-button" />}
+            {navbar && <HeaderNav cartButtonProps={cartButtonProps} menuPanelProps={menuPanelProps} buttonid="nav-button" />}
           
           </div>
         </div>
-        {navbar && <NavBarPanel />}
+        {navbar && <NavBarPanel menuPanelProps={menuPanelProps} />}
       </header>
 
       <AnimatePresence>

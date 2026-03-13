@@ -73,8 +73,8 @@ const Products = () => {
         <>
             <Header navbar={true} />
             <div>
-                <main className='center__content'>
-                    <section className='section' style={{ paddingLeft: "1rem" }} >
+                <main className='center__content main-page'>
+                    <section className='products-container section' style={{ paddingLeft: "1rem" }} >
                         <h3>Products</h3>
 
 

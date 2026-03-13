@@ -1,7 +1,5 @@
 .section {
-    padding: 2rem 1rem 2rem 2rem;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
+    padding: 1rem;
     border-radius: 1rem;
     background-color: var(--secondary-color);
     width: 95%;
@@ -10,15 +8,12 @@
 
     & h3 {
         padding: 0rem 0 0.6rem 0;
+        color: var(--text-color-dark);
+        font-size: 1rem;
     }
 }
 
 .section>.products {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    gap: 1rem;
-    overflow-x: auto;
     padding-bottom: 1rem;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
@@ -37,7 +32,7 @@
 
 .products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(44%, 10rem), 1fr));
     grid-template-rows: 1fr auto auto;
     gap: 1rem;
 }

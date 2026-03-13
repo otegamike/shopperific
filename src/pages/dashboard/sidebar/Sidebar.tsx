@@ -15,7 +15,6 @@ import OverviewSvg from "../../../assets/svg/overview"
 import ProductsSvg from "../../../assets/svg/products"
 import ShopSvg from "../../../assets/svg/shops"
 import OrdersSvg from "../../../assets/svg/orders"
-import CustomersSvg from "../../../assets/svg/customers"
 import SettingsSvg from "../../../assets/svg/settings"
 import LogoutSvg from "../../../assets/svg/logoout"
 
@@ -51,7 +50,6 @@ export default function Sidebar({ active, isSidebarOpen, handleSidebarOpen, hand
         <Link to="/dashboard/products"><List id="products" icon={<ProductsSvg fill="var(--color)" size={20} />} label="products"  active={active} handleActive={handleActive} isSidebarOpen={isSidebarOpen} /></Link>
         <Link to="/dashboard/orders"><List id="orders" icon={<OrdersSvg fill="var(--color)" size={20} />} label="orders" active={active} handleActive={handleActive} isSidebarOpen={isSidebarOpen} /></Link>
         <Link to="/dashboard/shops"><List id="shops" icon={<ShopSvg fill="var(--color)" size={20} />} label="shops" active={active} handleActive={handleActive} isSidebarOpen={isSidebarOpen} /></Link>
-        <Link to="/dashboard/customers"><List id="customers" icon={<CustomersSvg fill="var(--color)" size={20} />} label="customers" active={active} handleActive={handleActive} isSidebarOpen={isSidebarOpen} /></Link>
         <Link to="/dashboard/settings"><List id="settings" icon={<SettingsSvg fill="var(--color)" size={20} />} label="settings" active={active} handleActive={handleActive} isSidebarOpen={isSidebarOpen} /></Link>
         <List id="logout" icon={<LogoutSvg fill="var(--color)" size={20} />} label="logout" active={active} handleActive={handleActive} isSidebarOpen={isSidebarOpen} />
       </motion.ul>

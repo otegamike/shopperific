@@ -26,7 +26,7 @@ function Page({children, pageClass, style}: PageProps) {
     <>
         <Header navbar={true} />
         <div>
-            <main className='center__content'>
+            <main className='center__content main-page'>
                 <section className={`section ${pageClass? pageClass : ""}`} style={{ paddingLeft: "1rem" , ...style}} >
                     {children}
                 </section>

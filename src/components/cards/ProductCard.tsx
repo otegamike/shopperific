@@ -20,7 +20,7 @@ interface ProductCardProps {
     product?: ProductDataType;
 }
 
-function ProductCard({ orientation = "row", className, loading = true, product }: ProductCardProps) {
+function ProductCard({ orientation = "row", className, product }: ProductCardProps) {
    
     const navigate = useNavigate();
     const goToProduct = () => {
@@ -32,34 +32,53 @@ function ProductCard({ orientation = "row", className, loading = true, product }
     const cartItem = cartItems.find((item) => item.productId === product?._id);
 
     return (
-        <div onClick={goToProduct} className={`product__card  ${loading ? "loading" : ""} ${orientation} ${className}`} >
-            <span className={`product__image  ${loading ? "skeleton__loader" : ""}`}>
-                {!loading && product?.images?.[0] && <img src={product.images[0]} alt={product.name} />}
+        <div onClick={goToProduct} className={`product__card  ${orientation} ${className}`} >
+            <span className={`product__image`}>
+                {product?.images?.[0] && <img src={product.images[0]} alt={product.name} />}
             </span>
             <div className="product__info">
-                <span className={`product__name ${loading ? "skeleton__loader" : ""}`}>
-                    {!loading && product?.name}
+                <span className={`product__name`}>
+                    {product?.name}
                 </span>
             </div> 
             <span className="product__actions">
-                <span className={`product__price ${loading ? "skeleton__loader" : ""}`}>
-                    {!loading && `$${product?.price}`}
+                <span className={`product__price`}>
+                    {`$${product?.price}`}
                 </span>
 
-                {!loading && cartItem ? 
+                {cartItem ? 
                     <CartAddRemoveButtons 
                         itemQuantity={cartItem.productQuantity} 
                         productId={cartItem.productId}
                     /> 
                     : 
-                    <button className={`product__button ${loading ? "skeleton__loader" : ""}`} onClick={(e) => {
+                    <button className={`product__button`} onClick={(e) => {
                             e.stopPropagation();
                             addToCart(product!);
                         }}
                     >
-                    {!loading && <CartCheck size={20} />}
+                    <CartCheck size={20} />
                     </button>
                 }
+            </span>
+        </div>
+    )
+}
+
+function LoadingProductCard({ orientation = "row", className }: ProductCardProps) {
+
+    return (
+        <div className={`product__card loading  ${orientation} ${className}`} >
+            <span className='product__image loading'>
+            </span>
+            <div className="product__info">
+                <span className='product__name skeleton__loader'>
+                </span>
+            </div> 
+            <span className="product__actions">
+                <span className='product__price skeleton__loader'>
+                </span>
+                <button className="product__button skeleton__loader" ></button>
             </span>
         </div>
     )
@@ -70,8 +89,16 @@ export const ProductCardComponent: React.FC<{
     last?: boolean,
     orientation?: "row" | "grid",
     loading?: boolean
-}> = ({ product, orientation = "grid", loading = false }) => {
-    return (
+}> = ({ product, orientation = "grid", loading = true}) => {
+    if (loading) return (
+        <LoadingProductCard
+            orientation={orientation}
+            loading={loading}
+            product={product}
+            key={product?._id}
+        />
+    ) 
+    else return (
         <ProductCard
             orientation={orientation}
             loading={loading}

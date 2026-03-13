@@ -27,7 +27,7 @@ export default function DashboardShopCard({ shop }: { shop: DashboardShopData })
                                 <line x1="8" y1="21" x2="16" y2="21"></line>
                                 <line x1="12" y1="17" x2="12" y2="21"></line>
                             </svg>
-                            <span>{typeof shop.productsCount === 'number' && shop.productsCount > 0 ? `${shop.productsCount} Products` : "1,240 Products"}</span>
+                            <span>{typeof shop.productsCount === 'number' && shop.productsCount > 0 ? `${shop.productsCount} Products` : "No Products"}</span>
                         </div>
                     </div>
                 </div>

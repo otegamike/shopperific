@@ -1,35 +1,21 @@
-import { useState } from 'react';
 import './hamburger-menu.css'
-function HamburgerMenu() {
-  const [menuExpanded, setMenuExpanded] = useState(false);
+import { type MenuPanelProps } from '../Header';
 
 
-  const expandMenu = () => {
-  const menu = document.getElementById('menu');
-  const panelButton = document.getElementById('panel-button');
 
-  if (!menu || !panelButton) return;
+interface HamburgerMenuProps {
+  menuPanelProps: MenuPanelProps;
+}
 
-  if (!menuExpanded) {
-    menu.classList.add('menu__expand');
-    menu.classList.remove('is-hidden');
-
-  } else {
-    panelButton.style.zIndex = '120';
-    menu.classList.remove('menu__expand');
-    menu.classList.add('is-hidden');
-  }
-
-  setMenuExpanded(prev => !prev);
-};
-
+function HamburgerMenu({ menuPanelProps }: HamburgerMenuProps) {
+  const { isMenuOpen, toggleMenu } = menuPanelProps;
 
   return (
     <div className='menu__container active'>
-      <div className='hamburger-menu' onClick={expandMenu}>
-        <div className={`bar ${menuExpanded ? 'cross' : ''}`}></div>
-        <div className={`bar ${menuExpanded ? 'cross' : ''}`}></div>
-        <div className={`bar ${menuExpanded ? 'cross' : ''}`}></div>
+      <div className='hamburger-menu' onClick={() => toggleMenu()}>
+        <div className={`bar ${isMenuOpen ? 'cross' : ''}`}></div>
+        <div className={`bar ${isMenuOpen ? 'cross' : ''}`}></div>
+        <div className={`bar ${isMenuOpen ? 'cross' : ''}`}></div>
       </div>
     </div>
   );
